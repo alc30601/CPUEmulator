@@ -1,7 +1,9 @@
 // Edge.hpp
-
 #ifndef __EDGE_HPP__
 #define __EDGE_HPP__
+
+#include <memory>
+#include <vector>
 
 class Node;
 
@@ -14,6 +16,10 @@ template <class T>
 class Edge
 {
     T _v;   // value that hold this edge
+
+    // ★★★
+    // 自身の出力先のNode一覧を保持する。
+    std::vector<std::shared_ptr<Node> _outputNodes;
 
 public:
 
@@ -28,6 +34,13 @@ public:
     {
         _v = value;
     }
+
+    //-------------------------------------------------------
+    // ★★★
+    // 自身の先につながるNodeの一覧を取得する。
+    // List<std::shared_ptr<Node> getoutputNodes();
+
+
 };
 
 #endif
