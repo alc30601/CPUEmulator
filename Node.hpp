@@ -5,14 +5,16 @@
 #include <memory>
 #include <vector>
 
+class Edge;
+
 //-----------------------------------------------------------
 class Node
 {
     // ★★★自身の出力先のEdge一覧を保持する。
-    std::vector<std::shared_ptr<Edge> _outputEdges;
+    std::vector<std::shared_ptr<Edge>> _outputEdges;
 
     // ★★★自身の入力元のEdge一覧を保持する。
-    std::vector<std::shared_ptr<Edge> _inputEdges;
+    std::vector<std::shared_ptr<Edge>> _inputEdges;
 
 public:
     // Execute the operation of this node

@@ -2,8 +2,12 @@
 #ifndef __EDGE_HPP__
 #define __EDGE_HPP__
 
+#include <iostream>
 #include <memory>
 #include <vector>
+#include <any>
+#include <typeinfo>
+
 
 class Node;
 
@@ -11,26 +15,32 @@ class Node;
 // Definition of Edge class.
 // Edge is between Nodes.
 // Edge itself has a current value.
-// Edge has link to Ndestination nodes 
-template <class T>
+// Edge has link to destination nodes 
 class Edge
 {
-    T _v;   // value that hold this edge
+    std::any  _v;   // value that hold this edge
 
     // ★★★
     // 自身の出力先のNode一覧を保持する。
-    std::vector<std::shared_ptr<Node> _outputNodes;
+    std::vector<std::shared_ptr<Node>> _outputNodes;
 
 public:
 
     //-------------------------------------------------------
-    T getValue(void)
+    Edge(std::any initial_v)
+    {
+        std::cout << "Type of Edge : " << typeid(_v).name() << std::endl;
+        _v = initial_v;
+    }
+
+    //-------------------------------------------------------
+    std::any getValue(void)
     {
         return _v;
     }
 
     //-------------------------------------------------------
-    void setValue(T value)
+    void setValue(std::any value)
     {
         _v = value;
     }

@@ -7,7 +7,7 @@ HEADERS = 	Edge.hpp \
 SOURCE = 	main.cpp
 
 exe : $(SOURCE) $(HEADERS)
-	g++ $(SOURCE) -o dataflowgraph
+	g++ -std=c++17 $(SOURCE) -o dataflowgraph
 
 clean :
 	rm dataflowgraph

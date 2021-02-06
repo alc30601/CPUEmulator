@@ -9,38 +9,42 @@
 #include "Edge.hpp"
 #include "Node.hpp"
 
-#include "StartNode.hpp"
-#include "TerminateNode.hpp"
-
-
-
 
 //-----------------------------------------------------------
-class MyNode : public Node
+class MyNode1 : public Node
 {
-    std::shared_ptr<Edge<int>> _input;
-    std::shared_ptr<Edge<int>> _output;
+    std::shared_ptr<Edge> _edge;
 
 public:
+    void setEdge(std::shared_ptr<Edge> edge)
+    {
+        _edge = edge;
+    }
 
-    //-------------------------------------------------------
     void execute(void)
     {
-        int vIn = _input->getValue();
-        _output->setValue(vIn);
+        _edge->setValue(3);
     }
-
-    //-------------------------------------------------------
-    void set_edge(std::shared_ptr<Edge<int>> sp_input, std::shared_ptr<Edge<int>> sp_output)
-    {
-        _input = sp_input;
-        _output = sp_output;
-    }
-
 };
 
+//-----------------------------------------------------------
+class MyNode2 : public Node
+{
+    std::shared_ptr<Edge> _edge;
 
+public:
+    void setEdge(std::shared_ptr<Edge> edge)
+    {
+        _edge = edge;
+    }
 
+    void execute(void)
+    {
+        int a;
+        a = std::any_cast<int>(_edge->getValue());
+        std::cout << "flowed value is : " << a << std::endl;
+    }
+};
 
 
 //-----------------------------------------------------------
@@ -48,18 +52,15 @@ int main(void)
 {
     std::cout << "-- DataFlowGraph -- " << std::endl;
 
-    StartNode sNode;
-    TerminateNode tNode;
-    MyNode node;
+    MyNode1 n1;
+    MyNode2 n2;
+    std::shared_ptr<Edge> edge(new Edge(0));
 
-    std::shared_ptr<Edge<int>> spEdge1(new Edge<int>());
-    std::shared_ptr<Edge<int>> spEdge2(new Edge<int>());
+    n1.setEdge(edge);
+    n2.setEdge(edge);
 
-    node.set_edge(spEdge1, spEdge2);
-    sNode.set_edge(spEdge1);
-    tNode.set_edge(spEdge2);
-
-    sNode.execute();
+    n1.execute();
+    n2.execute();
 
     return 0;
 }
