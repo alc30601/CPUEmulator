@@ -8,41 +8,62 @@
 
 #include "Edge.hpp"
 #include "Node.hpp"
+#include "Executor.hpp"
 
 
 //-----------------------------------------------------------
 class MyNode1 : public Node
 {
-    std::shared_ptr<Edge> _edge;
+    std::shared_ptr<Edge> _edge1;
+    std::shared_ptr<Edge> _edge2;
 
 public:
-    void setEdge(std::shared_ptr<Edge> edge)
+    void setEdge(std::shared_ptr<Edge> edge1, std::shared_ptr<Edge> edge2)
     {
-        _edge = edge;
+        _edge1 = edge1;
+        _edge2 = edge2;
+
+        addOutEdge(edge1);
+        addOutEdge(edge2);
     }
 
     void execute(void)
     {
-        _edge->setValue(3);
+        _edge1->setValue(3);
+        _edge2->setValue('B');
     }
 };
 
 //-----------------------------------------------------------
 class MyNode2 : public Node
 {
-    std::shared_ptr<Edge> _edge;
+    std::shared_ptr<Edge> _edge1;
+    std::shared_ptr<Edge> _edge2;
 
 public:
-    void setEdge(std::shared_ptr<Edge> edge)
+    void setEdge(std::shared_ptr<Edge> edge1, std::shared_ptr<Edge> edge2)
     {
-        _edge = edge;
+        _edge1 = edge1;
+        _edge2 = edge2;
+
+        addInEdge(edge1);
+        addInEdge(edge2);
     }
 
     void execute(void)
     {
-        int a;
-        a = std::any_cast<int>(_edge->getValue());
-        std::cout << "flowed value is : " << a << std::endl;
+        bool dataCompleted = isInputDataCompleted();
+        if(dataCompleted == true){
+            int a;
+            char b;
+            a = std::any_cast<int>(_edge1->getValue());
+            b = std::any_cast<char>(_edge2->getValue());
+            std::cout << "flowed value 1 is : " << a << std::endl;
+            std::cout << "flowed value 2 is : " << b << std::endl;
+        }
+        else{
+            std::cout << "data is not reached yet.. do nothing" << std::endl;
+        }
     }
 };
 
@@ -52,15 +73,19 @@ int main(void)
 {
     std::cout << "-- DataFlowGraph -- " << std::endl;
 
-    MyNode1 n1;
-    MyNode2 n2;
-    std::shared_ptr<Edge> edge(new Edge(0));
+    std::shared_ptr<MyNode1> n1(new MyNode1);
+    std::shared_ptr<MyNode2> n2(new MyNode2);
+    std::shared_ptr<Edge> edge1(new Edge(0));
+    std::shared_ptr<Edge> edge2(new Edge('A'));
 
-    n1.setEdge(edge);
-    n2.setEdge(edge);
+    n1->setEdge(edge1, edge2);
+    n2->setEdge(edge1, edge2);
 
-    n1.execute();
-    n2.execute();
+    edge1->addOutNode(n2);
+    edge2->addOutNode(n2);
+
+    Executor exe(n1);
+    exe.step();
 
     return 0;
 }

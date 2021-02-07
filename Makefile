@@ -2,6 +2,7 @@
 
 HEADERS = 	Edge.hpp \
 			Node.hpp \
+			Executor.hpp \
 
 
 SOURCE = 	main.cpp
