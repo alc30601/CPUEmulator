@@ -34,7 +34,7 @@ public:
     }
 
     // Execute the operation of this node
-    virtual void execute(void) = 0;
+    virtual void execute(void){ _status = Status::DONE; };
 
     //-------------------------------------------------------
     // check if data that are necessary for execution of this node is ready or not
@@ -60,6 +60,7 @@ public:
     bool isExecuted(void)
     {
         bool result = _status == Status::DONE ? true : false;
+        return result;
     }
 
     //-------------------------------------------------------

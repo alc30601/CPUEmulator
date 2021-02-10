@@ -29,6 +29,10 @@ public:
 
     void execute(void)
     {
+        std::cout << "MyNode1::execute()" <<std::endl;
+
+        Node::execute();
+
         _edge1->setValue(3);
         _edge2->setValue('B');
     }
@@ -52,6 +56,10 @@ public:
 
     void execute(void)
     {
+        std::cout << "MyNode2::execute()" <<std::endl;
+
+        Node::execute();
+
         bool dataCompleted = isInputDataCompleted();
         if(dataCompleted == true){
             int a;
