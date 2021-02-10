@@ -59,19 +59,12 @@ public:
         std::cout << "MyNode2::execute()" <<std::endl;
 
         Node::execute();
-
-        bool dataCompleted = isInputDataCompleted();
-        if(dataCompleted == true){
-            int a;
-            char b;
-            a = std::any_cast<int>(_edge1->getValue());
-            b = std::any_cast<char>(_edge2->getValue());
-            std::cout << "flowed value 1 is : " << a << std::endl;
-            std::cout << "flowed value 2 is : " << b << std::endl;
-        }
-        else{
-            std::cout << "data is not reached yet.. do nothing" << std::endl;
-        }
+        int a;
+        char b;
+        a = std::any_cast<int>(_edge1->getValue());
+        b = std::any_cast<char>(_edge2->getValue());
+        std::cout << "flowed value 1 is : " << a << std::endl;
+        std::cout << "flowed value 2 is : " << b << std::endl;
     }
 };
 
