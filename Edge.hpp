@@ -7,7 +7,7 @@
 #include <vector>
 #include <any>
 #include <typeinfo>
-
+#include <cassert>
 
 class Node;
 
@@ -37,7 +37,6 @@ public:
     //-------------------------------------------------------
     Edge(std::any initial_v)
     {
-        std::cout << "Type of Edge : " << typeid(_v).name() << std::endl;
         _v = initial_v;
         _status = Status::DISABLE;
     }

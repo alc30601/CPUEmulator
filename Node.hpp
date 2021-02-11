@@ -16,7 +16,7 @@ public:
         NOTYET      // hasn't been executed yet
     };
 
-private:
+protected:
     // 自身の出力先のEdge一覧を保持する。
     std::vector<std::shared_ptr<Edge>> _outEdges;
 
@@ -44,7 +44,7 @@ public:
     {
         bool result = true;
 
-        // ★★★ 自身の入力元Edgeにデータが全て揃っているか確認する。
+        // 自身の入力元Edgeにデータが全て揃っているか確認する。
         for(auto edge : _inEdges){
             if(edge->getStatus() == Edge::Status::DISABLE){
                 result = false;
