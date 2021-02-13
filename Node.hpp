@@ -8,6 +8,9 @@
 class Edge;
 
 //-----------------------------------------------------------
+// ノードは0〜複数個の入力エッジ、0〜複数個の出力エッジを持つ。
+// 実行(execute)がコールされたら、入力エッジから必要なデータを取り出し
+// 演算を行い、出力端子に結果を書き出す。
 class Node
 {
 public:
@@ -30,11 +33,19 @@ public:
     //-------------------------------------------------------
     Node(void)
     {
-        _status = Status::NOTYET;
+        clearStatus();
     }
 
+    //-------------------------------------------------------
     // Execute the operation of this node
     virtual void execute(void){ _status = Status::DONE; };
+
+    //-------------------------------------------------------
+    // 実行履歴をクリアする。
+    void clearStatus(void)
+    {
+        _status = Status::NOTYET;
+    }
 
     //-------------------------------------------------------
     // check if data that are necessary for execution of this node is ready or not
@@ -78,7 +89,7 @@ public:
     }
 
     //-------------------------------------------------------
-    // 保持するEdge一覧を返すメソッド
+    // 保持する出力Edge一覧を返す
     std::vector<std::shared_ptr<Edge>> getOutEdges()
     {
         return _outEdges;

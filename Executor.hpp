@@ -5,6 +5,8 @@
 #include <iostream>
 #include <memory>
 #include <typeinfo>
+#include <vector>
+#include <iterator>
 
 #include "Node.hpp"
 #include "Edge.hpp"
@@ -15,20 +17,40 @@
 class Executor
 {
     std::shared_ptr<Node> _startNode;
+    std::vector<std::shared_ptr<Node>> _nodes;
+    std::vector<std::shared_ptr<Edge>> _edges;
 
 public:
     //-------------------------------------------------------
-    Executor(std::shared_ptr<Node> sNode)
+    Executor(std::shared_ptr<Node> startNode, std::vector<std::shared_ptr<Node>> nodes, std::vector<std::shared_ptr<Edge>> edges)
     {
-        _startNode = sNode;
+        _startNode = startNode;
+        std::copy(nodes.begin(), nodes.end(), std::back_inserter(_nodes));
+        std::copy(edges.begin(), edges.end(), std::back_inserter(_edges));
+    }
+
+    //-------------------------------------------------------
+    void clearNodeStatus(void)
+    {
+        for(auto node : _nodes){
+            node->clearStatus();
+        }
+    }
+
+    //-------------------------------------------------------
+    void clearEdgeStatus(void)
+    {
+        for(auto edge : _edges){
+            edge->clearStatus();
+        }
     }
 
     //-------------------------------------------------------
     // execute flow graph from start node
     void step(void)
     {
-        // ★★★
-        // メンバ変数として持つ、_startNodeから始めてグラフをたどる。
+        std::cout << "--< Executor::step >-- " << std::endl;
+        // _startNodeから始めてグラフをたどる。
         // あるNodeからその先に行くにはNodeクラスのgetOutputEdge()によりつながるEdgeを取得する。
         // あるEdgeからその先のNodeを見つけるにはEdgeのメソッドgetoutputNode()によりNode一覧を取得する。
 
@@ -37,8 +59,10 @@ public:
         // その判定のため、そのNodeに入力されるEdge一覧を取得し、全てのEdgeでデータが到達しているか
         // をチェックする。
 
-        step_recursive(_startNode);
+        stepRecursive(_startNode);
 
+        clearNodeStatus();
+        clearEdgeStatus();
     }
 
     //-------------------------------------------------------
@@ -47,7 +71,7 @@ public:
     // Second, find the edges from the node
     // Third, for each edge, find child nodes
     // Then, call this method for these child nodes
-    void step_recursive(std::shared_ptr<Node> node)
+    void stepRecursive(std::shared_ptr<Node> node)
     {
         if(node->isExecuted() == true){
             return;
@@ -63,7 +87,7 @@ public:
   
         for(auto edge : node->getOutEdges()){
             for(auto child_node : edge->getOutNodes()){
-                step_recursive(child_node);
+                stepRecursive(child_node);
             }
         }
     }

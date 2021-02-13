@@ -15,7 +15,7 @@ class Node;
 // Definition of Edge class.
 // Edge is between Nodes.
 // Edge itself has a current value.
-// Edge has link to destination nodes 
+// Edge has link to multiple destination nodes 
 class Edge
 {
 public:
@@ -38,6 +38,12 @@ public:
     Edge(std::any initial_v)
     {
         _v = initial_v;
+        clearStatus();
+    }
+
+    //-------------------------------------------------------
+    void clearStatus(void)
+    {
         _status = Status::DISABLE;
     }
 
