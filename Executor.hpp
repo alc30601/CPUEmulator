@@ -73,6 +73,7 @@ public:
     // Then, call this method for these child nodes
     void stepRecursive(std::shared_ptr<Node> node)
     {
+        // if this node already executed, do nothing
         if(node->isExecuted() == true){
             return;
         }
@@ -82,9 +83,10 @@ public:
             return;
         }
 
-        // if datas are ready to execute, do below
+        // do this node
         node->execute();
-  
+
+        // traverse out edges and nodes, then execute each node recursively
         for(auto edge : node->getOutEdges()){
             for(auto child_node : edge->getOutNodes()){
                 stepRecursive(child_node);
