@@ -35,7 +35,7 @@ public:
     }
 
     //-------------------------------------------------------
-    void setEdge(std::shared_ptr<Edge> edge)
+    void setEdge(Edge* edge)
     {
         _outEdges.resize(1);
         _outEdges.at(0) = edge;
@@ -59,7 +59,7 @@ class NodeE : public Node
 {
 public:
     //-------------------------------------------------------
-    void setEdge(std::shared_ptr<Edge> edge)
+    void setEdge(Edge* edge)
     {
         _inEdges.resize(1);
         _inEdges.at(0) = edge;
@@ -94,7 +94,7 @@ public:
     }
 
     //-------------------------------------------------------
-    void setEdge(std::shared_ptr<Edge> edge1, std::shared_ptr<Edge> edge2)
+    void setEdge(Edge* edge1, Edge* edge2)
     {
         _outEdges.resize(2);
         _outEdges.at(0) = edge1;
@@ -121,15 +121,15 @@ public:
 void test_04_01(void)
 {
     // ノード生成
-    std::shared_ptr<NodeNot> nodeNot(new NodeNot);
-    std::shared_ptr<NodeS> n1(new NodeS);
-    std::shared_ptr<NodeE> n2(new NodeE);
-    std::vector<std::shared_ptr<Node>> nodes = {n1, n2, nodeNot};
+    NodeNot* nodeNot(new NodeNot);
+    NodeS* n1(new NodeS);
+    NodeE* n2(new NodeE);
+    std::vector<Node*> nodes = {n1, n2, nodeNot};
 
     // エッジ生成
-    std::shared_ptr<Edge> e0(new Edge(true));
-    std::shared_ptr<Edge> e1(new Edge(true));
-    std::vector<std::shared_ptr<Edge>> edges = {e0, e1};
+    Edge* e0(new Edge(true));
+    Edge* e1(new Edge(true));
+    std::vector<Edge*> edges = {e0, e1};
 
     // ノードにエッジを紐付ける
     nodeNot->setEdge(e0, e1);
@@ -159,16 +159,16 @@ template <class T>
 void test_2in1out(void)
 {
     // ノード生成
-    std::shared_ptr<T> nodeOp(new T);
-    std::shared_ptr<NodeS2> n1(new NodeS2);
-    std::shared_ptr<NodeE> n2(new NodeE);
-    std::vector<std::shared_ptr<Node>> nodes = {n1, n2, nodeOp};
+    T* nodeOp(new T);
+    NodeS2* n1(new NodeS2);
+    NodeE* n2(new NodeE);
+    std::vector<Node*> nodes = {n1, n2, nodeOp};
 
     // エッジ生成
-    std::shared_ptr<Edge> e0(new Edge(true));
-    std::shared_ptr<Edge> e1(new Edge(true));
-    std::shared_ptr<Edge> e2(new Edge(true));
-    std::vector<std::shared_ptr<Edge>> edges = {e0, e1, e2};
+    Edge* e0(new Edge(true));
+    Edge* e1(new Edge(true));
+    Edge* e2(new Edge(true));
+    std::vector<Edge*> edges = {e0, e1, e2};
 
     // ノードにエッジを紐付ける
     nodeOp->setEdge(e0, e1, e2);

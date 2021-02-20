@@ -4,6 +4,8 @@
 
 #include <memory>
 #include <vector>
+#include <any>
+
 
 class Edge;
 
@@ -21,10 +23,10 @@ public:
 
 protected:
     // 自身の出力先のEdge一覧を保持する。
-    std::vector<std::shared_ptr<Edge>> _outEdges;
+    std::vector<Edge*> _outEdges;
 
     // 自身の入力元のEdge一覧を保持する。
-    std::vector<std::shared_ptr<Edge>> _inEdges;
+    std::vector<Edge*> _inEdges;
 
     Status _status; // node execution status
 
@@ -57,10 +59,10 @@ public:
 
         // 自身の入力元Edgeにデータが全て揃っているか確認する。
         for(auto edge : _inEdges){
-            if(edge->getStatus() == Edge::Status::DISABLE){
-                result = false;
-                break;
-            }
+            // if(edge->getStatus() == Edge::Status::DISABLE){
+            //     result = false;
+            //     break;
+            // }
         }
         return result;
     }
@@ -76,35 +78,35 @@ public:
 
     //-------------------------------------------------------
     // 出力先Edgeを追加する。
-    void addOutEdge(std::shared_ptr<Edge> edge)
+    void addOutEdge(Edge* edge)
     {
         _outEdges.push_back(edge);
     }
 
     //-------------------------------------------------------
     // 入力元Edgeを追加する。
-    void addInEdge(std::shared_ptr<Edge> edge)
+    void addInEdge(Edge* edge)
     {
         _inEdges.push_back(edge);
     }
 
     //-------------------------------------------------------
     // 出力先Edgeを一括追加する。
-    void addOutEdges(std::vector<std::shared_ptr<Edge>> edges)
+    void addOutEdges(std::vector<Edge*> edges)
     {
         std::copy(edges.begin(), edges.end(), std::back_inserter(_outEdges));
     }
 
     //-------------------------------------------------------
     // 入力元Edgeを一括追加する。
-    void addInEdges(std::vector<std::shared_ptr<Edge>> edges)
+    void addInEdges(std::vector<Edge*> edges)
     {
         std::copy(edges.begin(), edges.end(), std::back_inserter(_inEdges));
     }
 
     //-------------------------------------------------------
     // 保持する出力Edge一覧を返す
-    std::vector<std::shared_ptr<Edge>> getOutEdges()
+    std::vector<Edge*> getOutEdges()
     {
         return _outEdges;
     }
@@ -128,20 +130,20 @@ public:
 class NodeSub : public Node
 {
     // 本サブモジュールの入力、出力は以下の入り口ノード、出口ノードで集約する。
-    std::shared_ptr<Node> _nodeEntry;   // 入り口ノード
-    std::shared_ptr<Node> _nodeExit;    // 出口ノード
+    Node* _nodeEntry;   // 入り口ノード
+    Node* _nodeExit;    // 出口ノード
 
 public:
     //-------------------------------------------------------
     NodeSub(void)
     {
-        _nodeEntry = std::shared_ptr<Node>(new Node());
-        _nodeExit  = std::shared_ptr<Node>(new Node());
+        _nodeEntry = new Node();
+        _nodeExit  = new Node();
     }
 
     //-------------------------------------------------------
     // 入力エッジは入り口ノードに、出力エッジは出口ノードに紐付ける。
-    void setEdge(std::vector<std::shared_ptr<Edge>> inEdges, std::vector<std::shared_ptr<Edge>> outEdges)
+    void setEdge(std::vector<Edge*> inEdges, std::vector<Edge*> outEdges)
     {
         // 渡された外部エッジを入り口ノード、出口ノードに紐付ける。
         _nodeEntry->addInEdges(inEdges);
@@ -152,23 +154,25 @@ public:
         // Edgeを生成するためにはEdgeの型がわかっていないといけない。
         // 引数で渡されたinEdges,outEdgesをコピーして使用する。
 
-        for(auto edge : inEdges){
-            Edge internalEdge = *edge;
-            std::shared_ptr<Edge> temp = std::make_shared<Edge>(internalEdge);
-            _nodeEntry->addOutEdge(temp);
-        }
+        // for(auto edge : inEdges){
+        //     Edge internalEdge = *edge;
+        //     std::shared_ptr<Edge> temp = std::make_shared<Edge>(internalEdge);
+        //     _nodeEntry->addOutEdge(temp);
+        // }
 
-        for(auto edge : outEdges){
-            Edge internalEdge = *edge;
-            std::shared_ptr<Edge> temp = std::make_shared<Edge>(internalEdge);
-            _nodeEntry->addInEdge(temp);
-        }
+        // for(auto edge : outEdges){
+        //     Edge internalEdge = *edge;
+        //     std::shared_ptr<Edge> temp = std::make_shared<Edge>(internalEdge);
+        //     _nodeEntry->addInEdge(temp);
+        // }
 
     }
 
 
 
 };
+
+
 
 
 #endif

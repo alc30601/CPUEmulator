@@ -16,17 +16,20 @@
 // Start node of the graph
 class Executor
 {
-    std::shared_ptr<Node> _startNode;
-    std::vector<std::shared_ptr<Node>> _nodes;
-    std::vector<std::shared_ptr<Edge>> _edges;
+    Node* _startNode;
+    std::vector<Node*> _nodes;
+    std::vector<Edge*> _edges;
 
 public:
     //-------------------------------------------------------
-    Executor(std::shared_ptr<Node> startNode, std::vector<std::shared_ptr<Node>> nodes, std::vector<std::shared_ptr<Edge>> edges)
+    Executor(Node* startNode, std::vector<Node*> nodes, std::vector<Edge*> edges)
     {
         _startNode = startNode;
-        std::copy(nodes.begin(), nodes.end(), std::back_inserter(_nodes));
-        std::copy(edges.begin(), edges.end(), std::back_inserter(_edges));
+        // std::copy(nodes.begin(), nodes.end(), std::back_inserter(_nodes));
+        // std::copy(edges.begin(), edges.end(), std::back_inserter(_edges));
+        _nodes = nodes;
+        _edges = edges;
+
     }
 
     //-------------------------------------------------------
@@ -71,7 +74,7 @@ public:
     // Second, find the edges from the node
     // Third, for each edge, find child nodes
     // Then, call this method for these child nodes
-    void stepRecursive(std::shared_ptr<Node> node)
+    void stepRecursive(Node* node)
     {
         // if this node already executed, do nothing
         if(node->isExecuted() == true){

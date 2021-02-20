@@ -30,7 +30,7 @@ private:
 
 
     // hold output nodes from this Edge
-    std::vector<std::shared_ptr<Node>> _outNodes;
+    std::vector<Node*> _outNodes;
 
 public:
 
@@ -67,14 +67,14 @@ public:
     }
 
     //-------------------------------------------------------
-    void addOutNode(std::shared_ptr<Node> node)
+    void addOutNode(Node* node)
     {
         _outNodes.push_back(node);
     }
 
     //-------------------------------------------------------
     // 自身の先につながるNodeの一覧を取得する。
-    std::vector<std::shared_ptr<Node>> getOutNodes(void)
+    std::vector<Node*> getOutNodes(void)
     {
         return _outNodes;
     }

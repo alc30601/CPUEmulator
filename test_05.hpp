@@ -31,7 +31,7 @@ class NodeS : public Node
 public:
 
     //-------------------------------------------------------
-    void setEdge(std::shared_ptr<Edge> edge1, std::shared_ptr<Edge> edge2)
+    void setEdge(Edge* edge1, Edge* edge2)
     {
         _outEdges.resize(2);
         _outEdges.at(0) = edge1;
@@ -59,7 +59,7 @@ class NodeE : public Node
 
 public:
     //-------------------------------------------------------
-    void setEdge(std::shared_ptr<Edge> edge1, std::shared_ptr<Edge> edge2)
+    void setEdge(Edge* edge1, Edge* edge2)
     {
         _inEdges.resize(2);
         _inEdges.at(0) = edge1;
@@ -90,13 +90,12 @@ class NodeInternal : public Node
 // 複合ノード
 class NodeComplex : public NodeSub
 {
-    std::shared_ptr<NodeInternal> _internalNode;
+    NodeInternal* _internalNode;
 
 public:
     //-------------------------------------------------------
     NodeComplex(void)
     {
-        _internalNode = std::shared_ptr<NodeInternal>(new NodeInternal());
 
     }
 
@@ -108,22 +107,22 @@ public:
 void test(void)
 {
     // ノード生成
-    std::shared_ptr<NodeS> n1(new NodeS);
-    std::shared_ptr<NodeE> n2(new NodeE);
-    std::shared_ptr<NodeComplex> nc(new NodeComplex);
+    NodeS* n1(new NodeS);
+    NodeE* n2(new NodeE);
+    NodeComplex* nc(new NodeComplex);
 
     // エッジ生成
-    std::shared_ptr<Edge> e11(new Edge(true));
-    std::shared_ptr<Edge> e12(new Edge(true));
-    std::shared_ptr<Edge> e21(new Edge(true));
-    std::shared_ptr<Edge> e22(new Edge(true));
+    Edge* e11(new Edge(true));
+    Edge* e12(new Edge(true));
+    Edge* e21(new Edge(true));
+    Edge* e22(new Edge(true));
 
     // ノードにエッジを紐付ける。
     n1->setEdge(e11, e12);
     n2->setEdge(e21, e22);
 
-    std::vector<std::shared_ptr<Edge>> inEdges = {e11, e12};
-    std::vector<std::shared_ptr<Edge>> outEdges = {e21, e22};
+    std::vector<Edge*> inEdges = {e11, e12};
+    std::vector<Edge*> outEdges = {e21, e22};
     nc->setEdge(inEdges, outEdges);
 
     // エッジにノードを紐付ける。
@@ -133,8 +132,8 @@ void test(void)
     e22->addOutNode(n2);
 
     // 実行
-    std::vector<std::shared_ptr<Node>> nodes = {n1, n2, nc};
-    std::vector<std::shared_ptr<Edge>> edges = {e11, e12, e21, e22};
+    std::vector<Node*> nodes = {n1, n2, nc};
+    std::vector<Edge*> edges = {e11, e12, e21, e22};
 
     Executor exe(n1, nodes, edges);
     exe.step();
