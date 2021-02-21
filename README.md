@@ -77,4 +77,14 @@ This is a data flow graph core implementation.
 - 実行履歴のクリア処理
 - 複合ノード(サブファンクション)の実装中
 
+## 2021.02.21
+
+- std::shared_ptrを廃止。普通のポインタに置き換え
+  Node, Edgeで保持するオブジェクトは現状静的で管理者も明確なので
+  shared_ptrを使う必要性が少ないため。
+- 複合ノード作成(途中)
+  複数回実行がうまくできず。
+  Executorの持ち方検討の必要性有り。
+  サブシステム毎にExecutorを持つのか、全体で１つのExecutorで賄うのか。
+
 
