@@ -35,6 +35,12 @@ private:
 public:
 
     //-------------------------------------------------------
+    Edge(void)
+    {
+        clearStatus();
+    }
+
+    //-------------------------------------------------------
     Edge(std::any initial_v)
     {
         _v = initial_v;
@@ -73,7 +79,7 @@ public:
     }
 
     //-------------------------------------------------------
-    // 自身の先につながるNodeの一覧を取得する。
+    // get Nodes connected from out direction of this Edge
     std::vector<Node*> getOutNodes(void)
     {
         return _outNodes;

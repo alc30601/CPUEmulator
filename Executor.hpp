@@ -21,16 +21,45 @@ class Executor
     std::vector<Edge*> _edges;
 
 public:
+
+    //-------------------------------------------------------
+    Executor()
+    {
+
+    }
+
     //-------------------------------------------------------
     Executor(Node* startNode, std::vector<Node*> nodes, std::vector<Edge*> edges)
     {
-        _startNode = startNode;
+        // _startNode = startNode;
         // std::copy(nodes.begin(), nodes.end(), std::back_inserter(_nodes));
         // std::copy(edges.begin(), edges.end(), std::back_inserter(_edges));
-        _nodes = nodes;
-        _edges = edges;
+        // _nodes = nodes;
+        // _edges = edges;
 
+        setStartNode(startNode);
+        setNodes(nodes);
+        setEdges(edges);
     }
+
+    //-------------------------------------------------------
+    void setStartNode(Node* startNode)
+    {
+        _startNode = startNode;
+    }
+
+    //-------------------------------------------------------
+    void setNodes(std::vector<Node*> nodes)
+    {
+        _nodes = nodes;
+    }
+
+    //-------------------------------------------------------
+    void setEdges(std::vector<Edge*> edges)
+    {
+        _edges = edges;
+    }
+
 
     //-------------------------------------------------------
     void clearNodeStatus(void)
@@ -52,7 +81,7 @@ public:
     // execute flow graph from start node
     void step(void)
     {
-        std::cout << "--< Executor::step >-- " << std::endl;
+        // std::cout << "--< Executor::step >-- " << std::endl;
         // _startNodeから始めてグラフをたどる。
         // あるNodeからその先に行くにはNodeクラスのgetOutputEdge()によりつながるEdgeを取得する。
         // あるEdgeからその先のNodeを見つけるにはEdgeのメソッドgetoutputNode()によりNode一覧を取得する。

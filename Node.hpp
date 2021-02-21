@@ -40,10 +40,14 @@ public:
 
     //-------------------------------------------------------
     // Execute the operation of this node
+    // User Node that inherits this class must override this method.
+    // And do the user specific action in the overrided execute() method
+    // And also has to call this parent Node class execute() method
+    // in order to change execution status.
     virtual void execute(void){ _status = Status::DONE; };
 
     //-------------------------------------------------------
-    // 実行履歴をクリアする。
+    // Clear execution status
     void clearStatus(void)
     {
         _status = Status::NOTYET;
@@ -111,64 +115,12 @@ public:
         return _outEdges;
     }
 
-};
-
-//-----------------------------------------------------------
-// モジュール化されたノードのベースクラス
-// 本クラスを継承したサブモジュールを作成する。
-// 
-//   +-----------------------------------+
-//   | +---+                       +---+ |
-//  -|-|   |-Edge ...              |   | |
-//   | |   |              ... Edge-|   |-|-
-//  -|-|   |-Edge ...              |   | |
-//   | +---+                       +---+ |
-//   | 入り口ノード            出口ノード|
-//   +-----------------------------------+
-
-
-class NodeSub : public Node
-{
-    // 本サブモジュールの入力、出力は以下の入り口ノード、出口ノードで集約する。
-    Node* _nodeEntry;   // 入り口ノード
-    Node* _nodeExit;    // 出口ノード
-
-public:
     //-------------------------------------------------------
-    NodeSub(void)
+    // 保持する入力Edge一覧を返す
+    std::vector<Edge*> getInEdges()
     {
-        _nodeEntry = new Node();
-        _nodeExit  = new Node();
+        return _inEdges;
     }
-
-    //-------------------------------------------------------
-    // 入力エッジは入り口ノードに、出力エッジは出口ノードに紐付ける。
-    void setEdge(std::vector<Edge*> inEdges, std::vector<Edge*> outEdges)
-    {
-        // 渡された外部エッジを入り口ノード、出口ノードに紐付ける。
-        _nodeEntry->addInEdges(inEdges);
-        _nodeExit->addOutEdges(outEdges);
-
-        // 入力エッジ数、出力エッジ数に応じた内部エッジを生成し
-        // 入り口ノード、出口ノードに紐つけておく。
-        // Edgeを生成するためにはEdgeの型がわかっていないといけない。
-        // 引数で渡されたinEdges,outEdgesをコピーして使用する。
-
-        // for(auto edge : inEdges){
-        //     Edge internalEdge = *edge;
-        //     std::shared_ptr<Edge> temp = std::make_shared<Edge>(internalEdge);
-        //     _nodeEntry->addOutEdge(temp);
-        // }
-
-        // for(auto edge : outEdges){
-        //     Edge internalEdge = *edge;
-        //     std::shared_ptr<Edge> temp = std::make_shared<Edge>(internalEdge);
-        //     _nodeEntry->addInEdge(temp);
-        // }
-
-    }
-
-
 
 };
 
