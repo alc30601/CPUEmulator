@@ -54,24 +54,6 @@ public:
     }
 
     //-------------------------------------------------------
-    // check if data that are necessary for execution of this node is ready or not
-    // true : data are ready
-    // false : data are not ready yet
-    bool isInputDataCompleted(void)
-    {
-        bool result = true;
-
-        // 自身の入力元Edgeにデータが全て揃っているか確認する。
-        for(auto edge : _inEdges){
-            // if(edge->getStatus() == Edge::Status::DISABLE){
-            //     result = false;
-            //     break;
-            // }
-        }
-        return result;
-    }
-
-    //-------------------------------------------------------
     // if this node is already executed, return true
     // else return false
     bool isExecuted(void)

@@ -22,7 +22,7 @@
 
 //-----------------------------------------------------------
 // 0入力、1出力ノード
-class NodeS : public Node
+class Test04NodeS : public Node
 {
     bool _value;
 
@@ -47,7 +47,7 @@ public:
     {
         Node::execute();
 
-        std::cout << "NodeS::execute()" <<std::endl;
+        std::cout << "Test04NodeS::execute()" <<std::endl;
         std::cout << "input value is : " << _value << std::endl;
         _outEdges.at(0)->setValue(_value);
     }
@@ -55,7 +55,7 @@ public:
 
 //-----------------------------------------------------------
 // １入力、０出力ノード
-class NodeE : public Node
+class Test04NodeE : public Node
 {
 public:
     //-------------------------------------------------------
@@ -70,7 +70,7 @@ public:
     {
         Node::execute();
 
-        std::cout << "NodeE::execute()" <<std::endl;
+        std::cout << "Test04NodeE::execute()" <<std::endl;
         bool a;
         a = std::any_cast<bool>(_inEdges.at(0)->getValue());
         std::cout << "flowed value is : " << a << std::endl;
@@ -79,7 +79,7 @@ public:
 
 //-----------------------------------------------------------
 // ０入力、２出力ノード
-class NodeS2 : public Node
+class Test04NodeS2 : public Node
 {
     bool _value1;
     bool _value2;
@@ -107,7 +107,7 @@ public:
     {
         Node::execute();
 
-        std::cout << "NodeS2::execute()" <<std::endl;
+        std::cout << "Test04NodeS2::execute()" <<std::endl;
         std::cout << "input value is : " << _value1 << " , " << _value2 << std::endl;
         _outEdges.at(0)->setValue(_value1);
         _outEdges.at(1)->setValue(_value2);
@@ -122,8 +122,8 @@ void test_04_01(void)
 {
     // ノード生成
     NodeNot* nodeNot(new NodeNot);
-    NodeS* n1(new NodeS);
-    NodeE* n2(new NodeE);
+    Test04NodeS* n1(new Test04NodeS);
+    Test04NodeE* n2(new Test04NodeE);
     std::vector<Node*> nodes = {n1, n2, nodeNot};
 
     // エッジ生成
@@ -160,8 +160,8 @@ void test_2in1out(void)
 {
     // ノード生成
     T* nodeOp(new T);
-    NodeS2* n1(new NodeS2);
-    NodeE* n2(new NodeE);
+    Test04NodeS2* n1(new Test04NodeS2);
+    Test04NodeE* n2(new Test04NodeE);
     std::vector<Node*> nodes = {n1, n2, nodeOp};
 
     // エッジ生成
@@ -197,7 +197,7 @@ void test_2in1out(void)
 
 }
 //-----------------------------------------------------------
-void test(void)
+void test04(void)
 {
     test_04_01();
     test_2in1out<NodeAnd>();

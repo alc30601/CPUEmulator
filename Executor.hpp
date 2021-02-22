@@ -23,10 +23,7 @@ class Executor
 public:
 
     //-------------------------------------------------------
-    Executor()
-    {
-
-    }
+    Executor(){}
 
     //-------------------------------------------------------
     Executor(Node* startNode, std::vector<Node*> nodes, std::vector<Edge*> edges)
@@ -43,18 +40,37 @@ public:
     }
 
     //-------------------------------------------------------
+    // register start Node
     void setStartNode(Node* startNode)
     {
         _startNode = startNode;
     }
 
     //-------------------------------------------------------
+    // Add a Node
+    void addNode(Node* node)
+    {
+        _nodes.push_back(node);
+    }
+
+    //-------------------------------------------------------
+    // Add a Edge
+    void addEdge(Edge* edge)
+    {
+        _edges.push_back(edge);
+    }
+
+    //-------------------------------------------------------
+    // set Nodes at once
+    // caution! already registered Nodes are overwrote
     void setNodes(std::vector<Node*> nodes)
     {
         _nodes = nodes;
     }
 
     //-------------------------------------------------------
+    // set Edges at once
+    // caution! already registered Edges are overwrote
     void setEdges(std::vector<Edge*> edges)
     {
         _edges = edges;
@@ -76,6 +92,26 @@ public:
             edge->clearStatus();
         }
     }
+
+    //-------------------------------------------------------
+    // check if data that are necessary for execution of this node is ready or not
+    // true : data are ready
+    // false : data are not ready yet
+    bool isInputDataCompleted(Node* node)
+    {
+        bool result = true;
+        std::vector<Edge*> inEdges = node->getInEdges();
+
+        // 入力元Edgeにデータが全て揃っているか確認する。
+        for(auto edge : inEdges){
+            if(edge->getStatus() == Edge::Status::DISABLE){
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+
 
     //-------------------------------------------------------
     // execute flow graph from start node
@@ -111,7 +147,7 @@ public:
         }
         
         // if datas are not ready yet, do nothing
-        if(node->isInputDataCompleted() == false){
+        if(isInputDataCompleted(node) == false){
             return;
         }
 

@@ -24,7 +24,7 @@
 
 
 //-----------------------------------------------------------
-class NodeS : public Node
+class Test05NodeS : public Node
 {
     bool _value1;
     bool _value2;
@@ -51,8 +51,7 @@ public:
     {
         Node::execute();
 
-        std::cout << "NodeS::execute()" << std::endl;
-        std::cout << "input value is : " << _value1 << " , " << _value2 << std::endl;
+        std::cout << "Test05NodeS::execute() : " << _value1 << " , " << _value2 << std::endl;
 
         _outEdges.at(0)->setValue(_value1);
         _outEdges.at(1)->setValue(_value2);
@@ -61,7 +60,7 @@ public:
 
 
 //-----------------------------------------------------------
-class NodeE : public Node
+class Test05NodeE : public Node
 {
     bool _value1;
     bool _value2;
@@ -82,15 +81,14 @@ public:
 
         _value1 = std::any_cast<bool>(_inEdges.at(0)->getValue());
         _value2 = std::any_cast<bool>(_inEdges.at(1)->getValue());
-        std::cout << "NodeE::execute()" <<std::endl;
-        std::cout << "output value is : " << _value1 << " , " << _value2 << std::endl;
+        std::cout << "Test05NodeE::execute() : " << _value1 << " , " << _value2 << std::endl;
     }
 };
 
 
 //-----------------------------------------------------------
 // 複合ノード内の内部ノード
-class NodeInternal : public Node
+class Test05NodeInternal : public Node
 {
 public:
     //-------------------------------------------------------
@@ -104,8 +102,7 @@ public:
         _outEdges.at(0)->setValue(value1);
         _outEdges.at(1)->setValue(value2);
 
-        std::cout << "NodeInternal::execute()" << std::endl;
-        std::cout << "the value is : " << value1 << " , " << value2 << std::endl;
+        std::cout << "Test05NodeInternal::execute() : " << value1 << " , " << value2 << std::endl;
     }    
 };
 
@@ -114,13 +111,14 @@ public:
 // ２入力、２出力、内部ノード１
 class NodeComplex : public NodeSubSystem
 {
-    NodeInternal* _internalNode;
+    Test05NodeInternal* _internalNode;
 
 public:
     //-------------------------------------------------------
     NodeComplex(void)
     {
-        _internalNode = new NodeInternal();
+        _internalNode = new Test05NodeInternal();
+        getInnerExecutor()->addNode(_internalNode);
     }
 
     //-------------------------------------------------------
@@ -145,11 +143,11 @@ public:
 
 
 //-----------------------------------------------------------
-void test(void)
+void test05(void)
 {
     // ノード生成
-    NodeS* nS(new NodeS);
-    NodeE* nE(new NodeE);
+    Test05NodeS* nS(new Test05NodeS);
+    Test05NodeE* nE(new Test05NodeE);
     NodeComplex* nC(new NodeComplex);
 
     // エッジ生成
@@ -181,7 +179,7 @@ void test(void)
 
     Executor exe(nS, nodes, edges);
 
-    nS->setValues(false, false);
+    nS->setValues(true, true);
     exe.step();
 
     nS->setValues(false, true);
@@ -190,7 +188,7 @@ void test(void)
     nS->setValues(true, false);
     exe.step();
 
-    nS->setValues(true, true);
+    nS->setValues(false, false);
     exe.step();
 
 }
