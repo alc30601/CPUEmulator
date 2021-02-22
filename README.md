@@ -87,4 +87,8 @@ This is a data flow graph core implementation.
   Executorの持ち方検討の必要性有り。
   サブシステム毎にExecutorを持つのか、全体で１つのExecutorで賄うのか。
 
+## 2021.02.23
+
+- 複合ノード初版作成
+
 
