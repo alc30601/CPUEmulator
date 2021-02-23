@@ -62,33 +62,34 @@ public:
         return result;
     }
 
-    //-------------------------------------------------------
-    // 出力先Edgeを追加する。
-    void addOutEdge(Edge* edge)
-    {
-        _outEdges.push_back(edge);
-    }
+    // //-------------------------------------------------------
+    // // 入力元Edgeを追加する。
+    // virtual void addInEdge(Edge* edge)
+    // {
+    //     _inEdges.push_back(edge);
+    // }
+
+    // //-------------------------------------------------------
+    // // 出力先Edgeを追加する。
+    // virtual void addOutEdge(Edge* edge)
+    // {
+    //     _outEdges.push_back(edge);
+    // }
 
     //-------------------------------------------------------
-    // 入力元Edgeを追加する。
-    void addInEdge(Edge* edge)
+    // 入力元Edgeを一括追加する。
+    virtual void addInEdges(std::vector<Edge*> edges)
     {
-        _inEdges.push_back(edge);
+        std::copy(edges.begin(), edges.end(), std::back_inserter(_inEdges));
     }
 
     //-------------------------------------------------------
     // 出力先Edgeを一括追加する。
-    void addOutEdges(std::vector<Edge*> edges)
+    virtual void addOutEdges(std::vector<Edge*> edges)
     {
         std::copy(edges.begin(), edges.end(), std::back_inserter(_outEdges));
     }
 
-    //-------------------------------------------------------
-    // 入力元Edgeを一括追加する。
-    void addInEdges(std::vector<Edge*> edges)
-    {
-        std::copy(edges.begin(), edges.end(), std::back_inserter(_inEdges));
-    }
 
     //-------------------------------------------------------
     // 保持する出力Edge一覧を返す

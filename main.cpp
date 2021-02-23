@@ -26,11 +26,12 @@ int main(void)
     std::cout << "  -- test03" << std::endl;
     test03();
 
+    std::cout << "  -- test05" << std::endl;
+    test05();
+
     std::cout << "  -- test04" << std::endl;
     test04();
 
-    std::cout << "  -- test05" << std::endl;
-    test05();
 
     std::cout << "... Done." << std::endl;
     return 0;

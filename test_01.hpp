@@ -28,8 +28,10 @@ public:
         _edge1 = edge1;
         _edge2 = edge2;
 
-        addOutEdge(edge1);
-        addOutEdge(edge2);
+        // addOutEdge(edge1);
+        // addOutEdge(edge2);
+        std::vector<Edge*> edges = {edge1, edge2};
+        addOutEdges(edges);
     }
 
     void execute(void)
@@ -55,8 +57,10 @@ public:
         _edge1 = edge1;
         _edge2 = edge2;
 
-        addInEdge(edge1);
-        addInEdge(edge2);
+        // addInEdge(edge1);
+        // addInEdge(edge2);
+        std::vector<Edge*> edges = {edge1, edge2};
+        addInEdges(edges);
     }
 
     void execute(void)

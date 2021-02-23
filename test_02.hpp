@@ -15,6 +15,8 @@
 #ifndef __TEST_02_HPP__
 #define __TEST_02_HPP__
 
+#include <vector>
+
 #include "Edge.hpp"
 #include "Node.hpp"
 #include "Executor.hpp"
@@ -29,8 +31,10 @@ class Test02MyNode0 : public Node
 public:
     void setEdge(Edge* e01, Edge* e02)
     {
-        addOutEdge(e01);
-        addOutEdge(e02);
+        std::vector<Edge*> edges = {e01, e02};
+        addOutEdges(edges);
+        // addOutEdge(e01);
+        // addOutEdge(e02);
         _e01 = e01;
         _e02 = e02;
     }
@@ -53,8 +57,12 @@ class Test02MyNode1 : public Node
 public:
     void setEdge(Edge* e01, Edge* e13)
     {
-        addInEdge(e01);
-        addOutEdge(e13);
+        std::vector<Edge*> inEdges = {e01};
+        std::vector<Edge*> outEdges = {e13};
+        addInEdges(inEdges);
+        addOutEdges(outEdges);
+        // addInEdge(e01);
+        // addOutEdge(e13);
         _e01 = e01;
         _e13 = e13;
     }
@@ -76,8 +84,12 @@ class Test02MyNode2 : public Node
 public:
     void setEdge(Edge* e02, Edge* e23)
     {
-        addInEdge(e02);
-        addOutEdge(e23);
+        std::vector<Edge*> inEdges = {e02};
+        std::vector<Edge*> outEdges = {e23};
+        addInEdges(inEdges);
+        addOutEdges(outEdges);
+        // addInEdge(e02);
+        // addOutEdge(e23);
         _e02 = e02;
         _e23 = e23;
     }
@@ -99,8 +111,10 @@ class Test02MyNode3 : public Node
 public:
     void setEdge(Edge* e13, Edge* e23)
     {
-        addInEdge(e13);
-        addInEdge(e23);
+        std::vector<Edge*> edges = {e13, e23};
+        addInEdges(edges);
+        // addInEdge(e13);
+        // addInEdge(e23);
         _e13 = e13;
         _e23 = e23;
     }

@@ -20,29 +20,11 @@ class Node1In1Out : public Node
     static const int INDEX_EDGE_OUT = 0;    // index of output edge
 
 public:
-    //-------------------------------------------------------
-    void setEdge(Edge* inEdge, Edge* outEdge)
-    {
-        _inEdges.resize(1);
-        _inEdges.at(0) = inEdge;
-
-        _outEdges.resize(1);
-        _outEdges.at(0) = outEdge;
-    }
 
     //-------------------------------------------------------
     void execute(void)
     {
         Node::execute();
-
-        // Edge* aaa = _inEdges.at(INDEX_EDGE_IN);
-        // aaa->getValue();
-        // auto bbb = aaa->getValue();
-        // auto bbb = _inEdges.at(0)->getValue();
-        // T ccc = std::any_cast<T>(bbb);
-        // auto vvv = std::any_cast<T>(aaa->getValue());
-        // auto temp1 = _inEdges.at(INDEX_EDGE_IN)->getValue();
-        // T inValue = std::any_cast<T>(temp1);
 
         T inValue = std::any_cast<T>(_inEdges.at(INDEX_EDGE_IN)->getValue());
         T outValue = calculate(inValue);
@@ -69,16 +51,6 @@ class Node2In1Out : public Node
     static const int INDEX_EDGE_OUT = 0;     // index of output edge
 
 public:
-    //-------------------------------------------------------
-    void setEdge(Edge* inEdge1, Edge* inEdge2, Edge* outEdge)
-    {
-        _inEdges.resize(2);
-        _inEdges.at(0) = inEdge1;
-        _inEdges.at(1) = inEdge2;
-
-        _outEdges.resize(1);
-        _outEdges.at(0) = outEdge;
-    }
 
     //-------------------------------------------------------
     void execute(void)

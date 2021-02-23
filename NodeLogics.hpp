@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "Node.hpp"
+#include "NodeSubSystem.hpp"
 #include "NodeBase.hpp"
 
 
@@ -53,63 +54,70 @@ class NodeOr : public Node2In1Out<bool>
     }
 };
 
-// //-----------------------------------------------------------
-// // ★★★
-// // NORをORとNOTの組合せで構成する。
-// // ノードの結合を行う。
-// // 複合ノードは外部から見れば１つのノードとして振る舞う。
-// // 内部的に複数のノードを組合せる。
-// // 実行は外部のExecutorとは別に内部にExecutorを持ったほうが良いかもしれない。
-// class NodeNor : public Node
-// {
-//     std::shared_ptr<NodeOr> _nodeOr;
-//     std::shared_ptr<NodeNot> _nodeNot;
-//     std::shared_ptr<Edge> _edge;
+//-----------------------------------------------------------
+// NORをORとNOTの組合せで構成する。
+// ノードの結合を行う。
+// 複合ノードは外部から見れば１つのノードとして振る舞う。
+// 内部的に複数のノードを組合せる。
+class NodeNor : public NodeSubSystem
+{
+    NodeOr* _nodeOr;
+    NodeNot* _nodeNot;
+    Edge* _edge;
 
-// public:
+public:
 
-//     //-------------------------------------------------------
-//     // 本来、ここで生成した内部ノードにエッジを紐付けたいが
-//     // まだ、本ノード生成時点で外部エッジを指定されていないためできない。
-//     // setEdge()が呼ばれた時点でまとめて紐付けを行う。
-//     NodeNor(void)
-//     {
-//         // ノード生成
-//         _nodeOr = std::shared_ptr<NodeOr>(new NodeOr());
-//         _nodeNot = std::shared_ptr<NodeNot>(new NodeNot());
+    //-------------------------------------------------------
+    NodeNor(void)
+    {
+        // ノード生成
+        _nodeOr = new NodeOr();
+        _nodeNot = new NodeNot();
 
-//         // エッジ生成
-//         _edge = std::shared_ptr<Edge>(new Edge(true));
+        // エッジ生成
+        _edge = new Edge(true);
 
-//         // エッジにノードを紐付ける
-//         _edge->addOutNode(_nodeNot);
-//     }
+        // ノードにエッジを紐付ける。
+        std::vector<Edge*> edges = {_edge};
 
-//     //-------------------------------------------------------
-//     // 外部エッジの紐付けは本ノードの担当外。
-//     // 自身の持つノードに対するエッジの紐付けのみを行う。
-//     void setEdge(std::shared_ptr<Edge> inEdge1, std::shared_ptr<Edge> inEdge2, std::shared_ptr<Edge> outEdge)
-//     {
-//         _inEdges.resize(2);
-//         _inEdges.at(0) = inEdge1;
-//         _inEdges.at(1) = inEdge2;
+        _nodeOr->addOutEdges(edges);
+        _nodeNot->addInEdges(edges);
 
-//         _outEdges.resize(1);
-//         _outEdges.at(0) = outEdge;
+        // エッジにノードを紐付ける
+        _edge->addOutNode(_nodeNot);
 
-//         // ノードにエッジを紐付ける
-//         _nodeOr->setEdge(inEdge1, inEdge2, _edge);
-//         _nodeNot->setEdge(_edge, outEdge);
-//     }
+        // 内部Executorにノードとエッジを登録する。
+        // 入口/出口ノード及び双対エッジはベースクラスで追加されている
+        std::vector<Node*> nodes = {_nodeOr, _nodeNot};
+        getInnerExecutor()->addNodes(nodes);
+        getInnerExecutor()->addEdges(edges);
+    }
 
-//     //-------------------------------------------------------
-//     void execute(void)
-//     {
-//         Node::execute();
+    //-------------------------------------------------------
+    void addInEdges(std::vector<Edge*> edges)
+    {
+        NodeSubSystem::addInEdges(edges);
+
+        std::vector<Edge*> dualEdges = getInDualEdges();
+        _nodeOr->addInEdges(dualEdges);
+
+        for(auto edge : dualEdges){
+            edge->addOutNode(_nodeOr);
+        }
+
+    }
+
+    //-------------------------------------------------------
+    void addOutEdges(std::vector<Edge*> edges)
+    {
+        NodeSubSystem::addOutEdges(edges);
+
+        std::vector<Edge*> dualEdges = getOutDualEdges();
+        _nodeNot->addOutEdges(dualEdges);
+    }
 
 
-//     }
-// };
+};
 
 #endif
 

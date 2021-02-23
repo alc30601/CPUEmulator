@@ -28,15 +28,10 @@ public:
     //-------------------------------------------------------
     Executor(Node* startNode, std::vector<Node*> nodes, std::vector<Edge*> edges)
     {
-        // _startNode = startNode;
-        // std::copy(nodes.begin(), nodes.end(), std::back_inserter(_nodes));
-        // std::copy(edges.begin(), edges.end(), std::back_inserter(_edges));
-        // _nodes = nodes;
-        // _edges = edges;
-
         setStartNode(startNode);
-        setNodes(nodes);
-        setEdges(edges);
+
+        addNodes(nodes);
+        addEdges(edges);
     }
 
     //-------------------------------------------------------
@@ -48,32 +43,16 @@ public:
 
     //-------------------------------------------------------
     // Add a Node
-    void addNode(Node* node)
+    void addNodes(std::vector<Node*> nodes)
     {
-        _nodes.push_back(node);
+        std::copy(nodes.begin(), nodes.end(), std::back_inserter(_nodes));
     }
 
     //-------------------------------------------------------
-    // Add a Edge
-    void addEdge(Edge* edge)
+    // edgeを一括追加する。
+    void addEdges(std::vector<Edge*> edges)
     {
-        _edges.push_back(edge);
-    }
-
-    //-------------------------------------------------------
-    // set Nodes at once
-    // caution! already registered Nodes are overwrote
-    void setNodes(std::vector<Node*> nodes)
-    {
-        _nodes = nodes;
-    }
-
-    //-------------------------------------------------------
-    // set Edges at once
-    // caution! already registered Edges are overwrote
-    void setEdges(std::vector<Edge*> edges)
-    {
-        _edges = edges;
+        std::copy(edges.begin(), edges.end(), std::back_inserter(_edges));
     }
 
 

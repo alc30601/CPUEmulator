@@ -29,7 +29,9 @@ class Test03MyNode0 : public Node
 public:
     void setEdge(Edge* e0)
     {
-        addOutEdge(e0);
+        std::vector<Edge*> edges = {e0};
+        addOutEdges(edges);
+        // addOutEdge(e0);
         _e0 = e0;
     }
 
@@ -50,7 +52,8 @@ class Test03MyNode1 : public Node
 public:
     void setEdge(Edge* e01)
     {
-        addInEdge(e01);
+        std::vector<Edge*> edges = {e01};
+        addInEdges(edges);
         _e01 = e01;
     }
 
@@ -73,7 +76,8 @@ class Test03MyNode2 : public Node
 public:
     void setEdge(Edge* e02)
     {
-        addInEdge(e02);
+        std::vector<Edge*> edges = {e02};
+        addInEdges(edges);
         _e02 = e02;
     }
 

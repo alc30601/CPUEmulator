@@ -38,13 +38,13 @@ public:
         _value2 = v2;
     }
 
-    //-------------------------------------------------------
-    void setEdge(Edge* edge1, Edge* edge2)
-    {
-        _outEdges.resize(2);
-        _outEdges.at(0) = edge1;
-        _outEdges.at(1) = edge2;
-    }
+    // //-------------------------------------------------------
+    // void setEdge(Edge* edge1, Edge* edge2)
+    // {
+    //     _outEdges.resize(2);
+    //     _outEdges.at(0) = edge1;
+    //     _outEdges.at(1) = edge2;
+    // }
 
     //-------------------------------------------------------
     void execute(void)
@@ -66,13 +66,14 @@ class Test05NodeE : public Node
     bool _value2;
 
 public:
-    //-------------------------------------------------------
-    void setEdge(Edge* edge1, Edge* edge2)
-    {
-        _inEdges.resize(2);
-        _inEdges.at(0) = edge1;
-        _inEdges.at(1) = edge2;
-    }
+
+    // //-------------------------------------------------------
+    // void setEdge(Edge* edge1, Edge* edge2)
+    // {
+    //     _inEdges.resize(2);
+    //     _inEdges.at(0) = edge1;
+    //     _inEdges.at(1) = edge2;
+    // }
 
     //-------------------------------------------------------
     void execute(void)
@@ -118,7 +119,9 @@ public:
     NodeComplex(void)
     {
         _internalNode = new Test05NodeInternal();
-        getInnerExecutor()->addNode(_internalNode);
+        std::vector<Node*> nodes = {_internalNode};
+        getInnerExecutor()->addNodes(nodes);
+        // getInnerExecutor()->addNode(_internalNode);
     }
 
     //-------------------------------------------------------
@@ -150,19 +153,25 @@ void test05(void)
     Test05NodeE* nE(new Test05NodeE);
     NodeComplex* nC(new NodeComplex);
 
-    // エッジ生成
+    // エッジ生成addOdges
     Edge* e11(new Edge(true));
     Edge* e12(new Edge(true));
     Edge* e21(new Edge(true));
     Edge* e22(new Edge(true));
 
     // ノードにエッジを紐付ける。
-    nS->setEdge(e11, e12);
-    nE->setEdge(e21, e22);
+    // nS->setEdge(e11, e12);
+    // nE->setEdge(e21, e22);
 
-    std::vector<Edge*> inEdges = {e11, e12};
-    std::vector<Edge*> outEdges = {e21, e22};
-    nC->setEdge(inEdges, outEdges);
+    std::vector<Edge*> edges1 = {e11, e12};
+    std::vector<Edge*> edges2 = {e21, e22};
+    nS->addOutEdges(edges1);
+    nE->addInEdges(edges2);
+
+    // std::vector<Edge*> inEdges = {e11, e12};
+    // std::vector<Edge*> outEdges = {e21, e22};
+    nC->addInEdges(edges1);
+    nC->addOutEdges(edges2);
 
     // エッジにノードを紐付ける。
     e11->addOutNode(nC);

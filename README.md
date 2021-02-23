@@ -90,5 +90,6 @@ This is a data flow graph core implementation.
 ## 2021.02.23
 
 - 複合ノード初版作成
+- 複合ノードを用いたNORノードの実装
 
 

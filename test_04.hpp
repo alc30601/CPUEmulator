@@ -1,17 +1,18 @@
 // test_04.hpp
 //
 // Notノード評価
-// NodeS ---> Not ---> NodeE
+//  NodeS ---> Not ---> NodeE
 // Orノード評価
-// NodeS ---> And ---> NodeE
+//  NodeS ---> And ---> NodeE
 // Andノード評価
-// NodeS ---> And ---> NodeE
+//  NodeS ---> And ---> NodeE
 
 #ifndef __TEST_04_HPP__
 #define __TEST_04_HPP__
 
 #include <string>
 #include <memory>
+#include <vector>
 
 #include "Edge.hpp"
 #include "Node.hpp"
@@ -132,7 +133,10 @@ void test_04_01(void)
     std::vector<Edge*> edges = {e0, e1};
 
     // ノードにエッジを紐付ける
-    nodeNot->setEdge(e0, e1);
+    std::vector<Edge*> inEdges = {e0};
+    std::vector<Edge*> outEdges = {e1};
+    nodeNot->addInEdges(inEdges);
+    nodeNot->addOutEdges(outEdges);
     n1->setEdge(e0);
     n2->setEdge(e1);
 
@@ -171,7 +175,12 @@ void test_2in1out(void)
     std::vector<Edge*> edges = {e0, e1, e2};
 
     // ノードにエッジを紐付ける
-    nodeOp->setEdge(e0, e1, e2);
+    std::vector<Edge*> inEdges = {e0, e1};
+    nodeOp->addInEdges(inEdges);
+
+    std::vector<Edge*> outEdges = {e2};
+    nodeOp->addOutEdges(outEdges);
+
     n1->setEdge(e0, e1);
     n2->setEdge(e2);
 
@@ -202,6 +211,9 @@ void test04(void)
     test_04_01();
     test_2in1out<NodeAnd>();
     test_2in1out<NodeOr>();
+
+    test_2in1out<NodeNor>();
+
 }
 
 
