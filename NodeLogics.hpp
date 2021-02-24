@@ -6,8 +6,6 @@
 #include <iostream>
 #include <memory>
 
-#include "Node.hpp"
-#include "NodeSubSystem.hpp"
 #include "NodeBase.hpp"
 
 
@@ -54,70 +52,21 @@ class NodeOr : public Node2In1Out<bool>
     }
 };
 
+
+
 //-----------------------------------------------------------
-// NORをORとNOTの組合せで構成する。
-// ノードの結合を行う。
-// 複合ノードは外部から見れば１つのノードとして振る舞う。
-// 内部的に複数のノードを組合せる。
-class NodeNor : public NodeSubSystem
-{
-    NodeOr* _nodeOr;
-    NodeNot* _nodeNot;
-    Edge* _edge;
+// NOR
+// 2入力1出力ノード
+// データ型はともにbool
+#define NodeNor Node212<NodeOr, NodeNot>
 
-public:
+//-----------------------------------------------------------
+// NAND
+// 2入力1出力ノード
+// データ型はともにbool
+#define NodeNand Node212<NodeAnd, NodeNot>
 
-    //-------------------------------------------------------
-    NodeNor(void)
-    {
-        // ノード生成
-        _nodeOr = new NodeOr();
-        _nodeNot = new NodeNot();
-
-        // エッジ生成
-        _edge = new Edge(true);
-
-        // ノードにエッジを紐付ける。
-        std::vector<Edge*> edges = {_edge};
-
-        _nodeOr->addOutEdges(edges);
-        _nodeNot->addInEdges(edges);
-
-        // エッジにノードを紐付ける
-        _edge->addOutNode(_nodeNot);
-
-        // 内部Executorにノードとエッジを登録する。
-        // 入口/出口ノード及び双対エッジはベースクラスで追加されている
-        std::vector<Node*> nodes = {_nodeOr, _nodeNot};
-        getInnerExecutor()->addNodes(nodes);
-        getInnerExecutor()->addEdges(edges);
-    }
-
-    //-------------------------------------------------------
-    void addInEdges(std::vector<Edge*> edges)
-    {
-        NodeSubSystem::addInEdges(edges);
-
-        std::vector<Edge*> dualEdges = getInDualEdges();
-        _nodeOr->addInEdges(dualEdges);
-
-        for(auto edge : dualEdges){
-            edge->addOutNode(_nodeOr);
-        }
-
-    }
-
-    //-------------------------------------------------------
-    void addOutEdges(std::vector<Edge*> edges)
-    {
-        NodeSubSystem::addOutEdges(edges);
-
-        std::vector<Edge*> dualEdges = getOutDualEdges();
-        _nodeNot->addOutEdges(dualEdges);
-    }
-
-
-};
+ 
 
 #endif
 

@@ -208,11 +208,20 @@ void test_2in1out(void)
 //-----------------------------------------------------------
 void test04(void)
 {
+    std::cout << "-- test NOT -- " << std::endl;
     test_04_01();
+
+    std::cout << "-- test AND -- " << std::endl;
     test_2in1out<NodeAnd>();
+
+    std::cout << "-- test OR -- " << std::endl;
     test_2in1out<NodeOr>();
 
+    std::cout << "-- test NOR -- " << std::endl;
     test_2in1out<NodeNor>();
+
+    std::cout << "-- test NAND -- " << std::endl;
+    test_2in1out<NodeNand>();
 
 }
 

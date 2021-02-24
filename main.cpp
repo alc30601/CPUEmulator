@@ -12,10 +12,26 @@
 #include "test_04.hpp"
 #include "test_05.hpp"
 
+
+// class Aaa{ int _a; };
+// class Bbb{ std::string _a; };
+
+// template <class T>
+// T* test_func(void)
+// {
+//     T* a = new T();
+//     return a;
+// }
+
+
 //-----------------------------------------------------------
 int main(void)
 {
     std::cout << "-- Start - DataFlowGraph -- " << std::endl;
+
+    // auto a = test_func<Aaa>();
+    // auto b = test_func<Bbb>();
+
 
     std::cout << "  -- test01" << std::endl;
     test01();
