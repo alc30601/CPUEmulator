@@ -79,6 +79,12 @@ public:
     }
 
     //-------------------------------------------------------
+    void addOutNodes(std::vector<Node*> nodes)
+    {
+        std::copy(nodes.begin(), nodes.end(), std::back_inserter(_outNodes));
+    }
+
+    //-------------------------------------------------------
     // get Nodes connected from out direction of this Edge
     std::vector<Node*> getOutNodes(void)
     {

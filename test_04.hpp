@@ -19,6 +19,7 @@
 #include "Executor.hpp"
 #include "NodeLogics.hpp"
 
+#include "NodeTestBase.hpp"
 
 
 //-----------------------------------------------------------
@@ -78,43 +79,6 @@ public:
     }
 };
 
-//-----------------------------------------------------------
-// ０入力、２出力ノード
-class Test04NodeS2 : public Node
-{
-    bool _value1;
-    bool _value2;
-
-public:
-
-    //-------------------------------------------------------
-    void setValue(bool value1, bool value2)
-    {
-        _value1 = value1;
-        _value2 = value2;
-    }
-
-    //-------------------------------------------------------
-    void setEdge(Edge* edge1, Edge* edge2)
-    {
-        _outEdges.resize(2);
-        _outEdges.at(0) = edge1;
-        _outEdges.at(1) = edge2;
-
-    }
-
-    //-------------------------------------------------------
-    void execute(void)
-    {
-        Node::execute();
-
-        std::cout << "Test04NodeS2::execute()" <<std::endl;
-        std::cout << "input value is : " << _value1 << " , " << _value2 << std::endl;
-        _outEdges.at(0)->setValue(_value1);
-        _outEdges.at(1)->setValue(_value2);
-    }
-
-};
 
 
 //-----------------------------------------------------------
@@ -156,55 +120,34 @@ void test_04_01(void)
 }
 
 
+
 //-----------------------------------------------------------
-// 2入力１入つ力のノードのテストをするベース関数
-// テンプレートとして試験対象ノードを設定する。
-template <class T>
-void test_2in1out(void)
+template<typename T>
+void testOp2to1(void)
 {
-    // ノード生成
-    T* nodeOp(new T);
-    Test04NodeS2* n1(new Test04NodeS2);
-    Test04NodeE* n2(new Test04NodeE);
-    std::vector<Node*> nodes = {n1, n2, nodeOp};
+    std::tuple<Executor*, NodeTestEntry<bool>*> ret = test_2to1<T, bool>();
+    auto exe = std::get<0>(ret);
+    auto nEntry = std::get<1>(ret);
 
-    // エッジ生成
-    Edge* e0(new Edge(true));
-    Edge* e1(new Edge(true));
-    Edge* e2(new Edge(true));
-    std::vector<Edge*> edges = {e0, e1, e2};
+    nEntry->setValues(std::vector<bool>{false, false});
+    exe->step();
 
-    // ノードにエッジを紐付ける
-    std::vector<Edge*> inEdges = {e0, e1};
-    nodeOp->addInEdges(inEdges);
+    nEntry->setValues(std::vector<bool>{false, true});
+    exe->step();
 
-    std::vector<Edge*> outEdges = {e2};
-    nodeOp->addOutEdges(outEdges);
+    nEntry->setValues(std::vector<bool>{true, false});
+    exe->step();
 
-    n1->setEdge(e0, e1);
-    n2->setEdge(e2);
-
-    // エッジにノードを紐付ける
-    e0->addOutNode(nodeOp);
-    e1->addOutNode(nodeOp);
-    e2->addOutNode(n2);
-
-    // 実行
-    Executor exe(n1, nodes, edges);
-
-    n1->setValue(false, false);
-    exe.step();
-
-    n1->setValue(false, true);
-    exe.step();
-
-    n1->setValue(true, false);
-    exe.step();
-
-    n1->setValue(true, true);
-    exe.step();
+    nEntry->setValues(std::vector<bool>{true, true});
+    exe->step();
 
 }
+
+void test04_01(void)
+{
+    testOp2to1<NodeAnd>();
+}
+
 //-----------------------------------------------------------
 void test04(void)
 {
@@ -212,16 +155,16 @@ void test04(void)
     test_04_01();
 
     std::cout << "-- test AND -- " << std::endl;
-    test_2in1out<NodeAnd>();
+    testOp2to1<NodeAnd>();
 
     std::cout << "-- test OR -- " << std::endl;
-    test_2in1out<NodeOr>();
+    testOp2to1<NodeOr>();
 
     std::cout << "-- test NOR -- " << std::endl;
-    test_2in1out<NodeNor>();
+    testOp2to1<NodeNor>();
 
     std::cout << "-- test NAND -- " << std::endl;
-    test_2in1out<NodeNand>();
+    testOp2to1<NodeNand>();
 
 }
 
