@@ -2,6 +2,9 @@
 #ifndef __GRAPHBUILDER_HPP__
 #define __GRAPHBUILDER_HPP__
 
+#include "Edge.hpp"
+#include "Node.hpp"
+
 //-----------------------------------------------------------
 // Helper class that construct node and edge that connected
 // 
@@ -41,14 +44,47 @@
 //     nAdd.outto<1>(nExit);
 
 
+//-----------------------------------------------------------
+// 準ノード：GraphBuilderが取り扱う仮想的なノードクラス
+class QuasiNode
+{
+    Node* _node;
+public:
+    QuasiNode(Node* node) : _node(node){}
 
+    Node* getNode(void){ return _node; }
+};
+
+
+//-----------------------------------------------------------
 class GraphBuilder
 {
+    std::vector<Edge*> _edges;
+    
 public:
 
+    //-------------------------------------------------------
+    // 準ノードを生成する。本当のノードも生成し準ノードで包む。
+    // 準ノードをユーザにリターンするとともに、GraphBuilder内でも管理しておく。　
+    template <typename T>
+    QuasiNode& createNode(void)
+    {
+        T* node(new T);
+        auro a = new QuasiNode(node);
+        return a;
+    }
+
+    //-------------------------------------------------------
+    // ノードとノードをエッジで結ぶ。
+    // エッジを１つ生成し出力先ノード(１個以上任意個)に繋げる。
+    // エッジの接続先は複数有りうるので可変引数テンプレートを用いる。
+    template <typename... Args>
+    void outto(QuasiNode& fromNode, Args... args)
+    {
+        Edge* edge(new Edge);
 
 
-
+    }
 };
 
 
