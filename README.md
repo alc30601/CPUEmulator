@@ -102,4 +102,10 @@ This is a data flow graph core implementation.
 
 - 算術演算ノード作成
 
+## 2021.03.03
+
+- GraphBuilder作成中
+  NodeとEdgeの生成及びそれらを接続してグラフを構築する処理をより簡易に記述出来る
+  ようにするためのクラス。
+
 
