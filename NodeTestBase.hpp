@@ -103,7 +103,8 @@ std::tuple<Executor*, NodeTestEntry<T>*> test_1to1(T param)
 {
     NodeTestEntry<T>* nEntry(new NodeTestEntry<T>);
     NodeTestExit<T>* nExit(new NodeTestExit<T>);
-    TYPENODE* nOp(new TYPENODE(param));
+    TYPENODE* nOp(new TYPENODE());
+    nOp->setParam(param);
 
     Edge* e1(new Edge);
     Edge* e2(new Edge);

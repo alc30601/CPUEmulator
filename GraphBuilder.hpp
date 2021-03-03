@@ -55,6 +55,13 @@ public:
     Node* getNode(void){ return _node; }
 };
 
+//-----------------------------------------------------------
+// ノードとエッジの番号を組にしたタプル
+// ノード間接続の際にこのPort型で指定する。
+// 本来ノードにはIn,Outがあり、それぞれインデックスが1,2,3,...となり
+// このタプルだけではInかOutか区別がつかない。
+// しかし、使用される文脈で区別可能である。
+using Port = std::tuple<QuasiNode&, int>;
 
 //-----------------------------------------------------------
 class GraphBuilder
@@ -70,8 +77,8 @@ public:
     QuasiNode& createNode(void)
     {
         T* node(new T);
-        auro a = new QuasiNode(node);
-        return a;
+        auto a = new QuasiNode(node);
+        return *a;
     }
 
     //-------------------------------------------------------
@@ -79,10 +86,31 @@ public:
     // エッジを１つ生成し出力先ノード(１個以上任意個)に繋げる。
     // エッジの接続先は複数有りうるので可変引数テンプレートを用いる。
     template <typename... Args>
-    void outto(QuasiNode& fromNode, Args... args)
+    void outto(Port outPort, Args... inPorts)
     {
+        size_t sizeToPort = sizeof...(Args);
+        std::cout << "The number of args: " << sizeToPort << std::endl;
+
+        // 可変引数で渡された出力先ポートを配列として展開
+        Port array[] = { static_cast<Port>(inPorts)... };
+
+        // エッジ生成
         Edge* edge(new Edge);
 
+        // エッジを出力元ノードに紐付ける
+        Node* node = std::get<0>(outPort).getNode();
+        int index = std::get<1>(outPort);
+        node->setOutEdge(edge, index);
+
+        // エッジを出力先ノードに紐付ける。
+        for(int i=0;i<sizeToPort;i++){
+            Node* node = std::get<0>(array[i]).getNode();
+            int index = std::get<1>(array[i]);
+            node->setInEdge(edge, index);
+
+            // エッジに出力先ノードを紐付ける。
+            edge->addOutNode(node);
+        }
 
     }
 };

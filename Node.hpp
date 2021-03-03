@@ -62,19 +62,31 @@ public:
         return result;
     }
 
-    // //-------------------------------------------------------
-    // // 入力元Edgeを追加する。
-    // virtual void addInEdge(Edge* edge)
-    // {
-    //     _inEdges.push_back(edge);
-    // }
+    //-------------------------------------------------------
+    // 入力エッジを指定の場所に設定する。
+    // indexは1オリジンとする。
+    // 指定されたインデックスが現在の要素数外であれば要素数を拡張する。
+    void setInEdge(Edge* edge, int index)
+    {
+        std::size_t size = _inEdges.size();
+        if(size < index){
+            _inEdges.resize(index);
+        }
+        _inEdges[index-1] = edge;
+    }
 
-    // //-------------------------------------------------------
-    // // 出力先Edgeを追加する。
-    // virtual void addOutEdge(Edge* edge)
-    // {
-    //     _outEdges.push_back(edge);
-    // }
+    //-------------------------------------------------------
+    // 出力エッジを指定の場所に設定する。
+    // indexは1オリジンとする。
+    // 指定されたインデックスが現在の要素数外であれば要素数を拡張する。
+    void setOutEdge(Edge* edge, int index)
+    {
+        std::size_t size = _outEdges.size();
+        if(size < index){
+            _outEdges.resize(index);
+        }
+        _outEdges[index-1] = edge;
+    }
 
     //-------------------------------------------------------
     // 入力元Edgeを一括追加する。

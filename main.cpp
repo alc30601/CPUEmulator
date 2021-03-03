@@ -13,6 +13,7 @@
 #include "test_05.hpp"
 #include "test_06.hpp"
 #include "test_07.hpp"
+#include "test_08.hpp"
 
 
 // class Aaa{ int _a; };
@@ -79,6 +80,9 @@ int main(void)
 
     std::cout << "  -- test07" << std::endl;
     test07();
+
+    std::cout << "  -- test08" << std::endl;
+    test08();
 
     std::cout << "... Done." << std::endl;
     return 0;

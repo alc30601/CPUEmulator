@@ -15,9 +15,9 @@ std::tuple<Executor*, NodeTestEntry<double>*> test07_createGraph(double a, doubl
     NodeTestEntry<double>* nEntry(new NodeTestEntry<double>);
     NodeTestExit<double>* nExit(new NodeTestExit<double>);
     NodeMul* nMul(new  NodeMul());
-    NodeGain* nGainA(new NodeGain(a));
-    NodeGain* nGainB(new NodeGain(b));
-    NodeConst* nConstC(new NodeConst(c));
+    NodeGain* nGainA(new NodeGain());       nGainA->setParam(a);
+    NodeGain* nGainB(new NodeGain());       nGainB->setParam(b);
+    NodeConst* nConstC(new NodeConst());    nConstC->setParam(c);
     NodeAdd* nAdd(new NodeAdd());
 
     Edge* e1(new Edge);
