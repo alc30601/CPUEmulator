@@ -1,5 +1,7 @@
 // test_06.hpp
 // Test for Arithmetic Node
+// 算術ノードの評価
+// add, mul gain. const
 
 #ifndef __TEST_06_HPP__
 #define __TEST_06_HPP__

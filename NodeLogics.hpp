@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "NodeBase.hpp"
+#include "GraphBuilder.hpp"
 
 
 //-----------------------------------------------------------
@@ -53,20 +54,21 @@ class NodeOr : public Node2In1Out<bool>
 };
 
 
-
 //-----------------------------------------------------------
 // NOR
 // 2入力1出力ノード
 // データ型はともにbool
-#define NodeNor Node212<NodeOr, NodeNot>
+#define NodeNor Node21_11<NodeOr, NodeNot>
 
 //-----------------------------------------------------------
 // NAND
 // 2入力1出力ノード
 // データ型はともにbool
-#define NodeNand Node212<NodeAnd, NodeNot>
+#define NodeNand Node21_11<NodeAnd, NodeNot>
 
- 
+
+
+
 
 #endif
 

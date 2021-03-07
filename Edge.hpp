@@ -15,7 +15,15 @@ class Node;
 // Definition of Edge class.
 // Edge is between Nodes.
 // Edge itself has a current value.
-// Edge has link to multiple destination nodes 
+// Edge source is just one Node.
+// Edge has link to multiple destination nodes.
+// 
+//              +----->
+//    +-----+   +----->
+// ---|value|---+----->
+//    +-----+   +----->
+//              +----->
+// 
 class Edge
 {
 public:

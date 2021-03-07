@@ -35,6 +35,15 @@ This is a data flow graph core implementation.
 など。
 
 
+# Structure / Hierarchy
+
+     Node  Edge
+      Executor
+    NodeSubSystem
+     GraphBuilder
+      NodeBase
+NodeLogics  NodeArithmetic
+
 
 
 # History
@@ -51,7 +60,6 @@ This is a data flow graph core implementation.
 
 
 ## 2021.02.10
-
 - 基本的グラフ構造の実行OK。但しまだ、開始ノード、終了ノードの2ノード
   及びその間の2エッジ接続のみ。
 
@@ -66,19 +74,16 @@ This is a data flow graph core implementation.
 - グラフをたどって、ノードを実行するのはExecutorが行う。
 
 ## 2021.02.11
-
 - テストコードのファイル分離
 - グラフの基本動作の確認
 - NOTゲートの実装及び評価
 
 ## 2021.02.14
-
 - AND, ORノードの実装、評価
 - 実行履歴のクリア処理
 - 複合ノード(サブファンクション)の実装中
 
 ## 2021.02.21
-
 - std::shared_ptrを廃止。普通のポインタに置き換え
   Node, Edgeで保持するオブジェクトは現状静的で管理者も明確なので
   shared_ptrを使う必要性が少ないため。
@@ -88,24 +93,28 @@ This is a data flow graph core implementation.
   サブシステム毎にExecutorを持つのか、全体で１つのExecutorで賄うのか。
 
 ## 2021.02.23
-
 - 複合ノード初版作成
 - 複合ノードを用いたNORノードの実装
 
 ## 2021.02.24
-
 - 複合ノードを用いた２入力、１出力ノードのテンプレート化
   内部ノードとして２入力１出力ノード＋１入力１出力ノードの組合せパターンのものを
   テンプレート化。これにより、NORの書き直し、及びNANDの実装を行った。
 
 ## 2021.02.28
-
 - 算術演算ノード作成
 
 ## 2021.03.03
-
 - GraphBuilder作成中
   NodeとEdgeの生成及びそれらを接続してグラフを構築する処理をより簡易に記述出来る
   ようにするためのクラス。
+
+## 2021.03.07
+- GraphBuilder作成完了
+- NodeSubSystemに対するGraphBuilderによるグラフ生成対応完了
+  GraphBuilderにより、生成したものをサブノードすることも
+  NodeComplexを継承して内部のグラフを生成するだけでサブノードを構築することも可能。
+
+
 
 

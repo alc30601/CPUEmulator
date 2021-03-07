@@ -105,39 +105,13 @@ public:
     }
 
     //-------------------------------------------------------
-    void addInEdges(std::vector<Edge*> edges)
-    {
-        Node::addInEdges(edges);
-
-        // 入力エッジ数に応じた内部エッジを生成し
-        // 入り口ノードに紐つけておく。
-        std::vector<Edge*> dualEdges;
-        for(auto edge : edges){
-            Edge* dualEdge(new Edge());
-            dualEdges.push_back(dualEdge);
-        }
-        _nodeEntry->addOutEdges(dualEdges);
-        _exe->addEdges(dualEdges);
-    }
+    // 入口ノードを返す。
+    Node* getNodeEntry(void){ return _nodeEntry; }
 
     //-------------------------------------------------------
-    void addOutEdges(std::vector<Edge*> edges)
-    {
-        Node::addOutEdges(edges);
+    // 出口ノードを返す。
+    Node* getNodeExit(void){ return _nodeExit; }
 
-        // 出力エッジ数に応じた内部エッジを生成し
-        // 出口ノードに紐つけておく。
-        // かつ生成したエッジに出力先ノード(即ち出口ノード)を紐付ける。
-        std::vector<Edge*> dualEdges;
-        for(auto edge : edges){
-            Edge* dualEdge(new Edge());
-            dualEdges.push_back(dualEdge);
-            dualEdge->addOutNode(_nodeExit);
-        }
-        _nodeExit->addInEdges(dualEdges);
-        _exe->addEdges(dualEdges);
-    }
-    
 
     //-------------------------------------------------------
     // _nodeEntrtyノードの出力エッジ一覧を返す。

@@ -4,44 +4,9 @@
 
 #include "Edge.hpp"
 #include "Node.hpp"
+#include "NodeSubSystem.hpp"
+#include "Executor.hpp"
 
-//-----------------------------------------------------------
-// Helper class that construct node and edge that connected
-// 
-// なにか、↓こんな感じで書けるような。
-// 
-// ノードの生成(文字列で型名指定)
-// a = createNode("NodeMul");
-// b = createNode("NodeAdd");
-// c = createNode("NodeGain", 3.0);
-// または(テンプレートで型名指定、可変引数)
-// a = createNode<NodeMul>();
-// b = createNode<NodeAdd>();
-// c = createNode<NodeGain>(3.0);
-// 
-// エッジの生成及びノード間の紐付け
-// a.outto(1, b);
-// a.outto(2, {b,c});
-// または(テンプレートで出力ポート番号を指定、可変引数)
-// a.outto<1>(b)
-// a.outto<2>(b,c)
-
-// test_07の場合↓ぐらいの設定で済むように。
-//     nEntry = createNode<NodeMul, double>();
-//     nExit = createNode<NodeTestExit, double>();
-//     nMul = createNode<NodeMul>();
-//     nGainA = createNode<NodeGain>(2.0);
-//     nGainB = createNode<NodeGain>(3.0);
-//     nConstC = createNode<NodeConst>(4.0);
-//     nAdd = createNode<NodeAdd>();
-// 
-//     nEntry.outto<1>(nMul, nMul, nGainB);
-//     nEntry.outto<2>(nConstC);
-//     nMul.outto<1>(nGainA);
-//     nGainA.outto<1>(nAdd);
-//     nGainB.outto<1>(nAdd);
-//     nConstC.outto<1>(nAdd);
-//     nAdd.outto<1>(nExit);
 
 
 //-----------------------------------------------------------
@@ -64,21 +29,38 @@ public:
 using Port = std::tuple<QuasiNode&, int>;
 
 //-----------------------------------------------------------
+// Helper class that construct node and edge that connected
 class GraphBuilder
 {
     std::vector<Edge*> _edges;
-    
+    std::vector<Node*> _nodes;
+
+    std::vector<Port> _inPorts;
+    std::vector<Port> _outPorts;
+
 public:
 
     //-------------------------------------------------------
+    std::vector<Edge*> getEdges(void){ return _edges; }
+    std::vector<Node*> getNodes(void){ return _nodes; }
+
+    //-------------------------------------------------------
     // 準ノードを生成する。本当のノードも生成し準ノードで包む。
-    // 準ノードをユーザにリターンするとともに、GraphBuilder内でも管理しておく。　
     template <typename T>
     QuasiNode& createNode(void)
     {
         T* node(new T);
-        auto a = new QuasiNode(node);
-        return *a;
+        return quasiNodelize(node);
+    }
+
+    //-------------------------------------------------------
+    // 生ノードを準ノード化する。
+    // 準ノードをユーザにリターンするとともに、GraphBuilder内でも管理しておく。　
+    QuasiNode& quasiNodelize(Node* node)
+    {
+        _nodes.push_back(node);
+        auto qn = new QuasiNode(node);
+        return *qn;
     }
 
     //-------------------------------------------------------
@@ -89,13 +71,13 @@ public:
     void outto(Port outPort, Args... inPorts)
     {
         size_t sizeToPort = sizeof...(Args);
-        std::cout << "The number of args: " << sizeToPort << std::endl;
 
         // 可変引数で渡された出力先ポートを配列として展開
         Port array[] = { static_cast<Port>(inPorts)... };
 
         // エッジ生成
         Edge* edge(new Edge);
+        _edges.push_back(edge);
 
         // エッジを出力元ノードに紐付ける
         Node* node = std::get<0>(outPort).getNode();
@@ -113,10 +95,96 @@ public:
         }
 
     }
+
+    //-------------------------------------------------------
+    // 本グラフの入力ポートを定義する。
+    template <typename... Args>
+    void setInPorts(Args... ports)
+    {
+        size_t sizePorts = sizeof...(Args);
+        Port array[] = { static_cast<Port>(ports)... };
+        std::vector<Port> inPorts(std::begin(array), std::end(array));
+        _inPorts = inPorts;
+    }
+
+    //-------------------------------------------------------
+    // 本グラフの出力ポートを定義する。
+    template <typename... Args>
+    void setOutPorts(Args... ports)
+    {
+        size_t sizePorts = sizeof...(Args);
+        Port array[] = { static_cast<Port>(ports)... };
+        std::vector<Port> outPorts(std::begin(array), std::end(array));
+        _outPorts = outPorts;
+    }
+
+    //-------------------------------------------------------
+    // 構築されたグラフを含むノード(SubSystem)を生成する。
+    QuasiNode& nodelize(void)
+    {
+        NodeSubSystem* nSS(new NodeSubSystem());
+        return nodelize(nSS);
+    }
+
+    //-------------------------------------------------------
+    // NodeSubSystemに対して、
+    // 入口ノード、出口ノードを取得し、準ノード化する。
+    // 事前に設定されている入力ポート(_inPorts)を入口ノードの出力ポートに繋げる。
+    // 事前に設定されている出力ポート(_outPorts)を出口ノードの入口ポートに繋げる。
+    // NodeSubSystemは生成せず、与えられたNodeSubSystem内にグラフを設定する。
+    QuasiNode& nodelize(NodeSubSystem* nSS)
+    {
+        Node* nEntry = nSS->getNodeEntry();
+        Node* nExit = nSS->getNodeExit();
+
+        auto qnEntry = quasiNodelize(nEntry);
+        auto qnExit = quasiNodelize(nExit);
+
+        for(int i=0;i<_inPorts.size();i++){
+            outto(Port(qnEntry, i+1), _inPorts[i]);
+        }
+
+        for(int i=0;i<_outPorts.size();i++){
+            outto(_outPorts[i], Port(qnExit, i+1));
+        }
+
+        return quasiNodelize(nSS);
+    }
+
 };
 
 
+//-----------------------------------------------------------
+// GraphBuilderを用いてサブシステムのグラフを構成した結果を
+// Nodeとして持つためのクラス。
+// サブシステムのNodeはこのクラスを継承したNodeを生成する。
+class NodeComplex : public NodeSubSystem
+{
+    GraphBuilder _gb;
 
+public:
+    //-------------------------------------------------------
+    NodeComplex(void){}
+
+    //-------------------------------------------------------
+    GraphBuilder& getGraphBuilder(void){ return _gb; }
+
+    //-------------------------------------------------------
+    // GraphBuilderを用いて本クラスをNodeSubSystemのノード化
+    // (入口ノード、出口ノードとの接続)
+    // 内部Executorに対してノード、エッジを登録する。
+    // 本メソッドの実行により、本クラスが外部から利用できる複合ノードとなる。
+    void commit(void)
+    {
+        _gb.nodelize(this);
+
+        auto exe = NodeSubSystem::getInnerExecutor();
+        auto nodes = _gb.getNodes();
+        auto edges = _gb.getEdges();
+        exe->addNodes(nodes);
+        exe->addEdges(edges);
+    }
+};
 
 #endif
 

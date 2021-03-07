@@ -1,4 +1,7 @@
 // test_07.hpp
+// 少し複雑なグラフ
+// ２次方程式
+
 #ifndef __TEST_07_HPP__
 #define __TEST_07_HPP__
 
