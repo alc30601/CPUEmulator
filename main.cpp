@@ -16,49 +16,10 @@
 #include "test_08.hpp"
 
 
-// class Aaa{ int _a; };
-// class Bbb{ std::string _a; };
-
-// template <class T>
-// T* test_func(void)
-// {
-//     T* a = new T();
-//     return a;
-// }
-
-class Parent
-{
-public:
-    int _a;
-    Parent(){}
-    Parent(int a) : _a(a)
-    {
-        std::cout << "Parent" << _a << std::endl;
-    }
-};
-
-class Child : public Parent
-{
-public:
-    int _b;
-    // Child(int b) : Parent(b)
-    Child(int b)
-    {
-        std::cout << "Child" << _a << std::endl;
-
-    }
-};
-
 //-----------------------------------------------------------
 int main(void)
 {
     std::cout << "-- Start - DataFlowGraph -- " << std::endl;
-
-
-    Child child(3);
-    std::cout << child._a << std::endl;
-
-
 
     std::cout << "  -- test01" << std::endl;
     test01();

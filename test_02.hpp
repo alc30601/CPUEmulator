@@ -20,154 +20,143 @@
 #include "Edge.hpp"
 #include "Node.hpp"
 #include "Executor.hpp"
+#include "GraphBuilder.hpp"
 
 
 //-----------------------------------------------------------
 class Test02MyNode0 : public Node
 {
-    Edge* _e01;
-    Edge* _e02;
+    std::string _a;
+    double _b;
 
 public:
-    void setEdge(Edge* e01, Edge* e02)
-    {
-        std::vector<Edge*> edges = {e01, e02};
-        addOutEdges(edges);
-        // addOutEdge(e01);
-        // addOutEdge(e02);
-        _e01 = e01;
-        _e02 = e02;
-    }
-
+    //-------------------------------------------------------
     void execute(void)
     {
-        std::cout << "Test02MyNode0::execute()" <<std::endl;
         Node::execute();
-        _e01->setValue(0);  // just trigger
-        _e02->setValue(0);  // just trigger
+
+        auto outEdges = getOutEdges();
+        outEdges[0]->setValue(_a);
+        outEdges[1]->setValue(_b);
+    }
+
+    //-------------------------------------------------------
+    void setValue(std::string a, double b)
+    {
+        _a = a;
+        _b = b;
     }
 };
 
 //-----------------------------------------------------------
 class Test02MyNode1 : public Node
 {
-    Edge* _e01;
-    Edge* _e13;
-
 public:
-    void setEdge(Edge* e01, Edge* e13)
-    {
-        std::vector<Edge*> inEdges = {e01};
-        std::vector<Edge*> outEdges = {e13};
-        addInEdges(inEdges);
-        addOutEdges(outEdges);
-        // addInEdge(e01);
-        // addOutEdge(e13);
-        _e01 = e01;
-        _e13 = e13;
-    }
-
+    //-------------------------------------------------------
     void execute(void)
     {
-        std::cout << "Test02MyNode1::execute()" <<std::endl;
         Node::execute();
-        _e13->setValue(3);
+
+        auto inEdges = getInEdges();
+        auto outEdges = getOutEdges();
+        auto value = inEdges[0]->getValue();
+        outEdges[0]->setValue(value);
     }
 };
 
 //-----------------------------------------------------------
 class Test02MyNode2 : public Node
 {
-    Edge* _e02;
-    Edge* _e23;
-
 public:
-    void setEdge(Edge* e02, Edge* e23)
-    {
-        std::vector<Edge*> inEdges = {e02};
-        std::vector<Edge*> outEdges = {e23};
-        addInEdges(inEdges);
-        addOutEdges(outEdges);
-        // addInEdge(e02);
-        // addOutEdge(e23);
-        _e02 = e02;
-        _e23 = e23;
-    }
-
+    //-------------------------------------------------------
     void execute(void)
     {
-        std::cout << "Test02MyNode2::execute()" <<std::endl;
         Node::execute();
-        _e23->setValue(3.2);
+
+        auto inEdges = getInEdges();
+        auto outEdges = getOutEdges();
+        auto value = inEdges[0]->getValue();
+        outEdges[0]->setValue(value);
     }
 };
 
 //-----------------------------------------------------------
 class Test02MyNode3 : public Node
 {
-    Edge* _e13;
-    Edge* _e23;
+    std::string _a;
+    double _b;
 
 public:
-    void setEdge(Edge* e13, Edge* e23)
-    {
-        std::vector<Edge*> edges = {e13, e23};
-        addInEdges(edges);
-        // addInEdge(e13);
-        // addInEdge(e23);
-        _e13 = e13;
-        _e23 = e23;
-    }
-
+    //-------------------------------------------------------
     void execute(void)
     {
-        std::cout << "Test02MyNode3::execute()" <<std::endl;
-
         Node::execute();
-        int a;
-        double b;
-        a = std::any_cast<int>(_e13->getValue());
-        b = std::any_cast<double>(_e23->getValue());
-        std::cout << "flowed value 1 is : " << a << std::endl;
-        std::cout << "flowed value 2 is : " << b << std::endl;
+
+        auto inEdges = getInEdges();
+        _a = std::any_cast<std::string>(inEdges[0]->getValue());
+        _b = std::any_cast<double>(inEdges[1]->getValue());
+        std::cout << "flowed value 1 is : " << _a << std::endl;
+        std::cout << "flowed value 2 is : " << _b << std::endl;
+    }
+
+    //-------------------------------------------------------
+    std::tuple<std::string, double> getValue(void)
+    {
+        auto ret = std::make_tuple(_a, _b);
+        return ret;
     }
 };
+
 
 //-----------------------------------------------------------
 void test02(void)
 {
-    // ノード生成
-    Test02MyNode0* n0(new Test02MyNode0);
-    Test02MyNode1* n1(new Test02MyNode1);
-    Test02MyNode2* n2(new Test02MyNode2);
-    Test02MyNode3* n3(new Test02MyNode3);
+    GraphBuilder gb;
+    auto n0 = gb.createNode<Test02MyNode0>();
+    auto n1 = gb.createNode<Test02MyNode1>();
+    auto n2 = gb.createNode<Test02MyNode2>();
+    auto n3 = gb.createNode<Test02MyNode3>();
 
-    // エッジ生成
-    Edge* e01(new Edge(0));
-    Edge* e02(new Edge(0));
-    Edge* e13(new Edge(0));
-    Edge* e23(new Edge(0.0));
+    gb.outto(Port(n0, 1), Port(n1, 1));
+    gb.outto(Port(n0, 2), Port(n2, 1));
+    gb.outto(Port(n1, 1), Port(n3, 1));
+    gb.outto(Port(n2, 1), Port(n3, 2));
 
-    // ノードにエッジを紐付ける
-    n0->setEdge(e01, e02);
-    n1->setEdge(e01, e13);
-    n2->setEdge(e02, e23);
-    n3->setEdge(e13, e23);
+    auto nodes = gb.getNodes();
+    auto edges = gb.getEdges();
+    auto nEntry = n0.getNode();
+    Executor* exe(new Executor(nEntry, nodes, edges));
 
-    // エッジにノードを紐付ける
-    e01->addOutNode(n1);
-    e02->addOutNode(n2);
-    e13->addOutNode(n3);
-    e23->addOutNode(n3);
+    auto node_n0 = static_cast<Test02MyNode0*>(n0.getNode());
+    auto node_n3 = static_cast<Test02MyNode3*>(n3.getNode());
 
-    std::vector<Node*> nodes = {n0, n1, n2, n3};
-    std::vector<Edge*> edges = {e01, e02, e13, e23};
+    std::string a0, a1;
+    double b0, b1;
+    std::tuple<std::string, double> ret;
 
-    // 実行
-    Executor exe(n0, nodes, edges);
-    exe.step();
+    a0 = "Hello";
+    b0 = 3.141592;
+    node_n0->setValue(a0, b0);
+    exe->step();
+    ret = node_n3->getValue();
+    a1 = std::get<0>(ret);
+    b1 = std::get<1>(ret);
+    assert(a0 == a1);
+    assert(b0 == b1);
+
+    a0 = "Bye";
+    b0 = 1.414;
+    node_n0->setValue(a0, b0);
+    exe->step();
+    ret = node_n3->getValue();
+    a1 = std::get<0>(ret);
+    b1 = std::get<1>(ret);
+    assert(a0 == a1);
+    assert(b0 == b1);
 
 }
+
+
 
 
 #endif
