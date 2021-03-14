@@ -8,8 +8,8 @@
 
 #include "Node.hpp"
 #include "Edge.hpp"
-#include "GraphBuilder.hpp"
 #include "Executor.hpp"
+#include "GraphBuilder.hpp"
 
 #include "NodeLogics.hpp"
 #include "NodeArithmetic.hpp"
@@ -39,13 +39,11 @@ void test08_01(void)
     gb.outto(Port(n4, 1), Port(n5, 1));
 
     // 実行
-    auto nodes = gb.getNodes();
-    auto edges = gb.getEdges();
-    auto nEntry = static_cast<NodeTestEntry<double>*>(n0.getNode());
-    Executor* exe(new Executor(nEntry, nodes, edges));
+    Executor* exe = gb.createExecutor(n0);
 
     auto nGain = static_cast<NodeGain*>(n1.getNode());
     nGain->setParam(1.3);
+    auto nEntry = static_cast<NodeTestEntry<double>*>(n0.getNode());
     nEntry->setValues(std::vector<double>{1,2,3});
     exe->step();
     exe->step();
@@ -86,13 +84,11 @@ void test08_02(void)
     gb0.outto(Port(qnSub, 1), Port(n5, 1));
 
     // 実行
-    auto nodes = gb0.getNodes();
-    auto edges = gb0.getEdges();
-    auto nEntry = static_cast<NodeTestEntry<double>*>(n0.getNode());
-    Executor* exe(new Executor(nEntry, nodes, edges));
+    Executor* exe = gb0.createExecutor(n0);
 
     auto nGain = static_cast<NodeGain*>(n1.getNode());
     nGain->setParam(1.3);
+    auto nEntry = static_cast<NodeTestEntry<double>*>(n0.getNode());
     nEntry->setValues(std::vector<double>{1,2,3});
     exe->step();
 
@@ -101,7 +97,6 @@ void test08_02(void)
 //-----------------------------------------------------------
 // NodeComplexを使用するケース
 // 実行する処理ははtest08_01, test08_02と同じ。
-
 class NodeComplexTest08 : public NodeComplex
 {
 public:
@@ -121,7 +116,6 @@ public:
         gb.setInPorts(Port(n2, 1), Port(n1, 1), Port(n3, 2));
         gb.setOutPorts(Port(n4, 1));
 
-        // NodeComplex::commit();
         commit();
 
         // パラメータの設定
@@ -144,11 +138,9 @@ void test08_03(void)
     gb0.outto(Port(qnSub, 1), Port(n5, 1));
 
     // 実行
-    auto nodes = gb0.getNodes();
-    auto edges = gb0.getEdges();
-    auto nEntry = static_cast<NodeTestEntry<double>*>(n0.getNode());
-    Executor* exe(new Executor(nEntry, nodes, edges));
+    Executor* exe = gb0.createExecutor(n0);
 
+    auto nEntry = static_cast<NodeTestEntry<double>*>(n0.getNode());
     nEntry->setValues(std::vector<double>{1,2,3});
     std::cout << "test08_03 (1)" << std::endl;
     exe->step();

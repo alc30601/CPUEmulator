@@ -151,6 +151,16 @@ public:
         return quasiNodelize(nSS);
     }
 
+    //-------------------------------------------------------
+    // エントリノードを指定してExecutorを生成する。
+    Executor* createExecutor(QuasiNode&  entryQNode)
+    {
+        Node* entryNode = static_cast<Node*>(entryQNode.getNode());
+        auto nodes = getNodes();
+        auto edges = getEdges();
+        Executor* exe(new Executor(entryNode, nodes, edges));
+        return exe;
+    }
 };
 
 
@@ -158,6 +168,7 @@ public:
 // GraphBuilderを用いてサブシステムのグラフを構成した結果を
 // Nodeとして持つためのクラス。
 // サブシステムのNodeはこのクラスを継承したNodeを生成する。
+// コンストラクタにて個別の内部グラフを構築する。
 class NodeComplex : public NodeSubSystem
 {
     GraphBuilder _gb;

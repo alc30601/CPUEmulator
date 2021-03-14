@@ -16,10 +16,54 @@
 #include "test_08.hpp"
 
 
+
+//////////////////////////////////////////////////////////////////////////////////
+
+//------------------------
+class DummyClass
+{
+public:
+    std::string _name;
+    DummyClass(std::string name) : _name(name){}
+};
+
+using Classes = std::vector<DummyClass>;
+
+//------------------------
+template <typename... Args>
+void sub(Args... ports)
+{
+    size_t sizePorts = sizeof...(Args);
+    // Classes array[] = { static_cast<Classes>(ports)... };
+    // std::vector<DummyClass> inPorts(std::begin(array), std::end(array));
+
+     std::cout << "sub" << std::endl;
+}
+
+//------------------------
+void test(void)
+{
+    DummyClass a1("This is A1");
+    DummyClass a2("This is A2");
+    DummyClass a3("This is A3");
+    DummyClass b1("This is B1");
+    DummyClass b2("This is B2");
+    DummyClass c1("This is C1");
+
+    Classes clsesA{a1, a2, a3};
+    Classes clsesB{b1, b2};
+    Classes clsesC{c1};
+    sub(clsesA, clsesB, clsesC);
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+
 //-----------------------------------------------------------
 int main(void)
 {
     std::cout << "-- Start - DataFlowGraph -- " << std::endl;
+
+    test();
 
     std::cout << "  -- test01" << std::endl;
     test01();

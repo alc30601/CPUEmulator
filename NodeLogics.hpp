@@ -67,7 +67,27 @@ class NodeOr : public Node2In1Out<bool>
 #define NodeNand Node21_11<NodeAnd, NodeNot>
 
 
+//-----------------------------------------------------------
+// Exclusive OR
+class NodeExor : public NodeComplex
+{
+public:
+    NodeExor(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto not1 = gb.createNode<NodeNot>();
+        auto not2 = gb.createNode<NodeNot>();
+        auto and1 = gb.createNode<NodeAnd>();
+        auto and2 = gb.createNode<NodeAnd>();
+        auto or1 = gb.createNode<NodeOr>();
+        
+        gb.outto(Port(not1, 1), Port(and1, 1));
+        gb.outto(Port(not2, 1), Port(and2, 1));
+        gb.outto(Port(and1, 1), Port(or1, 1));
+        gb.outto(Port(and2, 1), Port(or1, 2));
 
+    }
+};
 
 
 #endif

@@ -13,6 +13,8 @@
 #include <string>
 #include <memory>
 #include <vector>
+#include <cassert>
+#include <tuple>
 
 #include "Edge.hpp"
 #include "Node.hpp"
@@ -123,30 +125,21 @@ void test_04_01(void)
 
 //-----------------------------------------------------------
 template<typename T>
-void testOp2to1(void)
+void testOp2to1(std::vector<std::vector<bool>>& input, std::vector<bool>& expected)
 {
-    std::tuple<Executor*, NodeTestEntry<bool>*> ret = test_2to1<T, bool>();
+    auto ret = test_2to1_template<T, bool>();
     auto exe = std::get<0>(ret);
-    auto nEntry = std::get<1>(ret);
+    auto nEntry = static_cast<NodeTestEntry<bool>*>(std::get<1>(ret).getNode());
+    auto nExit = static_cast<NodeTestExit<bool>*>(std::get<2>(ret).getNode());
 
-    nEntry->setValues(std::vector<bool>{false, false});
-    exe->step();
-
-    nEntry->setValues(std::vector<bool>{false, true});
-    exe->step();
-
-    nEntry->setValues(std::vector<bool>{true, false});
-    exe->step();
-
-    nEntry->setValues(std::vector<bool>{true, true});
-    exe->step();
-
+    for(int i=0;i<input.size();i++){
+        nEntry->setValues(input[i]);
+        exe->step();
+        auto values = nExit->getValues();
+        assert(expected[i] == values[0]);
+    }
 }
 
-void test04_01(void)
-{
-    testOp2to1<NodeAnd>();
-}
 
 //-----------------------------------------------------------
 void test04(void)
@@ -154,17 +147,27 @@ void test04(void)
     std::cout << "-- test NOT -- " << std::endl;
     test_04_01();
 
+    std::vector<std::vector<bool>> testVector{{false,false},{false,true}, {true,false},{true,true}};
+
     std::cout << "-- test AND -- " << std::endl;
-    testOp2to1<NodeAnd>();
+    std::vector<bool> expectedAND{false, false, false, true};
+    testOp2to1<NodeAnd>(testVector, expectedAND);
 
     std::cout << "-- test OR -- " << std::endl;
-    testOp2to1<NodeOr>();
+    std::vector<bool> expectedOR{false, true, true, true};
+    testOp2to1<NodeOr>(testVector, expectedOR);
 
     std::cout << "-- test NOR -- " << std::endl;
-    testOp2to1<NodeNor>();
+    std::vector<bool> expectedNOR{true, false, false, false};
+    testOp2to1<NodeNor>(testVector, expectedNOR);
 
     std::cout << "-- test NAND -- " << std::endl;
-    testOp2to1<NodeNand>();
+    std::vector<bool> expectedNAND{true, true, true, false};
+    testOp2to1<NodeNand>(testVector, expectedNAND);
+
+    std::cout << "-- test EXOR -- " << std::endl;
+    std::vector<bool> expectedEXOR{false, true, true, false};
+    testOp2to1<NodeExor>(testVector, expectedEXOR);
 
 }
 

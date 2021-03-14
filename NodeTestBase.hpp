@@ -7,6 +7,7 @@
 #include "Edge.hpp"
 #include "Node.hpp"
 #include "Executor.hpp"
+#include "GraphBuilder.hpp"
 
 
 //-----------------------------------------------------------
@@ -17,7 +18,6 @@ class NodeTestEntry : public Node
     std::vector<T> _values;
 
 public:
-
     //-------------------------------------------------------
     void setValues(std::vector<T> values)
     {
@@ -49,6 +49,15 @@ public:
 template <typename T>
 class NodeTestExit : public Node
 {
+    std::vector<T> _values;
+
+public:
+    //-------------------------------------------------------
+    std::vector<T> getValues(void)
+    {
+        return _values;
+    }
+
     //-------------------------------------------------------
     void execute(void)
     {
@@ -57,10 +66,18 @@ class NodeTestExit : public Node
         std::vector<Edge*> inEdges = getInEdges();
 
         std::cout << "Output Values : ";
-        for(auto edge : inEdges){
+
+        if(inEdges.size() > _values.size()){
+            _values.resize(inEdges.size());
+        }
+
+        for(int i=0;i<inEdges.size();i++){
+            auto edge = inEdges[i];
             T value = std::any_cast<T>(edge->getValue());
+            _values[i] = value;
             std::cout << value << " , ";
         }
+
         std::cout << std::endl;
     }
 };
@@ -70,6 +87,8 @@ class NodeTestExit : public Node
 
 
 //-----------------------------------------------------------
+// obsolate but still used by test_06...
+// instead of this function, use test_2to1_template()
 template <typename TYPENODE, typename T>
 std::tuple<Executor*, NodeTestEntry<T>*> test_2to1(void)
 {
@@ -96,6 +115,25 @@ std::tuple<Executor*, NodeTestEntry<T>*> test_2to1(void)
     std::tuple<Executor*, NodeTestEntry<T>*> ret = std::make_tuple(exe, nEntry);
     return ret;
 }
+
+//-----------------------------------------------------------
+template <typename TYPENODE, typename T>
+std::tuple<Executor*, QuasiNode, QuasiNode> test_2to1_template(void)
+{
+    GraphBuilder gb;
+    auto nTarget = gb.createNode<TYPENODE>();
+    auto nEntry = gb.createNode<NodeTestEntry<T>>();
+    auto nExit = gb.createNode<NodeTestExit<T>>();
+
+    gb.outto(Port(nEntry, 1), Port(nTarget,1));
+    gb.outto(Port(nEntry, 2), Port(nTarget,2));
+    gb.outto(Port(nTarget,1), Port(nExit,1));
+
+    Executor* exe = gb.createExecutor(nEntry);
+    auto ret = std::tie(exe, nEntry, nExit);
+    return ret;
+}
+
 
 //-----------------------------------------------------------
 template <typename TYPENODE, typename T>
