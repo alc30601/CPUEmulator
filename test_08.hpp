@@ -10,6 +10,7 @@
 #include "Edge.hpp"
 #include "Executor.hpp"
 #include "GraphBuilder.hpp"
+#include "NodeComplex.hpp"
 
 #include "NodeLogics.hpp"
 #include "NodeArithmetic.hpp"

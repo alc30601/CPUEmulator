@@ -112,21 +112,6 @@ public:
     // 出口ノードを返す。
     Node* getNodeExit(void){ return _nodeExit; }
 
-
-    // //-------------------------------------------------------
-    // // _nodeEntrtyノードの出力エッジ一覧を返す。
-    // std::vector<Edge*> getInDualEdges(void)
-    // {
-    //     return _nodeEntry->getOutEdges();
-    // }
-
-    // //-------------------------------------------------------
-    // // _nodeExitノードの入力エッジ一覧を返す。
-    // std::vector<Edge*> getOutDualEdges(void)
-    // {
-    //     return _nodeExit->getInEdges();
-    // }
-
     //-------------------------------------------------------
     Executor* getInnerExecutor(void)
     {

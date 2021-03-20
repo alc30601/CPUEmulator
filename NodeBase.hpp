@@ -8,6 +8,7 @@
 #include "Edge.hpp"
 #include "NodeSubSystem.hpp"
 #include "GraphBuilder.hpp"
+#include "NodeComplex.hpp"
 
 
 //-----------------------------------------------------------
@@ -77,10 +78,10 @@ public:
         auto n21 = gb.createNode<T21>();
         auto n11 = gb.createNode<T11>();
 
-        gb.outto(Port(n21, 1), Port(n11, 1));
+        gb.outto(Port(n21, 1), Ports{ Port(n11, 1) });
 
-        gb.setInPorts(Port(n21, 1), Port(n21, 2));
-        gb.setOutPorts(Port(n11, 1));
+        setInPortss(Ports{Port(n21, 1)}, Ports{Port(n21, 2)});
+        setOutPorts(Port(n11, 1));
 
         commit();
     }

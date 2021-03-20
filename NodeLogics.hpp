@@ -8,6 +8,7 @@
 
 #include "NodeBase.hpp"
 #include "GraphBuilder.hpp"
+#include "NodeComplex.hpp"
 
 
 //-----------------------------------------------------------
@@ -19,6 +20,8 @@ class NodeNot : public Node1In1Out<bool>
     //-------------------------------------------------------
     bool calculate(bool p)
     {
+        std::cout << "NOT" << std::endl;
+
         bool result = !p;
         return result;
     }
@@ -34,6 +37,8 @@ class NodeAnd : public Node2In1Out<bool>
     //-------------------------------------------------------
     bool calculate(bool p1, bool p2)
     {
+        std::cout << "AND" << std::endl;
+
         bool result = p1 & p2;
         return result;
     }
@@ -48,6 +53,8 @@ class NodeOr : public Node2In1Out<bool>
     //-------------------------------------------------------
     bool calculate(bool p1, bool p2)
     {
+        std::cout << "OR" << std::endl;
+
         bool result = p1 | p2;
         return result;
     }
@@ -80,12 +87,16 @@ public:
         auto and1 = gb.createNode<NodeAnd>();
         auto and2 = gb.createNode<NodeAnd>();
         auto or1 = gb.createNode<NodeOr>();
-        
-        gb.outto(Port(not1, 1), Port(and1, 1));
-        gb.outto(Port(not2, 1), Port(and2, 1));
-        gb.outto(Port(and1, 1), Port(or1, 1));
-        gb.outto(Port(and2, 1), Port(or1, 2));
 
+        gb.outto(Port(not1, 1), Ports{ Port(and1, 1) });
+        gb.outto(Port(not2, 1), Ports{ Port(and2, 1) });
+        gb.outto(Port(and1, 1), Ports{ Port(or1, 1) });
+        gb.outto(Port(and2, 1), Ports{ Port(or1, 2) });
+
+        setInPortss(Ports{Port(not1, 1), Port(and2, 2)}, Ports{Port(and1, 2), Port(not2, 1)});
+        setOutPorts(Port(or1, 1));
+
+        commit();
     }
 };
 

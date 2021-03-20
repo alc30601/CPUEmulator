@@ -125,9 +125,9 @@ std::tuple<Executor*, QuasiNode, QuasiNode> test_2to1_template(void)
     auto nEntry = gb.createNode<NodeTestEntry<T>>();
     auto nExit = gb.createNode<NodeTestExit<T>>();
 
-    gb.outto(Port(nEntry, 1), Port(nTarget,1));
-    gb.outto(Port(nEntry, 2), Port(nTarget,2));
-    gb.outto(Port(nTarget,1), Port(nExit,1));
+    gb.outto(Port(nEntry, 1), Ports{ Port(nTarget,1) });
+    gb.outto(Port(nEntry, 2), Ports{ Port(nTarget,2) });
+    gb.outto(Port(nTarget,1), Ports{ Port(nExit,1) });
 
     Executor* exe = gb.createExecutor(nEntry);
     auto ret = std::tie(exe, nEntry, nExit);

@@ -37,12 +37,12 @@ This is a data flow graph core implementation.
 
 # Structure / Hierarchy
 
-     Node  Edge
-      Executor
-    NodeSubSystem
-     GraphBuilder
-      NodeBase
-NodeLogics  NodeArithmetic
+           Node  Edge
+            Executor
+    NodeSubSystem GraphBuilder
+           NodeComplex
+            NodeBase
+     NodeLogics  NodeArithmetic
 
 
 
@@ -123,4 +123,7 @@ NodeLogics  NodeArithmetic
   する必要がある。C++での記述方法検討中。
   メソッドコール時に引数がコピーされないようにする必要がある。
 
-
+## 2021.03.20
+- NodeComplexで入力分岐に対応
+- それに伴い、GraphBuilderとNodeComplexのリファクタリング
+  サブノード化関連をGraphBuilderから排除し、NodeComplexに集約
