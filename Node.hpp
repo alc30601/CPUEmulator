@@ -48,7 +48,7 @@ public:
 
     //-------------------------------------------------------
     // Clear execution status
-    void clearStatus(void)
+    virtual void clearStatus(void)
     {
         _status = Status::NOTYET;
     }
@@ -56,11 +56,30 @@ public:
     //-------------------------------------------------------
     // if this node is already executed, return true
     // else return false
-    bool isExecuted(void)
+    virtual bool isExecuted(void)
     {
         bool result = _status == Status::DONE ? true : false;
         return result;
     }
+
+    //-------------------------------------------------------
+    // check if data that are necessary for execution of this node is ready or not
+    // true : data are ready
+    // false : data are not ready yet
+    virtual bool isInputDataCompleted(void)
+    {
+        bool result = true;
+
+        // 入力元Edgeにデータが全て揃っているか確認する。
+        for(auto edge : _inEdges){
+            if(edge->getStatus() == Edge::Status::DISABLE){
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
+
 
     //-------------------------------------------------------
     // 入力エッジを指定の場所に設定する。

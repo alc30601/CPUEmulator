@@ -73,26 +73,6 @@ public:
     }
 
     //-------------------------------------------------------
-    // check if data that are necessary for execution of this node is ready or not
-    // true : data are ready
-    // false : data are not ready yet
-    bool isInputDataCompleted(Node* node)
-    {
-        bool result = true;
-        std::vector<Edge*> inEdges = node->getInEdges();
-
-        // 入力元Edgeにデータが全て揃っているか確認する。
-        for(auto edge : inEdges){
-            if(edge->getStatus() == Edge::Status::DISABLE){
-                result = false;
-                break;
-            }
-        }
-        return result;
-    }
-
-
-    //-------------------------------------------------------
     // execute flow graph from start node
     void step(void)
     {
@@ -106,39 +86,92 @@ public:
         // その判定のため、そのNodeに入力されるEdge一覧を取得し、全てのEdgeでデータが到達しているか
         // をチェックする。
 
-        stepRecursive(_startNode);
+        // stepRecursive(_startNode);
+
+        doStep();
 
         clearNodeStatus();
         clearEdgeStatus();
     }
 
     //-------------------------------------------------------
+    // 再帰を用いた深さ優先探索によるノード巡回実行
+    // 効率は比較的いいが、深さ優先探索のため木構造のグラフにしか対応しない。
     // This method is called recursively with flow graph traversal.
     // First, execute the node
     // Second, find the edges from the node
     // Third, for each edge, find child nodes
     // Then, call this method for these child nodes
-    void stepRecursive(Node* node)
-    {
-        // if this node already executed, do nothing
-        if(node->isExecuted() == true){
-            return;
-        }
+    // void stepRecursive(Node* node)
+    // {
+    //     // if this node already executed, do nothing
+    //     if(node->isExecuted() == true){
+    //         return;
+    //     }
         
-        // if datas are not ready yet, do nothing
-        if(isInputDataCompleted(node) == false){
-            return;
+    //     // if datas are not ready yet, do nothing
+    //     if(isInputDataCompleted(node) == false){
+    //         return;
+    //     }
+
+    //     // do this node
+    //     node->execute();
+
+    //     // traverse out edges and nodes, then execute each node recursively
+    //     for(auto edge : node->getOutEdges()){
+    //         for(auto child_node : edge->getOutNodes()){
+    //             stepRecursive(child_node);
+    //         }
+    //     }
+    // }
+
+
+    //-------------------------------------------------------
+    // ノード一覧をなめ、実行できるものから実行していく。
+    // 実行していないノードが無くなるまで何度も繰り返す。
+    // 探索効率は悪いが、木構造以外のグラフでも全ノード実行可能
+    void doStep(void)
+    {
+        auto rest = _nodes.size();
+        while(rest > 0){
+            doOneRound();
+            rest = countUnExecutedNodes();
         }
+    }
 
-        // do this node
-        node->execute();
+    //-------------------------------------------------------
+    // ノード一覧を一巡して、実行出来るノードは実行する。
+    void doOneRound(void)
+    {
+        for(auto node : _nodes){
 
-        // traverse out edges and nodes, then execute each node recursively
-        for(auto edge : node->getOutEdges()){
-            for(auto child_node : edge->getOutNodes()){
-                stepRecursive(child_node);
+            // if this node already executed, do nothing
+            if(node->isExecuted() == true){
+                continue;
+            }
+            
+            // if datas are not ready yet, do nothing
+            if(node->isInputDataCompleted() == false){
+                continue;
+            }
+
+            // do this node
+            node->execute();
+        }
+    }
+
+    //-------------------------------------------------------
+    // ノード一覧のうち、未実行のノード数を計算する。
+    int countUnExecutedNodes(void)
+    {
+        int rest = 0;
+        for(auto node : _nodes){
+
+            if(node->isExecuted() == false){
+                rest++;
             }
         }
+        return rest;
     }
 
 };

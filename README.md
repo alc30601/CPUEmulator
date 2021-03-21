@@ -127,3 +127,10 @@ This is a data flow graph core implementation.
 - NodeComplexで入力分岐に対応
 - それに伴い、GraphBuilderとNodeComplexのリファクタリング
   サブノード化関連をGraphBuilderから排除し、NodeComplexに集約
+
+## 2021.03.21
+- テスト用ファイルをTESTディレクトリに移動
+  それに伴い、.vscode以下の.jsonファイルを修正
+- 木構造ではないグラフに対応出来るよう、Executorのノード探索方法の変更
+- 変数ノードの作成 - 状態値を保持出来る、常時値を取り出せるノードの作成(途中)
+

@@ -86,7 +86,7 @@ public:
         auto not2 = gb.createNode<NodeNot>();
         auto and1 = gb.createNode<NodeAnd>();
         auto and2 = gb.createNode<NodeAnd>();
-        auto or1 = gb.createNode<NodeOr>();
+        auto or1  = gb.createNode<NodeOr>();
 
         gb.outto(Port(not1, 1), Ports{ Port(and1, 1) });
         gb.outto(Port(not2, 1), Ports{ Port(and2, 1) });

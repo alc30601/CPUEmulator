@@ -59,12 +59,6 @@ public:
 // always puts constant value to out edge
 // This node doesnot need input value. But Executor mechanism requires
 // at least one input edge in order to execute the node.
-// class NodeConst : public NodeOne2One<double>
-// {
-// public:
-//     NodeConst(double c) : NodeOne2One(std::bind([](double a) -> double { return a; }, c)){}
-// };
-// コンストラクタを引数なしにしたいので親クラスを変更
 class NodeConst : public Node1In1Out<double>
 {
     double _value;
