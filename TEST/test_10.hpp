@@ -1,4 +1,5 @@
 // test_10.hpp
+// 半加算器、全加算器評価
 #ifndef __TEST_10_HPP__
 #define __TEST_10_HPP__
 

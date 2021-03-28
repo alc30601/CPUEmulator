@@ -26,7 +26,7 @@ public:
     Executor(){}
 
     //-------------------------------------------------------
-    Executor(Node* startNode, std::vector<Node*> nodes, std::vector<Edge*> edges)
+    Executor(Node* startNode, std::vector<Node*>& nodes, std::vector<Edge*>& edges)
     {
         setStartNode(startNode);
 
@@ -43,14 +43,14 @@ public:
 
     //-------------------------------------------------------
     // Add a Node
-    void addNodes(std::vector<Node*> nodes)
+    void addNodes(std::vector<Node*>& nodes)
     {
         std::copy(nodes.begin(), nodes.end(), std::back_inserter(_nodes));
     }
 
     //-------------------------------------------------------
     // edgeを一括追加する。
-    void addEdges(std::vector<Edge*> edges)
+    void addEdges(std::vector<Edge*>& edges)
     {
         std::copy(edges.begin(), edges.end(), std::back_inserter(_edges));
     }

@@ -20,7 +20,7 @@ class NodeNot : public Node1In1Out<bool>
     //-------------------------------------------------------
     bool calculate(bool p)
     {
-        std::cout << "NOT" << std::endl;
+        // std::cout << "NOT" << std::endl;
 
         bool result = !p;
         return result;
@@ -37,7 +37,7 @@ class NodeAnd : public Node2In1Out<bool>
     //-------------------------------------------------------
     bool calculate(bool p1, bool p2)
     {
-        std::cout << "AND" << std::endl;
+        // std::cout << "AND" << std::endl;
 
         bool result = p1 & p2;
         return result;
@@ -53,7 +53,7 @@ class NodeOr : public Node2In1Out<bool>
     //-------------------------------------------------------
     bool calculate(bool p1, bool p2)
     {
-        std::cout << "OR" << std::endl;
+        // std::cout << "OR" << std::endl;
 
         bool result = p1 | p2;
         return result;

@@ -46,8 +46,8 @@ class GraphBuilder
 public:
 
     //-------------------------------------------------------
-    std::vector<Edge*> getEdges(void){ return _edges; }
-    std::vector<Node*> getNodes(void){ return _nodes; }
+    std::vector<Edge*>& getEdges(void){ return _edges; }
+    std::vector<Node*>& getNodes(void){ return _nodes; }
 
     //-------------------------------------------------------
     // 準ノードを生成する。本当のノードも生成し準ノードで包む。
@@ -72,7 +72,7 @@ public:
     // ノードとノードをエッジで結ぶ。
     // エッジを１つ生成し出力先ノード(１個以上任意個)に繋げる。
     // 接続元は単一のポート、エッジの接続先ポートは複数有りうる。
-    void outto(Port srcPort, Ports dstPorts)
+    void outto(const Port& srcPort, const Ports& dstPorts)
     {
         int numDst = dstPorts.size();
 

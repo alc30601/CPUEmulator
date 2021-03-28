@@ -90,7 +90,7 @@ public:
 template <typename T>
 void evaluation(Executor* exe,
                 QuasiNode& qnS, QuasiNode& qnE,
-                std::vector<T> input, std::vector<T> expected)
+                std::vector<T>& input, std::vector<T>& expected)
 {
     auto nEntry = static_cast<NodeTestEntry<T>*>(qnS.getNode());
     auto nExit = static_cast<NodeTestExit<T>*>(qnE.getNode());
@@ -105,43 +105,20 @@ void evaluation(Executor* exe,
 }
 
 
-
-
-
-
-
-
-
-
-
-
 //-----------------------------------------------------------
-// obsolate but still used by test_06...
-// instead of this function, use test_2to1_template()
 template <typename TYPENODE, typename T>
-std::tuple<Executor*, NodeTestEntry<T>*> test_2to1(void)
+std::tuple<Executor*, QuasiNode, QuasiNode> test_1to1_template(void)
 {
-    NodeTestEntry<T>* nEntry(new NodeTestEntry<T>);
-    NodeTestExit<T>* nExit(new NodeTestExit<T>);
-    TYPENODE* nOp(new TYPENODE);
+    GraphBuilder gb;
+    auto nTarget = gb.createNode<TYPENODE>();
+    auto nEntry = gb.createNode<NodeTestEntry<T>>();
+    auto nExit = gb.createNode<NodeTestExit<T>>();
 
-    Edge* e1(new Edge);
-    Edge* e2(new Edge);
-    Edge* e3(new Edge);
-    Edge* e4(new Edge);
+    gb.outto(Port(nEntry, 1), Ports{ Port(nTarget,1) });
+    gb.outto(Port(nTarget,1), Ports{ Port(nExit,1) });
 
-    nEntry->addOutEdges(std::vector<Edge*>{e1,e2});
-    nOp->addInEdges(std::vector<Edge*>{e1,e2});
-    nOp->addOutEdges(std::vector<Edge*>{e3});
-    nExit->addInEdges(std::vector<Edge*>{e3});
-
-    e1->addOutNode(nOp);
-    e2->addOutNode(nOp);
-    e3->addOutNode(nExit);
-
-    Executor* exe(new Executor(nEntry, std::vector<Node*>{nEntry,nExit,nOp}, std::vector<Edge*>{e1,e2,e3}));
-
-    std::tuple<Executor*, NodeTestEntry<T>*> ret = std::make_tuple(exe, nEntry);
+    Executor* exe = gb.createExecutor(nEntry);
+    auto ret = std::tie(exe, nEntry, nExit);
     return ret;
 }
 
@@ -162,35 +139,6 @@ std::tuple<Executor*, QuasiNode, QuasiNode> test_2to1_template(void)
     auto ret = std::tie(exe, nEntry, nExit);
     return ret;
 }
-
-
-//-----------------------------------------------------------
-template <typename TYPENODE, typename T>
-std::tuple<Executor*, NodeTestEntry<T>*> test_1to1(T param)
-{
-    NodeTestEntry<T>* nEntry(new NodeTestEntry<T>);
-    NodeTestExit<T>* nExit(new NodeTestExit<T>);
-    TYPENODE* nOp(new TYPENODE());
-    nOp->setParam(param);
-
-    Edge* e1(new Edge);
-    Edge* e2(new Edge);
-
-    nEntry->addOutEdges(std::vector<Edge*>{e1});
-    nOp->addInEdges(std::vector<Edge*>{e1});
-    nOp->addOutEdges(std::vector<Edge*>{e2});
-    nExit->addInEdges(std::vector<Edge*>{e2});
-
-    e1->addOutNode(nOp);
-    e2->addOutNode(nExit);
-
-    Executor* exe(new Executor(nEntry, std::vector<Node*>{nEntry,nExit,nOp}, std::vector<Edge*>{e1,e2}));
-
-    std::tuple<Executor*, NodeTestEntry<T>*> ret = std::make_tuple(exe, nEntry);
-    return ret;
-
-}
-
 
 
 #endif

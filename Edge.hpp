@@ -49,16 +49,15 @@ public:
     }
 
     //-------------------------------------------------------
-    Edge(std::any initial_v)
-    {
-        _v = initial_v;
-        clearStatus();
-    }
-
-    //-------------------------------------------------------
     void clearStatus(void)
     {
         _status = Status::DISABLE;
+    }
+
+    //-------------------------------------------------------
+    Status getStatus(void)
+    {
+        return _status;
     }
 
     //-------------------------------------------------------
@@ -75,26 +74,14 @@ public:
     }
 
     //-------------------------------------------------------
-    Status getStatus(void)
-    {
-        return _status;
-    }
-
-    //-------------------------------------------------------
     void addOutNode(Node* node)
     {
         _outNodes.push_back(node);
     }
 
     //-------------------------------------------------------
-    void addOutNodes(std::vector<Node*> nodes)
-    {
-        std::copy(nodes.begin(), nodes.end(), std::back_inserter(_outNodes));
-    }
-
-    //-------------------------------------------------------
     // get Nodes connected from out direction of this Edge
-    std::vector<Node*> getOutNodes(void)
+    std::vector<Node*>& getOutNodes(void)
     {
         return _outNodes;
     }

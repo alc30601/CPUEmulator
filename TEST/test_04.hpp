@@ -24,104 +24,25 @@
 #include "NodeTestBase.hpp"
 
 
-//-----------------------------------------------------------
-// 0入力、1出力ノード
-class Test04NodeS : public Node
-{
-    bool _value;
-
-public:
-
-    //-------------------------------------------------------
-    void setValue(bool value)
-    {
-        _value = value;
-    }
-
-    //-------------------------------------------------------
-    void setEdge(Edge* edge)
-    {
-        _outEdges.resize(1);
-        _outEdges.at(0) = edge;
-
-    }
-
-    //-------------------------------------------------------
-    void execute(void)
-    {
-        Node::execute();
-
-        std::cout << "Test04NodeS::execute()" <<std::endl;
-        std::cout << "input value is : " << _value << std::endl;
-        _outEdges.at(0)->setValue(_value);
-    }
-};
-
-//-----------------------------------------------------------
-// １入力、０出力ノード
-class Test04NodeE : public Node
-{
-public:
-    //-------------------------------------------------------
-    void setEdge(Edge* edge)
-    {
-        _inEdges.resize(1);
-        _inEdges.at(0) = edge;
-    }
-
-    //-------------------------------------------------------
-    void execute(void)
-    {
-        Node::execute();
-
-        std::cout << "Test04NodeE::execute()" <<std::endl;
-        bool a;
-        a = std::any_cast<bool>(_inEdges.at(0)->getValue());
-        std::cout << "flowed value is : " << a << std::endl;
-    }
-};
-
 
 
 //-----------------------------------------------------------
-// NOTテスト
-void test_04_01(void)
+template<typename T>
+void testOp1to1(std::vector<bool>& input, std::vector<bool>& expected)
 {
-    // ノード生成
-    NodeNot* nodeNot(new NodeNot);
-    Test04NodeS* n1(new Test04NodeS);
-    Test04NodeE* n2(new Test04NodeE);
-    std::vector<Node*> nodes = {n1, n2, nodeNot};
+    auto ret = test_1to1_template<T, bool>();
+    auto exe = std::get<0>(ret);
+    auto nEntry = static_cast<NodeTestEntry<bool>*>(std::get<1>(ret).getNode());
+    auto nExit = static_cast<NodeTestExit<bool>*>(std::get<2>(ret).getNode());
 
-    // エッジ生成
-    Edge* e0(new Edge(true));
-    Edge* e1(new Edge(true));
-    std::vector<Edge*> edges = {e0, e1};
-
-    // ノードにエッジを紐付ける
-    std::vector<Edge*> inEdges = {e0};
-    std::vector<Edge*> outEdges = {e1};
-    nodeNot->addInEdges(inEdges);
-    nodeNot->addOutEdges(outEdges);
-    n1->setEdge(e0);
-    n2->setEdge(e1);
-
-    // エッジにノードを紐付ける
-    e0->addOutNode(nodeNot);
-    e0->addOutNode(n2);
-
-    // 実行
-    Executor exe(n1, nodes, edges);
-
-    n1->setValue(false);
-    exe.step();
-
-    n1->setValue(true);
-    exe.step();
-
+    for(int i=0;i<input.size();i++){
+        std::vector<bool> inValue{input[i]};
+        nEntry->setValues(inValue);
+        exe->step();
+        auto values = nExit->getValues();
+        assert(expected[i] == values[0]);
+    }
 }
-
-
 
 //-----------------------------------------------------------
 template<typename T>
@@ -144,8 +65,12 @@ void testOp2to1(std::vector<std::vector<bool>>& input, std::vector<bool>& expect
 //-----------------------------------------------------------
 void test04(void)
 {
+    std::vector<bool> testVector1{false,true};
+
     std::cout << "-- test NOT -- " << std::endl;
-    test_04_01();
+    std::vector<bool> expectedNot{true, false};
+    testOp1to1<NodeNot>(testVector1, expectedNot);
+
 
     std::vector<std::vector<bool>> testVector{{false,false},{false,true}, {true,false},{true,true}};
 

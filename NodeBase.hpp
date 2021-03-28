@@ -114,6 +114,8 @@ public:
     //-------------------------------------------------------
     void execute(void)
     {
+        Node::execute();
+
         std::vector<Edge*> inEdges = getInEdges();
         std::vector<Edge*> outEdges = getOutEdges();
 
