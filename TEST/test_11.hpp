@@ -29,7 +29,7 @@ void test11_01(void)
     std::vector<std::vector<int>> testVector{{1},{2},{3},{4}};
     std::vector<std::vector<int>>   expected{{0},{1},{2},{3}};
     for(int i=0;i<testVector.size();i++){
-        evaluation<int>(exe, qnS, qnE, testVector[i], expected[i]);
+        evaluation<int, int>(exe, qnS, qnE, testVector[i], expected[i]);
     }
 }
 
@@ -54,7 +54,7 @@ void test11_02(void)
     std::vector<std::vector<int>> testVector{{1},{2},{3},{4}};
     std::vector<std::vector<int>>   expected{{7},{7},{7},{7}};
     for(int i=0;i<testVector.size();i++){
-        evaluation<int>(exe, qnS, qnE, testVector[i], expected[i]);
+        evaluation<int, int>(exe, qnS, qnE, testVector[i], expected[i]);
     }
 }
 
@@ -80,7 +80,7 @@ void test11_03(void)
     std::vector<std::vector<int>> testVector{{1},{2},{3},{4}};
     std::vector<std::vector<int>>   expected{{9},{9},{9},{9}};    
     for(int i=0;i<testVector.size();i++){
-        evaluation<int>(exe, qnS, qnE, testVector[i], expected[i]);
+        evaluation<int, int>(exe, qnS, qnE, testVector[i], expected[i]);
     }
 
 }
@@ -114,7 +114,7 @@ void test11_04(void)
     std::vector<std::vector<int>> testVector{{},{},{},{}};
     std::vector<std::vector<int>>   expected{{0},{1},{2},{3}};    
     for(int i=0;i<expected.size();i++){
-        evaluation<int>(exe, qnS, qnE, testVector[i], expected[i]);
+        evaluation<int, int>(exe, qnS, qnE, testVector[i], expected[i]);
     }
 
     // 100回カウンタ

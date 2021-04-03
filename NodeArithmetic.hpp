@@ -7,7 +7,6 @@
 #include "NodeBase.hpp"
 
 
-
 //-----------------------------------------------------------
 // two or more input values added
 template <typename T>
@@ -27,66 +26,33 @@ public:
 };
 
 //-----------------------------------------------------------
+// ゲインはNodeMulとNodeValueで構築できるため不要
 // output value is input value multiply gain
-class NodeGain : public Node1In1Out<double>
-{
-    double _gain;
-
-public:
-    //-------------------------------------------------------
-    NodeGain(void)
-    {
-        _gain = 1.0;    // デフォルト値を1とする。
-    }
-
-    //-------------------------------------------------------
-    void setParam(double gain)
-    {
-        _gain = gain;
-    }
-
-    //-------------------------------------------------------
-    double calculate(double input_value)
-    {
-        double result = _gain * input_value;
-        return result;
-    }
-
-
-};
-
-
-
-//-----------------------------------------------------------
-// ***** OBSOLATE *****
-// always puts constant value to out edge
-// This node doesnot need input value. But Executor mechanism requires
-// at least one input edge in order to execute the node.
-// class NodeConst : public Node1In1Out<double>
+// class NodeGain : public Node1In1Out<double>
 // {
-//     double _value;
+//     double _gain;
 
 // public:
 //     //-------------------------------------------------------
-//     NodeConst(void)
+//     NodeGain(void)
 //     {
-//         _value = 1.0;    // デフォルト値を1とする。
+//         _gain = 1.0;    // デフォルト値を1とする。
 //     }
 
 //     //-------------------------------------------------------
-//     void setParam(double value)
+//     void setParam(double gain)
 //     {
-//         _value = value;
+//         _gain = gain;
 //     }
 
 //     //-------------------------------------------------------
 //     double calculate(double input_value)
 //     {
-//         return _value;
+//         double result = _gain * input_value;
+//         return result;
 //     }
 
 // };
-
 
 
 #endif

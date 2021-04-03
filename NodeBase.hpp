@@ -4,8 +4,8 @@
 
 #include <functional>
 
-#include "Node.hpp"
 #include "Edge.hpp"
+#include "Node.hpp"
 #include "NodeSubSystem.hpp"
 #include "GraphBuilder.hpp"
 #include "NodeComplex.hpp"

@@ -3,6 +3,7 @@
 #define __NODETESTBASE_HPP__
 
 #include <any>
+#include <cassert>
 
 #include "Edge.hpp"
 #include "Node.hpp"
@@ -87,13 +88,13 @@ public:
 // inputで与えられた値を入力としてNodeTestEntryに設定し、実行。
 // 実行結果をNodeTestExitから取り出す。
 // 与えられた正解と比較し間違いがあるとassertする。
-template <typename T>
+template <typename T1, typename T2>
 void evaluation(Executor* exe,
                 QuasiNode& qnS, QuasiNode& qnE,
-                std::vector<T>& input, std::vector<T>& expected)
+                std::vector<T1>& input, std::vector<T2>& expected)
 {
-    auto nEntry = static_cast<NodeTestEntry<T>*>(qnS.getNode());
-    auto nExit = static_cast<NodeTestExit<T>*>(qnE.getNode());
+    auto nEntry = static_cast<NodeTestEntry<T1>*>(qnS.getNode());
+    auto nExit = static_cast<NodeTestExit<T2>*>(qnE.getNode());
 
     // 実行
     nEntry->setValues(input);
