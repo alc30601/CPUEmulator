@@ -10,6 +10,53 @@
 #include "Executor.hpp"
 #include "GraphBuilder.hpp"
 
+//-----------------------------------------------------------
+// bit-0がMSB
+std::vector<std::vector<bool>> vectorBool2bits{
+    {false,false},
+    {false,true},
+    {true, false},
+    {true, true},
+};
+
+//-----------------------------------------------------------
+// bit-0がMSB
+std::vector<std::vector<bool>> vectorBool3bits{
+    {false,false, false},
+    {false,false, true},
+    {false,true,  false},
+    {false,true,  true},
+
+    {true, false, false},
+    {true, false, true},
+    {true, true,  false},
+    {true, true,  true}
+};
+
+//-----------------------------------------------------------
+// bit-0がLSB
+std::vector<std::vector<bool>>   vectorBool4bits{
+
+    {false,false, false, false},    // 0
+    {true, false, false, false},    // 1
+    {false,true,  false, false},    // 2
+    {true, true,  false, false},    // 3
+    {false,false, true,  false},    // 4
+    {true, false, true,  false},    // 5
+    {false,true,  true,  false},    // 6
+    {true, true,  true,  false},    // 7
+
+    {false,false, false, true },    // 8
+    {true, false, false, true },    // 9
+    {false,true,  false, true },    // 10
+    {true, true,  false, true },    // 11
+    {false,false, true,  true },    // 12
+    {true, false, true,  true },    // 13
+    {false,true,  true,  true },    // 14
+    {true, true,  true,  true }     // 15
+
+};
+
 
 //-----------------------------------------------------------
 // ０入力、複数出力ノード

@@ -145,5 +145,5 @@ This is a data flow graph core implementation.
 - 4bit加算器
 - 4bit加減算器
 - bit-数値変換ノード
-
+- 4 to 16デコーダー(デバッグ中)
 

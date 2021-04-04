@@ -1,5 +1,8 @@
 // test_10.hpp
-// 半加算器、全加算器評価
+// 半加算器、全加算器
+// 4bit加算器、4bit加減算器
+// マルチプレクサ
+// デコーダー
 #ifndef __TEST_10_HPP__
 #define __TEST_10_HPP__
 
@@ -9,8 +12,10 @@
 #include "Executor.hpp"
 #include "GraphBuilder.hpp"
 #include "NodeAdder.hpp"
+#include "NodeMultiplexer.hpp"
 #include "NodeTestBase.hpp"
 #include "NodeUtils.hpp"
+#include "NodeDecoder.hpp"
 
 
 //-----------------------------------------------------------
@@ -56,17 +61,7 @@ void test10_fulladdr(void)
 
     Executor* exe = gb.createExecutor(qnS);
 
-    std::vector<std::vector<bool>> testVector{
-        {false,false, false},
-        {false,false, true},
-        {false,true,  false},
-        {false,true,  true},
-
-        {true, false, false},
-        {true, false, true},
-        {true, true,  false},
-        {true, true,  true}
-    };
+    std::vector<std::vector<bool>>   testVector = vectorBool3bits;
 
     std::vector<std::vector<bool>>   expected{
         {false,false},
@@ -109,27 +104,7 @@ void test10_int2bit(void)
         {0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15}
     };
 
-    std::vector<std::vector<bool>>   expected{
-
-        {false,false, false, false},    // 0
-        {true, false, false, false},    // 1
-        {false,true,  false, false},    // 2
-        {true, true,  false, false},    // 3
-        {false,false, true,  false},    // 4
-        {true, false, true,  false},    // 5
-        {false,true,  true,  false},    // 6
-        {true, true,  true,  false},    // 7
-
-        {false,false, false, true },    // 8
-        {true, false, false, true },    // 9
-        {false,true,  false, true },    // 10
-        {true, true,  false, true },    // 11
-        {false,false, true,  true },    // 12
-        {true, false, true,  true },    // 13
-        {false,true,  true,  true },    // 14
-        {true, true,  true,  true }     // 15
-
-    };
+    std::vector<std::vector<bool>>   expected = vectorBool4bits;
 
     for(int i=0;i<testVector.size();i++){
         evaluation<int, bool>(exe, qnS, qnE, testVector[i], expected[i]);
@@ -156,28 +131,7 @@ void test10_bit2int(void)
 
     Executor* exe = gb.createExecutor(qnS);
 
-
-    std::vector<std::vector<bool>>   testVector{
-
-        {false,false, false, false},    // 0
-        {true, false, false, false},    // 1
-        {false,true,  false, false},    // 2
-        {true, true,  false, false},    // 3
-        {false,false, true,  false},    // 4
-        {true, false, true,  false},    // 5
-        {false,true,  true,  false},    // 6
-        {true, true,  true,  false},    // 7
-
-        {false,false, false, true },    // 8
-        {true, false, false, true },    // 9
-        {false,true,  false, true },    // 10
-        {true, true,  false, true },    // 11
-        {false,false, true,  true },    // 12
-        {true, false, true,  true },    // 13
-        {false,true,  true,  true },    // 14
-        {true, true,  true,  true }     // 15
-
-    };
+    std::vector<std::vector<bool>>   testVector = vectorBool4bits;
 
     std::vector<std::vector<int>> expected{
         {0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15}
@@ -403,6 +357,136 @@ void test10_4bitaddsub(void)
 }
 
 //-----------------------------------------------------------
+void test10_multiplexer(void)
+{
+    std::cout << "-- TEST Multiplexer --" << std::endl;
+
+    GraphBuilder gb;
+    auto qnS = gb.createNode<NodeTestEntry<bool>>();
+    auto qnE = gb.createNode<NodeTestExit<bool>>();
+    auto qnT = gb.createNode<NodeMultiplexer>();
+
+    gb.outto(Port(qnS, 1), Ports{ Port(qnT, 1) });
+    gb.outto(Port(qnS, 2), Ports{ Port(qnT, 2) });
+    gb.outto(Port(qnS, 3), Ports{ Port(qnT, 3) });
+    gb.outto(Port(qnT, 1), Ports{ Port(qnE, 1) });
+
+    Executor* exe = gb.createExecutor(qnS);
+
+    std::vector<std::vector<bool>>   testVector = vectorBool3bits;
+
+    std::vector<std::vector<bool>> expected{
+        {false},
+        {false},
+        {true},
+        {true},
+        {false},
+        {true},
+        {false},
+        {true}
+    };
+
+    for(int i=0;i<testVector.size();i++){
+        evaluation<bool, bool>(exe, qnS, qnE, testVector[i], expected[i]);
+    }
+
+}
+
+//-----------------------------------------------------------
+void test10_demultiplexer(void)
+{
+    std::cout << "-- TEST DeMultiplexer --" << std::endl;
+
+    GraphBuilder gb;
+    auto qnS = gb.createNode<NodeTestEntry<bool>>();
+    auto qnE = gb.createNode<NodeTestExit<bool>>();
+    auto qnT = gb.createNode<NodeDeMultiplexer>();
+
+    gb.outto(Port(qnS, 1), Ports{ Port(qnT, 1) });
+    gb.outto(Port(qnS, 2), Ports{ Port(qnT, 2) });
+    gb.outto(Port(qnT, 1), Ports{ Port(qnE, 1) });
+    gb.outto(Port(qnT, 2), Ports{ Port(qnE, 2) });
+
+    Executor* exe = gb.createExecutor(qnS);
+
+    std::vector<std::vector<bool>>   testVector = vectorBool2bits;
+
+    std::vector<std::vector<bool>> expected{
+        {false, false},
+        {true , false},
+        {false, false},
+        {false, true},
+    };
+
+    for(int i=0;i<testVector.size();i++){
+        evaluation<bool, bool>(exe, qnS, qnE, testVector[i], expected[i]);
+    }
+
+}
+
+//-----------------------------------------------------------
+void test10_decoder(void)
+{
+    std::cout << "-- TEST Decoder --" << std::endl;
+
+    GraphBuilder gb;
+    auto qnS = gb.createNode<NodeTestEntry<bool>>();
+    auto qnE = gb.createNode<NodeTestExit<bool>>();
+    auto qnT = gb.createNode<NodeDecoder4to16>();
+
+    gb.outto(Port(qnS, 1), Ports{ Port(qnT, 1) });
+    gb.outto(Port(qnS, 2), Ports{ Port(qnT, 2) });
+    gb.outto(Port(qnS, 3), Ports{ Port(qnT, 3) });
+    gb.outto(Port(qnS, 4), Ports{ Port(qnT, 4) });
+
+    gb.outto(Port(qnT, 1), Ports{ Port(qnE, 1) });
+    gb.outto(Port(qnT, 2), Ports{ Port(qnE, 2) });
+    gb.outto(Port(qnT, 3), Ports{ Port(qnE, 3) });
+    gb.outto(Port(qnT, 4), Ports{ Port(qnE, 4) });
+    gb.outto(Port(qnT, 5), Ports{ Port(qnE, 5) });
+    gb.outto(Port(qnT, 6), Ports{ Port(qnE, 6) });
+    gb.outto(Port(qnT, 7), Ports{ Port(qnE, 7) });
+    gb.outto(Port(qnT, 8), Ports{ Port(qnE, 8) });
+    gb.outto(Port(qnT, 9), Ports{ Port(qnE, 9) });
+    gb.outto(Port(qnT, 10), Ports{ Port(qnE, 10) });
+    gb.outto(Port(qnT, 11), Ports{ Port(qnE, 11) });
+    gb.outto(Port(qnT, 12), Ports{ Port(qnE, 12) });
+    gb.outto(Port(qnT, 13), Ports{ Port(qnE, 13) });
+    gb.outto(Port(qnT, 14), Ports{ Port(qnE, 14) });
+    gb.outto(Port(qnT, 15), Ports{ Port(qnE, 15) });
+    gb.outto(Port(qnT, 16), Ports{ Port(qnE, 16) });
+
+    Executor* exe = gb.createExecutor(qnS);
+
+    std::vector<std::vector<bool>>   testVector = vectorBool4bits;
+
+    std::vector<std::vector<bool>> expected{
+        {true,  false, false, false, false, false, false, false, false, false, false, false, false, false, false, false},
+        {false, true,  false, false, false, false, false, false, false, false, false, false, false, false, false, false},
+        {false, false, true,  false, false, false, false, false, false, false, false, false, false, false, false, false},
+        {false, false, false, true,  false, false, false, false, false, false, false, false, false, false, false, false},
+        {false, false, false, false, true,  false, false, false, false, false, false, false, false, false, false, false},
+        {false, false, false, false, false, true,  false, false, false, false, false, false, false, false, false, false},
+        {false, false, false, false, false, false, true,  false, false, false, false, false, false, false, false, false},
+        {false, false, false, false, false, false, false, true,  false, false, false, false, false, false, false, false},
+        {false, false, false, false, false, false, false, false, true,  false, false, false, false, false, false, false},
+        {false, false, false, false, false, false, false, false, false, true,  false, false, false, false, false, false},
+        {false, false, false, false, false, false, false, false, false, false, true,  false, false, false, false, false},
+        {false, false, false, false, false, false, false, false, false, false, false, true,  false, false, false, false},
+        {false, false, false, false, false, false, false, false, false, false, false, false, true,  false, false, false},
+        {false, false, false, false, false, false, false, false, false, false, false, false, false, true,  false, false},
+        {false, false, false, false, false, false, false, false, false, false, false, false, false, false, true,  false},
+        {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, true}
+    };
+
+    for(int i=0;i<testVector.size();i++){
+        evaluation<bool, bool>(exe, qnS, qnE, testVector[i], expected[i]);
+    }
+
+
+}
+
+//-----------------------------------------------------------
 void test10(void)
 {
     test10_halfaddr();
@@ -413,8 +497,12 @@ void test10(void)
     test10_int2int();
 
     test10_4bitadder();
-
     test10_4bitaddsub();
+
+    test10_multiplexer();
+    test10_demultiplexer();
+
+    test10_decoder();
 }
 
 

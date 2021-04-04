@@ -9,6 +9,8 @@
 
 //-----------------------------------------------------------
 // half Adder
+// In-port  : A, B
+// Out0port : S, C
 class NodeHalfAdder : public NodeComplex
 {
 public:
@@ -30,6 +32,8 @@ public:
 
 //-----------------------------------------------------------
 // Full Adder
+// In-port  : A, B, C-in
+// Out0port : S, C-out
 class NodeFullAdder : public NodeComplex
 {
 public:

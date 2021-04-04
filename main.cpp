@@ -54,8 +54,8 @@ int main(void)
     std::cout << "  -- test10" << std::endl;
     test10();
 
-    // std::cout << "  -- test11" << std::endl;
-    // test11();
+    std::cout << "  -- test11" << std::endl;
+    test11();
 
     std::cout << "... Done." << std::endl;
     return 0;
