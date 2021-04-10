@@ -18,36 +18,36 @@ public:
     {
         auto& gb = getGraphBuilder();
 
-        auto X00 = gb.createNode<NodeNot>();
-        auto X01 = gb.createNode<NodeNot>();
-        auto X02 = gb.createNode<NodeNot>();
-        auto X03 = gb.createNode<NodeNot>();
+        auto X00 = gb.createNode<NodeNot>("X00");
+        auto X01 = gb.createNode<NodeNot>("X01");
+        auto X02 = gb.createNode<NodeNot>("X02");
+        auto X03 = gb.createNode<NodeNot>("X03");
 
-        auto U00  = gb.createNode<NodeNand>();
-        auto U01  = gb.createNode<NodeNand>();
-        auto U10  = gb.createNode<NodeNand>();
-        auto U11  = gb.createNode<NodeNand>();
-        auto L00  = gb.createNode<NodeNand>();
-        auto L01  = gb.createNode<NodeNand>();
-        auto L10  = gb.createNode<NodeNand>();
-        auto L11  = gb.createNode<NodeNand>();
+        auto U00  = gb.createNode<NodeNand>("U00");
+        auto U01  = gb.createNode<NodeNand>("U01");
+        auto U10  = gb.createNode<NodeNand>("U10");
+        auto U11  = gb.createNode<NodeNand>("U11");
+        auto L00  = gb.createNode<NodeNand>("L00");
+        auto L01  = gb.createNode<NodeNand>("L01");
+        auto L10  = gb.createNode<NodeNand>("L10");
+        auto L11  = gb.createNode<NodeNand>("L11");
 
-        auto Y00  = gb.createNode<NodeNor>();
-        auto Y01  = gb.createNode<NodeNor>();
-        auto Y02  = gb.createNode<NodeNor>();
-        auto Y03  = gb.createNode<NodeNor>();
-        auto Y04  = gb.createNode<NodeNor>();
-        auto Y05  = gb.createNode<NodeNor>();
-        auto Y06  = gb.createNode<NodeNor>();
-        auto Y07  = gb.createNode<NodeNor>();
-        auto Y08  = gb.createNode<NodeNor>();
-        auto Y09  = gb.createNode<NodeNor>();
-        auto Y10  = gb.createNode<NodeNor>();
-        auto Y11  = gb.createNode<NodeNor>();
-        auto Y12  = gb.createNode<NodeNor>();
-        auto Y13  = gb.createNode<NodeNor>();
-        auto Y14  = gb.createNode<NodeNor>();
-        auto Y15  = gb.createNode<NodeNor>();
+        auto Y00  = gb.createNode<NodeNor>("Y00");
+        auto Y01  = gb.createNode<NodeNor>("Y01");
+        auto Y02  = gb.createNode<NodeNor>("Y02");
+        auto Y03  = gb.createNode<NodeNor>("Y03");
+        auto Y04  = gb.createNode<NodeNor>("Y04");
+        auto Y05  = gb.createNode<NodeNor>("Y05");
+        auto Y06  = gb.createNode<NodeNor>("Y06");
+        auto Y07  = gb.createNode<NodeNor>("Y07");
+        auto Y08  = gb.createNode<NodeNor>("Y08");
+        auto Y09  = gb.createNode<NodeNor>("Y09");
+        auto Y10  = gb.createNode<NodeNor>("Y10");
+        auto Y11  = gb.createNode<NodeNor>("Y11");
+        auto Y12  = gb.createNode<NodeNor>("Y12");
+        auto Y13  = gb.createNode<NodeNor>("Y13");
+        auto Y14  = gb.createNode<NodeNor>("Y14");
+        auto Y15  = gb.createNode<NodeNor>("Y15");
 
         gb.outto(Port(X00, 1), Ports{Port(L10, 2), Port(L00, 2)});
         gb.outto(Port(X01, 1), Ports{Port(L01, 1), Port(L00, 1)});
@@ -70,21 +70,21 @@ public:
                     Ports{ Port(U11, 1), Port(U10, 1), Port(X03, 1) });   // X3
 
         setOutPorts(Port(Y00, 1),
-                    Port(Y01, 2),
-                    Port(Y02, 3),
-                    Port(Y03, 4),
-                    Port(Y04, 5),
-                    Port(Y05, 6),
-                    Port(Y06, 7),
-                    Port(Y07, 8),
-                    Port(Y08, 9),
-                    Port(Y09, 10),
-                    Port(Y10, 11),
-                    Port(Y11, 12),
-                    Port(Y12, 13),
-                    Port(Y13, 14),
-                    Port(Y14, 15),
-                    Port(Y15, 16));
+                    Port(Y01, 1),
+                    Port(Y02, 1),
+                    Port(Y03, 1),
+                    Port(Y04, 1),
+                    Port(Y05, 1),
+                    Port(Y06, 1),
+                    Port(Y07, 1),
+                    Port(Y08, 1),
+                    Port(Y09, 1),
+                    Port(Y10, 1),
+                    Port(Y11, 1),
+                    Port(Y12, 1),
+                    Port(Y13, 1),
+                    Port(Y14, 1),
+                    Port(Y15, 1));
 
         commit();
     }

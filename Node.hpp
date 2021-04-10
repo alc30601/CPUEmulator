@@ -30,13 +30,18 @@ protected:
 
     Status _status; // node execution status
 
+    std::string _name;
+
 public:
 
     //-------------------------------------------------------
-    Node(void)
+    Node()
     {
         clearStatus();
     }
+
+    //-------------------------------------------------------
+    void setName(const std::string& name){ _name = name; }
 
     //-------------------------------------------------------
     // Execute the operation of this node

@@ -53,9 +53,11 @@ public:
     // 準ノードを生成する。本当のノードも生成し準ノードで包む。
     // 準ノードをユーザに返すとともに、GraphBuilder内でも管理しておく。　
     template <typename T>
-    QuasiNode& createNode(void)
+    // QuasiNode& createNode(void)
+    QuasiNode& createNode(const std::string& name = "")
     {
         T* node(new T);
+        node->setName(name);
         _nodes.push_back(node);
         return quasiNodelize(node);
     }

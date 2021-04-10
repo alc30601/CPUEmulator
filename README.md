@@ -147,3 +147,18 @@ This is a data flow graph core implementation.
 - bit-数値変換ノード
 - 4 to 16デコーダー(デバッグ中)
 
+## 2021.04.10
+- GraphBuilderでノードに名前をつけられるようにした。
+  ベースのNodeで名前を保持する。
+- 4 to 16デコーダ評価完了
+
+
+
+
+
+
+
+
+
+
+
