@@ -152,6 +152,9 @@ This is a data flow graph core implementation.
   ベースのNodeで名前を保持する。
 - 4 to 16デコーダ評価完了
 
+## 2021.04.11
+- 複合ノード(ComplexNode)の構成時に出力ポート、入力ポートの定義を行っていたが、廃止
+  代わりにEntry,Exitノードを陽に表し、入出力もEntry,Exitノードとのouttoでの接続で設定
 
 
 

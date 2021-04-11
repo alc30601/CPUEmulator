@@ -75,14 +75,18 @@ public:
     {
         // グラフの構築
         auto& gb = getGraphBuilder();
+        auto enty = getEntryNode();
+        auto exit = getExitNode();
 
         auto n21 = gb.createNode<T21>();
         auto n11 = gb.createNode<T11>();
 
+        gb.outto(Port(enty, 1), Ports{ Port(n21, 1) });
+        gb.outto(Port(enty, 2), Ports{ Port(n21, 2) });
+
         gb.outto(Port(n21, 1), Ports{ Port(n11, 1) });
 
-        setInPortss(Ports{Port(n21, 1)}, Ports{Port(n21, 2)});
-        setOutPorts(Port(n11, 1));
+        gb.outto(Port(n11, 1), Ports{ Port(exit, 1) });
 
         commit();
     }
@@ -157,19 +161,24 @@ public:
     NodeExor(void)
     {
         auto& gb = getGraphBuilder();
+        auto enty = getEntryNode();
+        auto exit = getExitNode();
+
         auto not1 = gb.createNode<NodeNot>();
         auto not2 = gb.createNode<NodeNot>();
         auto and1 = gb.createNode<NodeAnd>();
         auto and2 = gb.createNode<NodeAnd>();
         auto or1  = gb.createNode<NodeOr>();
 
+        gb.outto(Port(enty, 1), Ports{Port(not1, 1), Port(and2, 2)});
+        gb.outto(Port(enty, 2), Ports{Port(and1, 2), Port(not2, 1)});
+
         gb.outto(Port(not1, 1), Ports{ Port(and1, 1) });
         gb.outto(Port(not2, 1), Ports{ Port(and2, 1) });
         gb.outto(Port(and1, 1), Ports{ Port(or1, 1) });
         gb.outto(Port(and2, 1), Ports{ Port(or1, 2) });
 
-        setInPortss(Ports{Port(not1, 1), Port(and2, 2)}, Ports{Port(and1, 2), Port(not2, 1)});
-        setOutPorts(Port(or1, 1));
+        gb.outto(Port(or1, 1), Ports{ Port(exit, 1)});
 
         commit();
     }

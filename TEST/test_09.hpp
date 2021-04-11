@@ -35,12 +35,14 @@ public:
     {
         // グラフの構築
         auto& gb = getGraphBuilder();
+        auto enty = getEntryNode();
+        auto exit = getExitNode();
         auto n1 = gb.createNode<NodeAnd>();
 
-        setInPortss(Ports{ Port(n1, 1), Port(n1, 2) });
-        setOutPorts(Port(n1, 1));
+        gb.outto(Port(enty, 1), Ports{ Port(n1, 1), Port(n1, 2) });
+        gb.outto(Port(n1, 1), Ports{ Port(exit, 1) });
 
-        commit();
+       commit();
     }
 };
 

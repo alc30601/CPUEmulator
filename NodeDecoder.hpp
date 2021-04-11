@@ -17,6 +17,8 @@ public:
     NodeDecoder4to16(void)
     {
         auto& gb = getGraphBuilder();
+        auto enty = getEntryNode();
+        auto exit = getExitNode();
 
         auto X00 = gb.createNode<NodeNot>("X00");
         auto X01 = gb.createNode<NodeNot>("X01");
@@ -63,33 +65,36 @@ public:
         gb.outto(Port(L01,1), Ports{Port(Y05,2), Port(Y01,2), Port(Y13,2), Port(Y09,2)});
         gb.outto(Port(L00,1), Ports{Port(Y04,2), Port(Y00,2), Port(Y12,2), Port(Y08,2)});
 
+        gb.outto(Port(enty, 1), Ports{ Port(L11, 2), Port(L01, 2), Port(X00, 1) }); // X0
+        gb.outto(Port(enty, 2), Ports{ Port(L11, 1), Port(L10, 1), Port(X01, 1) }); // X1
+        gb.outto(Port(enty, 3), Ports{ Port(U11, 2), Port(U01, 2), Port(X02, 1) }); // X2
+        gb.outto(Port(enty, 4), Ports{ Port(U11, 1), Port(U10, 1), Port(X03, 1) }); // X3
 
-        setInPortss(Ports{ Port(L11, 2), Port(L01, 2), Port(X00, 1) },    // X0
-                    Ports{ Port(L11, 1), Port(L10, 1), Port(X01, 1) },    // X1
-                    Ports{ Port(U11, 2), Port(U01, 2), Port(X02, 1) },    // X2
-                    Ports{ Port(U11, 1), Port(U10, 1), Port(X03, 1) });   // X3
-
-        setOutPorts(Port(Y00, 1),
-                    Port(Y01, 1),
-                    Port(Y02, 1),
-                    Port(Y03, 1),
-                    Port(Y04, 1),
-                    Port(Y05, 1),
-                    Port(Y06, 1),
-                    Port(Y07, 1),
-                    Port(Y08, 1),
-                    Port(Y09, 1),
-                    Port(Y10, 1),
-                    Port(Y11, 1),
-                    Port(Y12, 1),
-                    Port(Y13, 1),
-                    Port(Y14, 1),
-                    Port(Y15, 1));
+        gb.outto(Port(Y00, 1), Ports{ Port(exit, 1) });
+        gb.outto(Port(Y01, 1), Ports{ Port(exit, 2) });
+        gb.outto(Port(Y02, 1), Ports{ Port(exit, 3) });
+        gb.outto(Port(Y03, 1), Ports{ Port(exit, 4) });
+        gb.outto(Port(Y04, 1), Ports{ Port(exit, 5) });
+        gb.outto(Port(Y05, 1), Ports{ Port(exit, 6) });
+        gb.outto(Port(Y06, 1), Ports{ Port(exit, 7) });
+        gb.outto(Port(Y07, 1), Ports{ Port(exit, 8) });
+        gb.outto(Port(Y08, 1), Ports{ Port(exit, 9) });
+        gb.outto(Port(Y09, 1), Ports{ Port(exit, 10) });
+        gb.outto(Port(Y10, 1), Ports{ Port(exit, 11) });
+        gb.outto(Port(Y11, 1), Ports{ Port(exit, 12) });
+        gb.outto(Port(Y12, 1), Ports{ Port(exit, 13) });
+        gb.outto(Port(Y13, 1), Ports{ Port(exit, 14) });
+        gb.outto(Port(Y14, 1), Ports{ Port(exit, 15) });
+        gb.outto(Port(Y15, 1), Ports{ Port(exit, 16) });
 
         commit();
     }
 };
 
+        // auto enty = getEntryNode();
+        // auto exit = getExitNode();
+        // gb.outto(Port(enty, 1), );
+        // gb.outto(, Ports{ Port(exit, 1) });
 
 #endif
 
