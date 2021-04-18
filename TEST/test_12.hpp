@@ -23,18 +23,34 @@ void test12_01(void)
     gb.outto(Port(qnT, 1), Ports{ Port(qnE, 1) });
     gb.outto(Port(qnT, 2), Ports{ Port(qnE, 2) });
 
-    std::vector<std::vector<bool>>   testVector = vectorBool2bits;
+    std::vector<std::vector<bool>>   testVector{
+        {T, F}, // 不定状態を解消するためにリセット
+        {T, F}, // 不定状態を解消するためにリセット
+        {F, F}, // 前値保持
+        {F, F}, // 前値保持
+        {F, T}, // set
+        {F, T}, // set
+        {F, F}, // 前値保持
+        {F, F}, // 前値保持
+        {F, F}, // 前値保持
+        {F, F}, // 前値保持
+        {T, F}, // reset
+        {T, F}, // reset
+        {F, F}, // 前値保持
+        {F, F}, // 前値保持
+        {F, F}, // 前値保持
+        {F, F}, // 前値保持
+    };
 
     std::vector<std::vector<bool>> expected{
         {false, false},
-        {true , false},
-        {false, false},
-        {false, true},
+        {false , true},
+        {true, false}
     };
 
     Executor* exe = gb.createExecutor(qnS);
     for(int i=0;i<testVector.size();i++){
-        evaluation<bool, bool>(exe, qnS, qnE, testVector[i], expected[i]);
+        evaluation<bool, bool>(exe, qnS, qnE, testVector[i], expected[i], false);
     }
 
 }

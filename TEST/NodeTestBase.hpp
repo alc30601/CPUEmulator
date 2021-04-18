@@ -80,13 +80,13 @@ public:
 
         std::vector<Edge*> outEdges = getOutEdges();
 
-        std::cout << "Input Values : ";
+        std::cout << "Input  Values : ";
         for(int i=0; i<outEdges.size();i++){
             T value = _values.at(i);
             outEdges.at(i)->setValue(value);
             std::cout << value << " , ";
         }
-        std::cout << std::endl;
+        // std::cout << std::endl;
     }
 
 };
@@ -135,10 +135,13 @@ public:
 // inputで与えられた値を入力としてNodeTestEntryに設定し、実行。
 // 実行結果をNodeTestExitから取り出す。
 // 与えられた正解と比較し間違いがあるとassertする。
+// assertによる判定を実行するか否かは引数do_assertによって判断する。
+// do_assertはデフォルト値がtrue(=assert判定有り)となっている。
+// assert判定したくない場合はdo_assertをfalseで呼べば良い。
 template <typename T1, typename T2>
 void evaluation(Executor* exe,
                 QuasiNode& qnS, QuasiNode& qnE,
-                std::vector<T1>& input, std::vector<T2>& expected)
+                std::vector<T1>& input, std::vector<T2>& expected, bool do_assert=true)
 {
     auto nEntry = static_cast<NodeTestEntry<T1>*>(qnS.getNode());
     auto nExit = static_cast<NodeTestExit<T2>*>(qnE.getNode());
@@ -149,7 +152,9 @@ void evaluation(Executor* exe,
     auto output = nExit->getValues();
 
     // 答え合わせ
-    assert(output == expected);
+    if(do_assert){
+        assert(output == expected);
+    }
 }
 
 

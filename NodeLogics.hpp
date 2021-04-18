@@ -10,6 +10,9 @@
 #include "GraphBuilder.hpp"
 #include "NodeComplex.hpp"
 
+// 論理演算の取りうる値boolのtrue,falseをT,Fで表現する。
+static const bool T = true;
+static const bool F = false;
 
 
 //-----------------------------------------------------------
