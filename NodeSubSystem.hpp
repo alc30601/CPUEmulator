@@ -32,7 +32,10 @@ class NodeSubSystem : public Node
 
     public:
         //-------------------------------------------------------
-        NodeSubSystemEntry(NodeSubSystem& parentNode) : _parentNode(parentNode){}
+        NodeSubSystemEntry(NodeSubSystem& parentNode) : _parentNode(parentNode)
+        {
+            _name = "NodeSubSystemEntry";
+        }
 
         //-------------------------------------------------------
         // 親ノードの入り口エッジの値を自身の出口エッジにコピーする。
@@ -58,7 +61,10 @@ class NodeSubSystem : public Node
 
     public:
         //-------------------------------------------------------
-        NodeSubSystemExit(NodeSubSystem& parentNode) : _parentNode(parentNode){}
+        NodeSubSystemExit(NodeSubSystem& parentNode) : _parentNode(parentNode)
+        {
+            _name = "NodeSubSystemExit";
+        }
 
         //-------------------------------------------------------
         // 自身の入り口エッジの値を親ノードの出口エッジにコピーする。
@@ -95,7 +101,8 @@ public:
         _nodeEntry = new NodeSubSystemEntry(*this);
         _nodeExit  = new NodeSubSystemExit(*this);
 
-        _exe = new Executor();
+        // _exe = new Executor();
+        _exe = getExecutor();
         _exe->setStartNode(_nodeEntry);
         std::vector<Node*> nodes = {_nodeEntry, _nodeExit};
         _exe->addNodes(nodes);

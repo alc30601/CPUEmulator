@@ -14,6 +14,19 @@
 static const bool T = true;
 static const bool F = false;
 
+//-----------------------------------------------------------
+// 入力Edgeにまだ値が設定されていない場合はその型のデフォルト値を返す。
+// 値が設定されている場合はその値を取得し返す。
+template <typename T>
+T getValueFromAny(std::any& anyValue)
+{
+    T value = T();
+    if(anyValue.has_value() == true){
+        value = std::any_cast<T>(anyValue);
+    }
+    return value;
+}
+
 
 //-----------------------------------------------------------
 // 1入力1出力ノードの基本クラス
@@ -28,7 +41,8 @@ public:
     {
         Node::execute();
 
-        T inValue = std::any_cast<T>(_inEdges.at(0)->getValue());
+        // T inValue = std::any_cast<T>(_inEdges.at(0)->getValue());
+        T inValue = getValueFromAny<T>(_inEdges.at(0)->getValue());
         T outValue = calculate(inValue);
         _outEdges.at(0)->setValue(outValue);
     }
@@ -53,8 +67,10 @@ public:
     {
         Node::execute();
 
-        T inValue1 = std::any_cast<T>(_inEdges.at(0)->getValue());
-        T inValue2 = std::any_cast<T>(_inEdges.at(1)->getValue());
+        // T inValue1 = std::any_cast<T>(_inEdges.at(0)->getValue());
+        // T inValue2 = std::any_cast<T>(_inEdges.at(1)->getValue());
+        T inValue1 = getValueFromAny<T>(_inEdges.at(0)->getValue());
+        T inValue2 = getValueFromAny<T>(_inEdges.at(1)->getValue());
         T outValue = calculate(inValue1, inValue2);
         _outEdges.at(0)->setValue(outValue);
     }
@@ -167,11 +183,11 @@ public:
         auto enty = getEntryNode();
         auto exit = getExitNode();
 
-        auto not1 = gb.createNode<NodeNot>();
-        auto not2 = gb.createNode<NodeNot>();
-        auto and1 = gb.createNode<NodeAnd>();
-        auto and2 = gb.createNode<NodeAnd>();
-        auto or1  = gb.createNode<NodeOr>();
+        auto not1 = gb.createNode<NodeNot>("NodeNot in NodeExor");
+        auto not2 = gb.createNode<NodeNot>("NodeNot in NodeExor");
+        auto and1 = gb.createNode<NodeAnd>("NodeAnd in NodeExor");
+        auto and2 = gb.createNode<NodeAnd>("NodeAnd in NodeExor");
+        auto or1  = gb.createNode<NodeOr>("NodeOr in NodeExor");
 
         gb.outto(Port(enty, 1), Ports{Port(not1, 1), Port(and2, 2)});
         gb.outto(Port(enty, 2), Ports{Port(and1, 2), Port(not2, 1)});

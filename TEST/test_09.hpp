@@ -62,14 +62,19 @@ void test09(void)
     Executor* exe = gb0.createExecutor(qnS);
 
     auto nEntry = static_cast<NodeTestEntry<bool>*>(qnS.getNode());
+    auto nExit = static_cast<NodeTestExit<bool>*>(qnE.getNode());
 
     nEntry->setValues(std::vector<bool>{true});
     std::cout << "test09 (1)" << std::endl;
     exe->step();
+    nEntry->printValues();
+    nExit->printValues();
 
     nEntry->setValues(std::vector<bool>{false});
     std::cout << "test09 (2)" << std::endl;
     exe->step();
+    nEntry->printValues();
+    nExit->printValues();
 }
 
 

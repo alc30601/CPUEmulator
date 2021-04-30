@@ -33,7 +33,7 @@ public:
     };
 
 private:
-    std::any  _v;   // value that hold this edge
+    std::any  _v;       // value that hold this edge
     Status _status;    // status of this edge
 
 
@@ -61,7 +61,7 @@ public:
     }
 
     //-------------------------------------------------------
-    std::any getValue(void)
+    std::any& getValue(void)
     {
         return _v;
     }

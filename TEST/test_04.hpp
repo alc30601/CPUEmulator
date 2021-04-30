@@ -40,6 +40,10 @@ void testOp1to1(std::vector<bool>& input, std::vector<bool>& expected)
         nEntry->setValues(inValue);
         exe->step();
         auto values = nExit->getValues();
+
+        nEntry->printValues();
+        nExit->printValues();
+
         assert(expected[i] == values[0]);
     }
 }
@@ -57,6 +61,10 @@ void testOp2to1(std::vector<std::vector<bool>>& input, std::vector<bool>& expect
         nEntry->setValues(input[i]);
         exe->step();
         auto values = nExit->getValues();
+
+        nEntry->printValues();
+        nExit->printValues();
+
         assert(expected[i] == values[0]);
     }
 }

@@ -57,6 +57,20 @@ std::vector<std::vector<bool>>   vectorBool4bits{
 
 };
 
+//-----------------------------------------------------------
+// std::vectorの値をコンソール出力する。
+template <typename T>
+void printVector(std::vector<T>& values, std::string title, bool cr)
+{
+    std::cout << title;
+    for(int i=0; i<values.size();i++){
+        T value = values.at(i);
+        std::cout << value << " , ";
+    }
+    if(cr == true){
+        std::cout << std::endl;
+    }
+}
 
 //-----------------------------------------------------------
 // ０入力、複数出力ノード
@@ -77,18 +91,19 @@ public:
     {
         Node::execute();
 
-
         std::vector<Edge*> outEdges = getOutEdges();
 
-        std::cout << "Input  Values : ";
         for(int i=0; i<outEdges.size();i++){
             T value = _values.at(i);
             outEdges.at(i)->setValue(value);
-            std::cout << value << " , ";
         }
-        // std::cout << std::endl;
     }
 
+    //-------------------------------------------------------
+    void printValues(void)
+    {
+        printVector<T>(_values, std::string("Input Values : "), false);
+    }
 };
 
 
@@ -113,8 +128,6 @@ public:
 
         std::vector<Edge*> inEdges = getInEdges();
 
-        std::cout << "Output Values : ";
-
         if(inEdges.size() > _values.size()){
             _values.resize(inEdges.size());
         }
@@ -123,10 +136,13 @@ public:
             auto edge = inEdges[i];
             T value = std::any_cast<T>(edge->getValue());
             _values[i] = value;
-            std::cout << value << " , ";
         }
+    }
 
-        std::cout << std::endl;
+    //-------------------------------------------------------
+    void printValues(void)
+    {
+        printVector<T>(_values, std::string("Output Values : "), true);
     }
 };
 
@@ -150,6 +166,9 @@ void evaluation(Executor* exe,
     nEntry->setValues(input);
     exe->step();
     auto output = nExit->getValues();
+
+    nEntry->printValues();
+    nExit->printValues();
 
     // 答え合わせ
     if(do_assert){

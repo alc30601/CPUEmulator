@@ -54,7 +54,9 @@ std::tuple<Executor*, NodeTestEntry<double>*> test07_createGraph(double a, doubl
 
     std::vector<Node*> nodes = {nEntry, nExit, nMul, nGainA, nGainB, nConstC, nAdd};
     std::vector<Edge*> edges = {e1, e2, e3, e4, e5, e6, e7};
-    Executor* exe(new Executor(nEntry, nodes, edges));
+    // Executor* exe(new Executor(nEntry, nodes, edges));
+    Executor* exe = getExecutor(nEntry, nodes, edges);
+
     std::tuple<Executor*, NodeTestEntry<double>*> ret = std::make_tuple(exe, nEntry);
     return ret;
 }

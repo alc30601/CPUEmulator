@@ -71,6 +71,14 @@ public:
         return true; // return always true - always input data completed
     }
 
+    //-------------------------------------------------------
+    // override from Node
+    // Executorから問い合わせされた際は常に実行可能としておく。
+    virtual bool isInputEdgeHaveValues(void)
+    {
+        return true; // return always true - always input data completed
+    }
+
 };
 
 #endif

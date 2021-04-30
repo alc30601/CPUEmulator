@@ -105,7 +105,11 @@ public:
         Node* entryNode = static_cast<Node*>(entryQNode.getNode());
         auto nodes = getNodes();
         auto edges = getEdges();
-        Executor* exe(new Executor(entryNode, nodes, edges));
+        // Executor* exe(new Executor(entryNode, nodes, edges));
+        Executor* exe = getExecutor(entryNode, nodes, edges);
+        // Executor* exe = createExecutor();
+
+
         return exe;
     }
 };

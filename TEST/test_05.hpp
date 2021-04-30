@@ -119,7 +119,8 @@ void test05(void)
     auto nodes = gb0.getNodes();
     auto edges = gb0.getEdges();
     auto nEntry = static_cast<NodeTestEntry<bool>*>(n0.getNode());
-    Executor* exe(new Executor(nEntry, nodes, edges));
+    // Executor* exe(new Executor(nEntry, nodes, edges));
+    Executor* exe = getExecutor(nEntry, nodes, edges);
 
     nEntry->setValues(std::vector<bool>{true, true});
     exe->step();

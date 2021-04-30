@@ -68,7 +68,7 @@ public:
     }
 
     //-------------------------------------------------------
-    // check if data that are necessary for execution of this node is ready or not
+    // 各ステップで新規入力データが全て届いているか確認する。
     // true : data are ready
     // false : data are not ready yet
     virtual bool isInputDataCompleted(void)
@@ -85,6 +85,25 @@ public:
         return result;
     }
 
+    //-------------------------------------------------------
+    // 入力Edgeに値が設定されているか確認する。
+    // Edgeのデータはstd::any型なので、そもそもデータがまだ一度も
+    // 設定されていなければ値の取り出しが出来ない。
+    // true : data exists
+    // false : data doesn't exist
+    virtual bool isInputEdgeHaveValues(void)
+    {
+        bool result = true;
+
+        // 入力元Edgeにデータが全て揃っているか確認する。
+        for(auto edge : _inEdges){
+            if(edge->getValue().has_value() == false){
+                result = false;
+                break;
+            }
+        }
+        return result;
+    }
 
     //-------------------------------------------------------
     // 入力エッジを指定の場所に設定する。

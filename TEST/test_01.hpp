@@ -87,7 +87,8 @@ void test01(void)
     auto nodes = gb.getNodes();
     auto edges = gb.getEdges();
     auto nEntry = n0.getNode();
-    Executor* exe(new Executor(nEntry, nodes, edges));
+    // Executor* exe(new Executor(nEntry, nodes, edges));
+    Executor* exe = getExecutor(nEntry, nodes, edges);
 
     auto node_n0 = static_cast<Test01MyNode1*>(n0.getNode());
     auto node_n1 = static_cast<Test01MyNode2*>(n1.getNode());
