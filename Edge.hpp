@@ -67,6 +67,12 @@ public:
     }
 
     //-------------------------------------------------------
+    void setJustValue(std::any value)
+    {
+        _v = value;
+    }
+
+    //-------------------------------------------------------
     void setValue(std::any value)
     {
         _v = value;

@@ -5,7 +5,7 @@
 #include <memory>
 #include <vector>
 #include <any>
-
+#include <cassert>
 
 class Edge;
 
@@ -98,6 +98,8 @@ public:
         // 入力元Edgeにデータが全て揃っているか確認する。
         for(auto edge : _inEdges){
             if(edge->getValue().has_value() == false){
+                std::cout << "Input Edge has no value" << std::endl;
+                assert(false);
                 result = false;
                 break;
             }

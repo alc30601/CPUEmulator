@@ -163,8 +163,9 @@ This is a data flow graph core implementation.
   ExecutorStableEdgeにより、グラフが循環している場合も実行ができるようになった。
 - 上記ExecutorStableEdgeを用いて、SR-FlipFlopを作成。
 
-
-
+## 2021.05.02
+- NAND型SR-FlipKlop実装、確認完了。
+- Executorクラスのサブクラスをファイル分割
 
 
 

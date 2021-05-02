@@ -24,10 +24,10 @@ public:
         auto exor1 = gb.createNode<NodeExor>();
         auto and1  = gb.createNode<NodeAnd>();
 
-        gb.outto(Port(enty, 1), Ports{Port(exor1, 1), Port(and1, 1)});
-        gb.outto(Port(enty, 2), Ports{Port(exor1, 2), Port(and1, 2)});
-        gb.outto(Port(exor1, 1), Ports{ Port(exit, 1) });
-        gb.outto(Port(and1, 1), Ports{ Port(exit, 2) });
+        gb.outto(Port(enty, 1), Ports{Port(exor1, 1), Port(and1, 1)}, typeid(bool));
+        gb.outto(Port(enty, 2), Ports{Port(exor1, 2), Port(and1, 2)}, typeid(bool));
+        gb.outto(Port(exor1, 1), Ports{ Port(exit, 1) }, typeid(bool));
+        gb.outto(Port(and1, 1), Ports{ Port(exit, 2) }, typeid(bool));
 
         commit();
     }
@@ -51,15 +51,15 @@ public:
         auto half2 = gb.createNode<NodeHalfAdder>();
         auto or1   = gb.createNode<NodeOr>();
 
-        gb.outto(Port(half1, 1), Ports{ Port(half2, 1) });
-        gb.outto(Port(half1, 2), Ports{ Port(or1,   2) });
-        gb.outto(Port(half2, 2), Ports{ Port(or1,   1) });
+        gb.outto(Port(half1, 1), Ports{ Port(half2, 1) }, typeid(bool));
+        gb.outto(Port(half1, 2), Ports{ Port(or1,   2) }, typeid(bool));
+        gb.outto(Port(half2, 2), Ports{ Port(or1,   1) }, typeid(bool));
 
-        gb.outto(Port(enty, 1),  Ports{Port(half1, 1)});
-        gb.outto(Port(enty, 2),  Ports{Port(half1, 2)});
-        gb.outto(Port(enty, 3),  Ports{Port(half2, 2)});
-        gb.outto(Port(half2, 1), Ports{ Port(exit, 1) });
-        gb.outto(Port(or1, 1),   Ports{ Port(exit, 2) });
+        gb.outto(Port(enty, 1),  Ports{Port(half1, 1)}, typeid(bool));
+        gb.outto(Port(enty, 2),  Ports{Port(half1, 2)}, typeid(bool));
+        gb.outto(Port(enty, 3),  Ports{Port(half2, 2)}, typeid(bool));
+        gb.outto(Port(half2, 1), Ports{ Port(exit, 1) }, typeid(bool));
+        gb.outto(Port(or1, 1),   Ports{ Port(exit, 2) }, typeid(bool));
 
         commit();
     }
@@ -94,25 +94,25 @@ public:
         auto const0 = gb.createNode<NodeValue<bool>>();
 
         // ノード間接続
-        gb.outto(Port(const0, 1), Ports{Port(adders[0], 3)});
-        gb.outto(Port(adders[0], 2), Ports{Port(adders[1], 3)});
-        gb.outto(Port(adders[1], 2), Ports{Port(adders[2], 3)});
-        gb.outto(Port(adders[2], 2), Ports{Port(adders[3], 3)});
+        gb.outto(Port(const0, 1), Ports{Port(adders[0], 3)}, typeid(bool));
+        gb.outto(Port(adders[0], 2), Ports{Port(adders[1], 3)}, typeid(bool));
+        gb.outto(Port(adders[1], 2), Ports{Port(adders[2], 3)}, typeid(bool));
+        gb.outto(Port(adders[2], 2), Ports{Port(adders[3], 3)}, typeid(bool));
 
-        gb.outto(Port(enty, 1), Ports{ Port(adders[0], 1) });   // A0
-        gb.outto(Port(enty, 2), Ports{ Port(adders[1], 1) });   // A1
-        gb.outto(Port(enty, 3), Ports{ Port(adders[2], 1) });   // A2
-        gb.outto(Port(enty, 4), Ports{ Port(adders[3], 1) });   // A3
-        gb.outto(Port(enty, 5), Ports{ Port(adders[0], 2) });   // B0
-        gb.outto(Port(enty, 6), Ports{ Port(adders[1], 2) });   // B1
-        gb.outto(Port(enty, 7), Ports{ Port(adders[2], 2) });   // B2
-        gb.outto(Port(enty, 8), Ports{ Port(adders[3], 2) } );  // B3
+        gb.outto(Port(enty, 1), Ports{ Port(adders[0], 1) }, typeid(bool));   // A0
+        gb.outto(Port(enty, 2), Ports{ Port(adders[1], 1) }, typeid(bool));   // A1
+        gb.outto(Port(enty, 3), Ports{ Port(adders[2], 1) }, typeid(bool));   // A2
+        gb.outto(Port(enty, 4), Ports{ Port(adders[3], 1) }, typeid(bool));   // A3
+        gb.outto(Port(enty, 5), Ports{ Port(adders[0], 2) }, typeid(bool));   // B0
+        gb.outto(Port(enty, 6), Ports{ Port(adders[1], 2) }, typeid(bool));   // B1
+        gb.outto(Port(enty, 7), Ports{ Port(adders[2], 2) }, typeid(bool));   // B2
+        gb.outto(Port(enty, 8), Ports{ Port(adders[3], 2) }, typeid(bool));  // B3
 
-        gb.outto(Port(adders[0], 1), Ports{ Port(exit, 1) });   // S0
-        gb.outto(Port(adders[1], 1), Ports{ Port(exit, 2) });   // S1
-        gb.outto(Port(adders[2], 1), Ports{ Port(exit, 3) });   // S2 
-        gb.outto(Port(adders[3], 1), Ports{ Port(exit, 4) });   // S3
-        gb.outto(Port(adders[3], 2), Ports{ Port(exit, 5) });   // C-out
+        gb.outto(Port(adders[0], 1), Ports{ Port(exit, 1) }, typeid(bool));   // S0
+        gb.outto(Port(adders[1], 1), Ports{ Port(exit, 2) }, typeid(bool));   // S1
+        gb.outto(Port(adders[2], 1), Ports{ Port(exit, 3) }, typeid(bool));   // S2 
+        gb.outto(Port(adders[3], 1), Ports{ Port(exit, 4) }, typeid(bool));   // S3
+        gb.outto(Port(adders[3], 2), Ports{ Port(exit, 5) }, typeid(bool));   // C-out
 
         // ノード初期値設定
         auto nConst = static_cast<NodeValue<bool>*>(const0.getNode());
@@ -162,36 +162,36 @@ public:
         }
 
         // ノード間接続
-        gb.outto(Port(adders[0], 2), Ports{Port(adders[1], 3)});
-        gb.outto(Port(adders[1], 2), Ports{Port(adders[2], 3)});
-        gb.outto(Port(adders[2], 2), Ports{Port(adders[3], 3)});
+        gb.outto(Port(adders[0], 2), Ports{Port(adders[1], 3)}, typeid(bool));
+        gb.outto(Port(adders[1], 2), Ports{Port(adders[2], 3)}, typeid(bool));
+        gb.outto(Port(adders[2], 2), Ports{Port(adders[3], 3)}, typeid(bool));
 
-        gb.outto(Port(exors[0], 1), Ports{Port(adders[0], 2)});
-        gb.outto(Port(exors[1], 1), Ports{Port(adders[1], 2)});
-        gb.outto(Port(exors[2], 1), Ports{Port(adders[2], 2)});
-        gb.outto(Port(exors[3], 1), Ports{Port(adders[3], 2)});
+        gb.outto(Port(exors[0], 1), Ports{Port(adders[0], 2)}, typeid(bool));
+        gb.outto(Port(exors[1], 1), Ports{Port(adders[1], 2)}, typeid(bool));
+        gb.outto(Port(exors[2], 1), Ports{Port(adders[2], 2)}, typeid(bool));
+        gb.outto(Port(exors[3], 1), Ports{Port(adders[3], 2)}, typeid(bool));
 
         // 外部入出力定義
-        gb.outto(Port(enty, 1), Ports{ Port(adders[0], 1) });   // A0
-        gb.outto(Port(enty, 2), Ports{ Port(adders[1], 1) });   // A1
-        gb.outto(Port(enty, 3), Ports{ Port(adders[2], 1) });   // A2
-        gb.outto(Port(enty, 4), Ports{ Port(adders[3], 1) });   // A3
-        gb.outto(Port(enty, 5), Ports{ Port(exors[0], 1) });    // B0
-        gb.outto(Port(enty, 6), Ports{ Port(exors[1], 1) });    // B1
-        gb.outto(Port(enty, 7), Ports{ Port(exors[2], 1) });    // B2
-        gb.outto(Port(enty, 8), Ports{ Port(exors[3], 1) });    // B3
+        gb.outto(Port(enty, 1), Ports{ Port(adders[0], 1) }, typeid(bool));   // A0
+        gb.outto(Port(enty, 2), Ports{ Port(adders[1], 1) }, typeid(bool));   // A1
+        gb.outto(Port(enty, 3), Ports{ Port(adders[2], 1) }, typeid(bool));   // A2
+        gb.outto(Port(enty, 4), Ports{ Port(adders[3], 1) }, typeid(bool));   // A3
+        gb.outto(Port(enty, 5), Ports{ Port(exors[0], 1) }, typeid(bool));    // B0
+        gb.outto(Port(enty, 6), Ports{ Port(exors[1], 1) }, typeid(bool));    // B1
+        gb.outto(Port(enty, 7), Ports{ Port(exors[2], 1) }, typeid(bool));    // B2
+        gb.outto(Port(enty, 8), Ports{ Port(exors[3], 1) }, typeid(bool));    // B3
         gb.outto(Port(enty, 9), Ports{                          // ADD/SUB
                                 Port(exors[0], 2),
                                 Port(exors[1], 2),
                                 Port(exors[2], 2),
                                 Port(exors[3], 2),
-                                Port(adders[0], 3) });
+                                Port(adders[0], 3) }, typeid(bool));
 
-        gb.outto(Port(adders[0], 1), Ports{ Port(exit, 1) });   // S0,
-        gb.outto(Port(adders[1], 1), Ports{ Port(exit, 2) });   // S1,
-        gb.outto(Port(adders[2], 1), Ports{ Port(exit, 3) });   // S2,
-        gb.outto(Port(adders[3], 1), Ports{ Port(exit, 4) });   // S3,
-        gb.outto(Port(adders[3], 2), Ports{ Port(exit, 5) });   // C-out,
+        gb.outto(Port(adders[0], 1), Ports{ Port(exit, 1) }, typeid(bool));   // S0,
+        gb.outto(Port(adders[1], 1), Ports{ Port(exit, 2) }, typeid(bool));   // S1,
+        gb.outto(Port(adders[2], 1), Ports{ Port(exit, 3) }, typeid(bool));   // S2,
+        gb.outto(Port(adders[3], 1), Ports{ Port(exit, 4) }, typeid(bool));   // S3,
+        gb.outto(Port(adders[3], 2), Ports{ Port(exit, 5) }, typeid(bool));   // C-out,
 
         commit();
 

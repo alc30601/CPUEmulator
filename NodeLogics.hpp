@@ -5,6 +5,7 @@
 
 #include <iostream>
 #include <memory>
+#include <cassert>
 
 // #include "NodeBase.hpp"
 #include "GraphBuilder.hpp"
@@ -24,6 +25,10 @@ T getValueFromAny(std::any& anyValue)
     if(anyValue.has_value() == true){
         value = std::any_cast<T>(anyValue);
     }
+    else{
+        std::cout << "Edge has no value" << std::endl;
+        assert(false);
+    }
     return value;
 }
 
@@ -41,7 +46,6 @@ public:
     {
         Node::execute();
 
-        // T inValue = std::any_cast<T>(_inEdges.at(0)->getValue());
         T inValue = getValueFromAny<T>(_inEdges.at(0)->getValue());
         T outValue = calculate(inValue);
         _outEdges.at(0)->setValue(outValue);
@@ -67,8 +71,6 @@ public:
     {
         Node::execute();
 
-        // T inValue1 = std::any_cast<T>(_inEdges.at(0)->getValue());
-        // T inValue2 = std::any_cast<T>(_inEdges.at(1)->getValue());
         T inValue1 = getValueFromAny<T>(_inEdges.at(0)->getValue());
         T inValue2 = getValueFromAny<T>(_inEdges.at(1)->getValue());
         T outValue = calculate(inValue1, inValue2);
@@ -86,7 +88,7 @@ public:
 // 前段：2入力1出力ノード T21
 // 後段：1入力1出力ノード T11
 // テンプレートで上記ノードを指定すれば接続は本テンプレートクラスで実現される。
-template <class T21, class T11>
+template <typename T, class T21, class T11>
 class Node21_11 : public NodeComplex
 {
 public:
@@ -100,12 +102,10 @@ public:
         auto n21 = gb.createNode<T21>();
         auto n11 = gb.createNode<T11>();
 
-        gb.outto(Port(enty, 1), Ports{ Port(n21, 1) });
-        gb.outto(Port(enty, 2), Ports{ Port(n21, 2) });
-
-        gb.outto(Port(n21, 1), Ports{ Port(n11, 1) });
-
-        gb.outto(Port(n11, 1), Ports{ Port(exit, 1) });
+        gb.outto(Port(enty, 1), Ports{ Port(n21, 1) }, typeid(T));
+        gb.outto(Port(enty, 2), Ports{ Port(n21, 2) }, typeid(T));
+        gb.outto(Port(n21, 1), Ports{ Port(n11, 1) }, typeid(T));
+        gb.outto(Port(n11, 1), Ports{ Port(exit, 1) }, typeid(T));
 
         commit();
     }
@@ -163,13 +163,13 @@ class NodeOr : public Node2In1Out<bool>
 // NOR
 // 2入力1出力ノード
 // データ型はともにbool
-#define NodeNor Node21_11<NodeOr, NodeNot>
+#define NodeNor Node21_11<bool, NodeOr, NodeNot>
 
 //-----------------------------------------------------------
 // NAND
 // 2入力1出力ノード
 // データ型はともにbool
-#define NodeNand Node21_11<NodeAnd, NodeNot>
+#define NodeNand Node21_11<bool, NodeAnd, NodeNot>
 
 
 //-----------------------------------------------------------
@@ -189,15 +189,13 @@ public:
         auto and2 = gb.createNode<NodeAnd>("NodeAnd in NodeExor");
         auto or1  = gb.createNode<NodeOr>("NodeOr in NodeExor");
 
-        gb.outto(Port(enty, 1), Ports{Port(not1, 1), Port(and2, 2)});
-        gb.outto(Port(enty, 2), Ports{Port(and1, 2), Port(not2, 1)});
-
-        gb.outto(Port(not1, 1), Ports{ Port(and1, 1) });
-        gb.outto(Port(not2, 1), Ports{ Port(and2, 1) });
-        gb.outto(Port(and1, 1), Ports{ Port(or1, 1) });
-        gb.outto(Port(and2, 1), Ports{ Port(or1, 2) });
-
-        gb.outto(Port(or1, 1), Ports{ Port(exit, 1)});
+        gb.outto(Port(enty, 1), Ports{Port(not1, 1), Port(and2, 2)}, typeid(bool));
+        gb.outto(Port(enty, 2), Ports{Port(and1, 2), Port(not2, 1)}, typeid(bool));
+        gb.outto(Port(not1, 1), Ports{ Port(and1, 1) }, typeid(bool));
+        gb.outto(Port(not2, 1), Ports{ Port(and2, 1) }, typeid(bool));
+        gb.outto(Port(and1, 1), Ports{ Port(or1, 1) }, typeid(bool));
+        gb.outto(Port(and2, 1), Ports{ Port(or1, 2) }, typeid(bool));
+        gb.outto(Port(or1, 1), Ports{ Port(exit, 1)}, typeid(bool));
 
         commit();
     }

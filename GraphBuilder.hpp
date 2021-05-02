@@ -5,7 +5,7 @@
 #include "Edge.hpp"
 #include "Node.hpp"
 #include "Executor.hpp"
-
+#include "ExecutorFactory.hpp"
 
 
 //-----------------------------------------------------------
@@ -74,7 +74,7 @@ public:
     // ノードとノードをエッジで結ぶ。
     // エッジを１つ生成し出力先ノード(１個以上任意個)に繋げる。
     // 接続元は単一のポート、エッジの接続先ポートは複数有りうる。
-    void outto(const Port& srcPort, const Ports& dstPorts)
+    Edge* outto(const Port& srcPort, const Ports& dstPorts)
     {
         int numDst = dstPorts.size();
 
@@ -96,6 +96,37 @@ public:
             // エッジに出力先ノードを紐付ける。
             edge->addOutNode(node);
         }
+        return edge;
+    }
+
+    //-------------------------------------------------------
+    // 型情報付きEdge生成
+    // 指定された型情報を元にEdgeの値を初期化する。
+    // 本関数を経由するとEdgeが常時値を持つことになる。
+    // (有効値ではないにしても)
+    Edge* outto(const Port& srcPort, const Ports& dstPorts, std::type_info const &ti)
+    {
+        Edge* edge = outto(srcPort, dstPorts);
+
+        // 型情報に応じてその型のデフォルト値を生成しEdgeに設定する。
+        if(ti == typeid(bool)){
+            bool a = bool();
+            edge->setJustValue(a);
+        }
+        else if(ti == typeid(int)){
+            int a =int();
+            edge->setJustValue(a);
+        }
+        else if(ti == typeid(double)){
+            double a = double();
+            edge->setJustValue(a);
+        }
+        else{
+            std::cout << "Unknown data type" << std::endl;
+            assert(false);
+        }
+
+        return edge;
     }
 
     //-------------------------------------------------------
@@ -105,10 +136,7 @@ public:
         Node* entryNode = static_cast<Node*>(entryQNode.getNode());
         auto nodes = getNodes();
         auto edges = getEdges();
-        // Executor* exe(new Executor(entryNode, nodes, edges));
         Executor* exe = getExecutor(entryNode, nodes, edges);
-        // Executor* exe = createExecutor();
-
 
         return exe;
     }

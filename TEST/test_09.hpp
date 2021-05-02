@@ -39,8 +39,8 @@ public:
         auto exit = getExitNode();
         auto n1 = gb.createNode<NodeAnd>();
 
-        gb.outto(Port(enty, 1), Ports{ Port(n1, 1), Port(n1, 2) });
-        gb.outto(Port(n1, 1), Ports{ Port(exit, 1) });
+        gb.outto(Port(enty, 1), Ports{ Port(n1, 1), Port(n1, 2) }, typeid(bool));
+        gb.outto(Port(n1, 1), Ports{ Port(exit, 1) }, typeid(bool));
 
        commit();
     }
@@ -55,8 +55,8 @@ void test09(void)
     auto qnS = gb0.createNode<NodeTestEntry<bool>>();
     auto qnE = gb0.createNode<NodeTestExit<bool>>();
 
-    gb0.outto(Port(qnS, 1), Ports{ Port(qnT, 1) });
-    gb0.outto(Port(qnT, 1), Ports{ Port(qnE, 1) });
+    gb0.outto(Port(qnS, 1), Ports{ Port(qnT, 1) }, typeid(bool));
+    gb0.outto(Port(qnT, 1), Ports{ Port(qnE, 1) }, typeid(bool));
 
     // 実行
     Executor* exe = gb0.createExecutor(qnS);
