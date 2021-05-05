@@ -64,6 +64,14 @@ public:
     }
 
     //-------------------------------------------------------
+    // Nodeの実行が可能か確認する。
+    // 常に実行可能としておく。
+    virtual bool isExecutable(void)
+    {
+        return true; // return always true
+    }
+
+    //-------------------------------------------------------
     // override from Node
     // Executorから問い合わせされた際は常に実行可能としておく。
     bool isInputDataCompleted(void)

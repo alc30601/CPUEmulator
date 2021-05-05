@@ -89,6 +89,12 @@ void test2(void)
 // 型情報を関数引数として渡す。
 #include <typeinfo>
 
+
+class MyClassForTest3
+{
+    int _a;
+};
+
 void test3_sub(std::type_info const &ti)
 {
     std::cout << ti.name() << std::endl;
@@ -118,6 +124,7 @@ void test3(void)
 
     test3_sub(typeid(double));
     test3_sub(typeid(bool));
+    test3_sub(typeid(MyClassForTest3));
 }
 
 

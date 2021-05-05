@@ -47,10 +47,29 @@ class NodeSubSystem : public Node
             std::vector<Edge*> outEdges = getOutEdges();
 
             for(int i=0;i<inEdges.size();i++){
-                auto value = inEdges.at(i)->getValue();
-                outEdges.at(i)->setValue(value);
+                Edge* edge = inEdges.at(i);
+                if(edge->getStatus() == Edge::Status::ENABLE){
+                    auto value = edge->getValue();
+                    outEdges.at(i)->setValue(value);
+                }
             }
         }
+
+        //-------------------------------------------------------
+        // 親Nodeの入力Edgeのうち一つでも入力されていたら実行可能とする。
+        bool isExecutable(void)
+        {
+            bool atLeastOneDataAvailable = false;
+            std::vector<Edge*> inEdges = _parentNode.getInEdges();
+            for(auto edge : inEdges){
+                if(edge->getStatus() == Edge::Status::ENABLE){
+                    atLeastOneDataAvailable = true;
+                    break;
+                }
+            }
+            return atLeastOneDataAvailable;
+        }
+
     };
 
     //-----------------------------------------------------------
@@ -128,6 +147,12 @@ public:
         Node::execute();
 
         _exe->step();
+    }
+
+    //-------------------------------------------------------
+    bool isExecutable(void)
+    {
+        return _nodeEntry->isExecutable();
     }
 
 };

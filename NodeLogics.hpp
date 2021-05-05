@@ -177,6 +177,7 @@ class NodeOr : public Node2In1Out<bool>
 class NodeExor : public NodeComplex
 {
 public:
+    //-------------------------------------------------------
     NodeExor(void)
     {
         auto& gb = getGraphBuilder();
@@ -198,6 +199,57 @@ public:
         gb.outto(Port(or1, 1), Ports{ Port(exit, 1)}, typeid(bool));
 
         commit();
+    }
+};
+
+//-----------------------------------------------------------
+// ３端子AND
+class Node3And : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    Node3And(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty = getEntryNode();
+        auto exit = getExitNode();
+
+        auto and1 = gb.createNode<NodeAnd>("NodeAnd in Node3And");
+        auto and2 = gb.createNode<NodeAnd>("NodeAnd in Node3And");
+
+        gb.outto(Port(enty, 1), Ports{Port(and1, 1) }, typeid(bool));
+        gb.outto(Port(enty, 2), Ports{Port(and1, 2) }, typeid(bool));
+        gb.outto(Port(enty, 3), Ports{Port(and2, 1) }, typeid(bool));
+        gb.outto(Port(and1, 1), Ports{Port(and2, 2) }, typeid(bool));
+        gb.outto(Port(and2, 1), Ports{ Port(exit, 1)}, typeid(bool));
+
+        commit();
+    }
+};
+
+//-----------------------------------------------------------
+// ３端子NAND
+class Node3Nand : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    Node3Nand(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty = getEntryNode();
+        auto exit = getExitNode();
+
+        auto and1 = gb.createNode<Node3And>("Node3Nand in Node3Nand");
+        auto not1 = gb.createNode<NodeNot>("NodeNot in Node3Nand");
+
+        gb.outto(Port(enty, 1), Ports{Port(and1, 1) }, typeid(bool));
+        gb.outto(Port(enty, 2), Ports{Port(and1, 2) }, typeid(bool));
+        gb.outto(Port(enty, 3), Ports{Port(and1, 3) }, typeid(bool));
+        gb.outto(Port(and1, 1), Ports{Port(not1, 1) }, typeid(bool));
+        gb.outto(Port(not1, 1), Ports{ Port(exit, 1)}, typeid(bool));
+
+        commit();
+
     }
 };
 

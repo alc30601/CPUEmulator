@@ -9,19 +9,6 @@
 class ExecutorNodeListTraversal : public Executor
 {
     //-------------------------------------------------------
-    // ノード一覧をなめ、実行できるものから実行していく。
-    // 実行していないノードが無くなるまで何度も繰り返す。
-    // 探索効率は悪いが、木構造以外のグラフでも全ノード実行可能
-    // void doStep(void)
-    // {
-    //     auto rest = _nodes.size();
-    //     while(rest > 0){
-    //         doOneRound();
-    //         rest = countUnExecutedNodes();
-    //     }
-    // }
-
-    //-------------------------------------------------------
     // ノード一覧を一巡して、実行出来るノードは実行する。
     void doOneRound(void)
     {
@@ -33,7 +20,7 @@ class ExecutorNodeListTraversal : public Executor
             }
             
             // if datas are not ready yet, do nothing
-            if(node->isInputDataCompleted() == false){
+            if(node->isExecutable() == false){
                 continue;
             }
 
@@ -55,8 +42,6 @@ public:
             doOneRound();
             rest = countUnExecutedNodes();
         }
-
-        // doStep();
 
         clearNodeStatus();
         clearEdgeStatus();

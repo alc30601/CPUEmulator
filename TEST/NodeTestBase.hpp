@@ -12,6 +12,13 @@
 
 //-----------------------------------------------------------
 // bit-0がMSB
+std::vector<std::vector<bool>> vectorBool1bits{
+    {F},
+    {T},
+};
+
+//-----------------------------------------------------------
+// bit-0がMSB
 std::vector<std::vector<bool>> vectorBool2bits{
     {false,false},
     {false,true},
@@ -154,16 +161,29 @@ public:
 // assertによる判定を実行するか否かは引数do_assertによって判断する。
 // do_assertはデフォルト値がtrue(=assert判定有り)となっている。
 // assert判定したくない場合はdo_assertをfalseで呼べば良い。
+// 
+// <template引数>
+// T1       : 入力データ型
+// T2       : 出力データ型
+//
+// <関数引数>
+// exe         : Executorのポインタ
+// qnS         : NodeTestEntry準ノードのポインタ
+// qnE         : NodeTestExit準ノードのポインタ
+// test_vector : 入力値
+// expected    : 出力期待値
+// do_assert   : assertによるチェック実施要否(デフォルト：実施要)
 template <typename T1, typename T2>
 void evaluation(Executor* exe,
                 QuasiNode& qnS, QuasiNode& qnE,
-                std::vector<T1>& input, std::vector<T2>& expected, bool do_assert=true)
+                std::vector<T1>& test_vector, std::vector<T2>& expected, 
+                bool do_assert=true)
 {
     auto nEntry = static_cast<NodeTestEntry<T1>*>(qnS.getNode());
     auto nExit = static_cast<NodeTestExit<T2>*>(qnE.getNode());
 
     // 実行
-    nEntry->setValues(input);
+    nEntry->setValues(test_vector);
     exe->step();
     auto output = nExit->getValues();
 
@@ -178,40 +198,45 @@ void evaluation(Executor* exe,
 
 
 //-----------------------------------------------------------
-template <typename TYPENODE, typename T>
-std::tuple<Executor*, QuasiNode, QuasiNode> test_1to1_template(void)
+// Node評価関数テンプレート
+// 単一のNodeを評価する。入力値、出力値はそれぞれ単一の型である必要がある。
+// 入力型、出力型は異なっていてもよい。
+// 入力ポート数、出力ポート数は任意
+// 
+// <template引数>
+// TYPENAME : 評価対象Nodeクラス
+// T1       : 入力データ型
+// T2       : 出力データ型
+//
+// <関数引数>
+// test_vector : 入力値
+// expected    : 出力期待値
+// do_assert   : assertによるチェック実施要否(デフォルト：実施要)
+template <typename TYPENODE, typename T1, typename T2>
+void test_NtoM_template(std::vector<std::vector<T1>>& test_vector, std::vector<std::vector<T2>>& expected, bool do_assert=true)
 {
     GraphBuilder gb;
-    auto nTarget = gb.createNode<TYPENODE>();
-    auto nEntry = gb.createNode<NodeTestEntry<T>>();
-    auto nExit = gb.createNode<NodeTestExit<T>>();
+    auto qnT = gb.createNode<TYPENODE>(typeid(TYPENODE).name());
+    auto qnS = gb.createNode<NodeTestEntry<T1>>("NodeTestEntry");
+    auto qnE = gb.createNode<NodeTestExit<T2>>("NodeTestExit");
 
-    gb.outto(Port(nEntry, 1), Ports{ Port(nTarget,1) }, typeid(T));
-    gb.outto(Port(nTarget,1), Ports{ Port(nExit,1) }, typeid(T));
+    int num_input = test_vector[0].size();
+    int num_output = expected[0].size();
 
-    Executor* exe = gb.createExecutor(nEntry);
-    auto ret = std::tie(exe, nEntry, nExit);
-    return ret;
+    for(int i=1;i<= num_input; i++){
+        gb.outto(Port(qnS, i), Ports{ Port(qnT,i) }, typeid(T1));
+    }
+
+    for(int i=1;i<= num_output;i++){
+        gb.outto(Port(qnT, i), Ports{ Port(qnE,i) }, typeid(T2));
+    }
+
+     Executor* exe = gb.createExecutor(qnS);
+    for(int i=0;i<test_vector.size();i++){
+        evaluation<T1, T2>(exe, qnS, qnE, test_vector[i], expected[i], do_assert);
+    }
+
 }
-
-//-----------------------------------------------------------
-template <typename TYPENODE, typename T>
-std::tuple<Executor*, QuasiNode, QuasiNode> test_2to1_template(void)
-{
-    GraphBuilder gb;
-    auto nTarget = gb.createNode<TYPENODE>();
-    auto nEntry = gb.createNode<NodeTestEntry<T>>();
-    auto nExit = gb.createNode<NodeTestExit<T>>();
-
-    gb.outto(Port(nEntry, 1), Ports{ Port(nTarget,1) }, typeid(T));
-    gb.outto(Port(nEntry, 2), Ports{ Port(nTarget,2) }, typeid(T));
-    gb.outto(Port(nTarget,1), Ports{ Port(nExit,1) }, typeid(T));
-
-    Executor* exe = gb.createExecutor(nEntry);
-    auto ret = std::tie(exe, nEntry, nExit);
-    return ret;
-}
-
 
 #endif
 

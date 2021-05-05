@@ -68,6 +68,13 @@ public:
     }
 
     //-------------------------------------------------------
+    // Nodeの実行が可能か確認する。
+    virtual bool isExecutable(void)
+    {
+        return isInputDataCompleted();
+    }
+
+    //-------------------------------------------------------
     // 各ステップで新規入力データが全て届いているか確認する。
     // true : data are ready
     // false : data are not ready yet

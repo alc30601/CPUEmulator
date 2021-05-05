@@ -6,6 +6,7 @@
 #include "ExecutorDepthFirstTraversal.hpp"
 #include "ExecutorNodeListTraversal.hpp"
 #include "ExecutorStableEdge.hpp"
+#include "ExecutorForCircuit.hpp"
 
 
 //-----------------------------------------------------------
@@ -16,7 +17,8 @@ Executor* getExecutor(void)
 {
     // Executor* executor = new ExecutorDepthFirstTraversal();
     // Executor* executor = new ExecutorNodeListTraversal();
-    Executor* executor = new ExecutorStableEdge();
+    // Executor* executor = new ExecutorStableEdge();
+    Executor* executor = new ExecutorForCircuit();
 
     return executor;
 }

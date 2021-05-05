@@ -155,7 +155,7 @@ public:
             stabilized = compareValues(edgeValuesBefore, edgeValuesAfter);
             edgeValuesBefore = edgeValuesAfter;
         }
-    } 
+    }
 
 };
 

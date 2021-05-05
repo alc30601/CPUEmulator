@@ -22,7 +22,7 @@ class ExecutorDepthFirstTraversal : public Executor
         }
         
         // if datas are not ready yet, do nothing
-        if(node->isInputDataCompleted() == false){
+        if(node->isExecutable() == false){
             return;
         }
 
