@@ -231,7 +231,11 @@ void test_NtoM_template(std::vector<std::vector<T1>>& test_vector, std::vector<s
         gb.outto(Port(qnT, i), Ports{ Port(qnE,i) }, typeid(T2));
     }
 
-     Executor* exe = gb.createExecutor(qnS);
+    auto exe = createExecutor();
+    exe->setStartNode(static_cast<Node*>(qnS.getNode()));
+    exe->addNodes(gb.getNodes());
+    exe->addEdges(gb.getEdges());
+    // Executor* exe = gb.createExecutor(qnS);
     for(int i=0;i<test_vector.size();i++){
         evaluation<T1, T2>(exe, qnS, qnE, test_vector[i], expected[i], do_assert);
     }

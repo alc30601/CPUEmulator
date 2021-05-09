@@ -21,7 +21,11 @@ void test11_01(void)
     gb.outto(Port(qnS, 1), Ports{ Port(qnT, 1) });
     gb.outto(Port(qnT, 1), Ports{ Port(qnE, 1) });
 
-    Executor* exe = gb.createExecutor(qnS);
+    // Executor* exe = gb.createExecutor(qnS);
+    auto exe = createExecutor();
+    exe->setStartNode(static_cast<Node*>(qnS.getNode()));
+    exe->addNodes(gb.getNodes());
+    exe->addEdges(gb.getEdges());
 
     auto nVal = static_cast<NodeValue<int>*>(qnT.getNode());
     nVal->setValue(0);
@@ -46,7 +50,11 @@ void test11_02(void)
 
     gb.outto(Port(qnT, 1), Ports{ Port(qnE, 1) });
 
-    Executor* exe = gb.createExecutor(qnS);
+    // Executor* exe = gb.createExecutor(qnS);
+    auto exe = createExecutor();
+    exe->setStartNode(static_cast<Node*>(qnS.getNode()));
+    exe->addNodes(gb.getNodes());
+    exe->addEdges(gb.getEdges());
 
     auto nVal = static_cast<NodeValue<int>*>(qnT.getNode());
     nVal->setValue(7);
@@ -72,7 +80,11 @@ void test11_03(void)
 
     gb.outto(Port(qnT, 1), Ports{ Port(qnT, 1), Port(qnE, 1) });
 
-    Executor* exe = gb.createExecutor(qnS);
+    // Executor* exe = gb.createExecutor(qnS);
+    auto exe = createExecutor();
+    exe->setStartNode(static_cast<Node*>(qnS.getNode()));
+    exe->addNodes(gb.getNodes());
+    exe->addEdges(gb.getEdges());
 
     auto nVal = static_cast<NodeValue<int>*>(qnT.getNode());
     nVal->setValue(9);
@@ -103,7 +115,11 @@ void test11_04(void)
     gb.outto(Port(qnCounter, 1), Ports{ Port(qnAdd, 2), Port(qnE, 1) });
     gb.outto(Port(qnAdd, 1), Ports{ Port(qnCounter, 1) });
 
-    Executor* exe = gb.createExecutor(qnS);
+    // Executor* exe = gb.createExecutor(qnS);
+    auto exe = createExecutor();
+    exe->setStartNode(static_cast<Node*>(qnS.getNode()));
+    exe->addNodes(gb.getNodes());
+    exe->addEdges(gb.getEdges());
 
     auto nVal = static_cast<NodeValue<int>*>(qnCounter.getNode());
     nVal->setValue(0);

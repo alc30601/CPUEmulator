@@ -9,7 +9,7 @@
 // 再帰を用いた深さ優先探索によるノード巡回実行
 class ExecutorDepthFirstTraversal : public Executor
 {
-    Node* _startNode;
+    // Node* _startNode;
 
     //-------------------------------------------------------
     // 再帰を用いた深さ優先探索によるノード巡回実行
@@ -17,7 +17,7 @@ class ExecutorDepthFirstTraversal : public Executor
     void stepRecursive(Node* node)
     {
         // if this node already executed, do nothing
-        if(node->isExecuted() == true){
+         if(node->isExecuted() == true){
             return;
         }
         

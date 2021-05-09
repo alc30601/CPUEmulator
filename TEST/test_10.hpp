@@ -33,7 +33,11 @@ void test10_halfaddr(void)
     gb.outto(Port(qnT, 1), Ports{ Port(qnE, 1) });
     gb.outto(Port(qnT, 2), Ports{ Port(qnE, 2) });
 
-    Executor* exe = gb.createExecutor(qnS);
+    // Executor* exe = gb.createExecutor(qnS);
+    auto exe = createExecutor();
+    exe->setStartNode(static_cast<Node*>(qnS.getNode()));
+    exe->addNodes(gb.getNodes());
+    exe->addEdges(gb.getEdges());
 
     std::vector<std::vector<bool>> testVector{{false,false},{false,true}, {true,false},{true,true}};
     std::vector<std::vector<bool>>   expected{{false,false},{true,false}, {true,false},{false,true}};
@@ -59,7 +63,11 @@ void test10_fulladdr(void)
     gb.outto(Port(qnT, 1), Ports{ Port(qnE, 1) });
     gb.outto(Port(qnT, 2), Ports{ Port(qnE, 2) });
 
-    Executor* exe = gb.createExecutor(qnS);
+    // Executor* exe = gb.createExecutor(qnS);
+    auto exe = createExecutor();
+    exe->setStartNode(static_cast<Node*>(qnS.getNode()));
+    exe->addNodes(gb.getNodes());
+    exe->addEdges(gb.getEdges());
 
     std::vector<std::vector<bool>>   testVector = vectorBool3bits;
 
@@ -98,7 +106,11 @@ void test10_int2bit(void)
     gb.outto(Port(qnT, 3), Ports{ Port(qnE, 3) });
     gb.outto(Port(qnT, 4), Ports{ Port(qnE, 4) });
 
-    Executor* exe = gb.createExecutor(qnS);
+    // Executor* exe = gb.createExecutor(qnS);
+    auto exe = createExecutor();
+    exe->setStartNode(static_cast<Node*>(qnS.getNode()));
+    exe->addNodes(gb.getNodes());
+    exe->addEdges(gb.getEdges());
 
     std::vector<std::vector<int>> testVector{
         {0},{1},{2},{3},{4},{5},{6},{7},{8},{9},{10},{11},{12},{13},{14},{15}
@@ -129,7 +141,11 @@ void test10_bit2int(void)
     gb.outto(Port(qnS, 4), Ports{ Port(qnT, 4) });
     gb.outto(Port(qnT, 1), Ports{ Port(qnE, 1) });
 
-    Executor* exe = gb.createExecutor(qnS);
+    // Executor* exe = gb.createExecutor(qnS);
+    auto exe = createExecutor();
+    exe->setStartNode(static_cast<Node*>(qnS.getNode()));
+    exe->addNodes(gb.getNodes());
+    exe->addEdges(gb.getEdges());
 
     std::vector<std::vector<bool>>   testVector = vectorBool4bits;
 
@@ -166,7 +182,11 @@ void test10_int2int(void)
 
     gb.outto(Port(qnB, 1), Ports{ Port(qnE, 1) });
 
-    Executor* exe = gb.createExecutor(qnS);
+    // Executor* exe = gb.createExecutor(qnS);
+    auto exe = createExecutor();
+    exe->setStartNode(static_cast<Node*>(qnS.getNode()));
+    exe->addNodes(gb.getNodes());
+    exe->addEdges(gb.getEdges());
 
 
     std::vector<std::vector<int>>   testVector{
@@ -228,7 +248,11 @@ void test10_4bitadder(void)
 
     gb.outto(Port(qnT, 5), Ports{ Port(qnD, 1) });
 
-    Executor* exe = gb.createExecutor(qnS);
+    // Executor* exe = gb.createExecutor(qnS);
+    auto exe = createExecutor();
+    exe->setStartNode(static_cast<Node*>(qnS.getNode()));
+    exe->addNodes(gb.getNodes());
+    exe->addEdges(gb.getEdges());
 
     std::vector<std::vector<int>>   testVector{
         {2, 3}, {0, 1}, {7, 8}, {8, 8}, {10, 10}
@@ -313,7 +337,11 @@ void test10_4bitaddsub(void)
     gb.outto(Port(qnC, 1), Ports{ Port(qnE, 1) });
 
 
-    Executor* exe = gb.createExecutor(qnS);
+    // Executor* exe = gb.createExecutor(qnS);
+    auto exe = createExecutor();
+    exe->setStartNode(static_cast<Node*>(qnS.getNode()));
+    exe->addNodes(gb.getNodes());
+    exe->addEdges(gb.getEdges());
 
     std::vector<std::vector<int>>   testVector{
         {2, 3},  {0, 1}, {7, 8},   {8, 8}, {10, 10},
@@ -371,7 +399,11 @@ void test10_multiplexer(void)
     gb.outto(Port(qnS, 3), Ports{ Port(qnT, 3) });
     gb.outto(Port(qnT, 1), Ports{ Port(qnE, 1) });
 
-    Executor* exe = gb.createExecutor(qnS);
+    // Executor* exe = gb.createExecutor(qnS);
+    auto exe = createExecutor();
+    exe->setStartNode(static_cast<Node*>(qnS.getNode()));
+    exe->addNodes(gb.getNodes());
+    exe->addEdges(gb.getEdges());
 
     std::vector<std::vector<bool>>   testVector = vectorBool3bits;
 
@@ -407,7 +439,11 @@ void test10_demultiplexer(void)
     gb.outto(Port(qnT, 1), Ports{ Port(qnE, 1) });
     gb.outto(Port(qnT, 2), Ports{ Port(qnE, 2) });
 
-    Executor* exe = gb.createExecutor(qnS);
+    // Executor* exe = gb.createExecutor(qnS);
+    auto exe = createExecutor();
+    exe->setStartNode(static_cast<Node*>(qnS.getNode()));
+    exe->addNodes(gb.getNodes());
+    exe->addEdges(gb.getEdges());
 
     std::vector<std::vector<bool>>   testVector = vectorBool2bits;
 
@@ -456,7 +492,11 @@ void test10_decoder(void)
     gb.outto(Port(qnT, 15), Ports{ Port(qnE, 15) });
     gb.outto(Port(qnT, 16), Ports{ Port(qnE, 16) });
 
-    Executor* exe = gb.createExecutor(qnS);
+    // Executor* exe = gb.createExecutor(qnS);
+    auto exe = createExecutor();
+    exe->setStartNode(static_cast<Node*>(qnS.getNode()));
+    exe->addNodes(gb.getNodes());
+    exe->addEdges(gb.getEdges());
 
     std::vector<std::vector<bool>>   testVector = vectorBool4bits;
 

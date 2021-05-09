@@ -131,15 +131,17 @@ public:
 
     //-------------------------------------------------------
     // エントリノードを指定してExecutorを生成する。
-    Executor* createExecutor(QuasiNode&  entryQNode)
-    {
-        Node* entryNode = static_cast<Node*>(entryQNode.getNode());
-        auto nodes = getNodes();
-        auto edges = getEdges();
-        Executor* exe = getExecutor(entryNode, nodes, edges);
+    // これは違う。GraphBuilderにあるめきメソッドではない。
+    // 本来GraphBuilderはExecutorを知らないはず。
+    // Executor* createExecutor(QuasiNode&  entryQNode)
+    // {
+    //     Node* entryNode = static_cast<Node*>(entryQNode.getNode());
+    //     auto nodes = getNodes();
+    //     auto edges = getEdges();
+    //     Executor* exe = getExecutor(entryNode, nodes, edges);
 
-        return exe;
-    }
+    //     return exe;
+    // }
 };
 
 

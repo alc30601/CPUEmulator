@@ -57,18 +57,18 @@ class NodeSubSystem : public Node
 
         //-------------------------------------------------------
         // 親Nodeの入力Edgeのうち一つでも入力されていたら実行可能とする。
-        bool isExecutable(void)
-        {
-            bool atLeastOneDataAvailable = false;
-            std::vector<Edge*> inEdges = _parentNode.getInEdges();
-            for(auto edge : inEdges){
-                if(edge->getStatus() == Edge::Status::ENABLE){
-                    atLeastOneDataAvailable = true;
-                    break;
-                }
-            }
-            return atLeastOneDataAvailable;
-        }
+        // bool isExecutable(void)
+        // {
+        //     bool atLeastOneDataAvailable = false;
+        //     std::vector<Edge*> inEdges = _parentNode.getInEdges();
+        //     for(auto edge : inEdges){
+        //         if(edge->getStatus() == Edge::Status::ENABLE){
+        //             atLeastOneDataAvailable = true;
+        //             break;
+        //         }
+        //     }
+        //     return atLeastOneDataAvailable;
+        // }
 
     };
 
@@ -121,7 +121,7 @@ public:
         _nodeExit  = new NodeSubSystemExit(*this);
 
         // _exe = new Executor();
-        _exe = getExecutor();
+        _exe = createExecutor();
         _exe->setStartNode(_nodeEntry);
         std::vector<Node*> nodes = {_nodeEntry, _nodeExit};
         _exe->addNodes(nodes);
@@ -149,11 +149,11 @@ public:
         _exe->step();
     }
 
-    //-------------------------------------------------------
-    bool isExecutable(void)
-    {
-        return _nodeEntry->isExecutable();
-    }
+    // //-------------------------------------------------------
+    // bool isExecutable(void)
+    // {
+    //     return _nodeEntry->isExecutable();
+    // }
 
 };
 

@@ -14,7 +14,7 @@
 // #include "test_06.hpp"
 // #include "test_07.hpp"
 // #include "test_08.hpp"
-#include "test_09.hpp"
+// #include "test_09.hpp"
 #include "test_10.hpp"
 #include "test_11.hpp"
 #include "test_12.hpp"
@@ -161,8 +161,8 @@ int main(void)
     // std::cout << "  -- test08" << std::endl;
     // test08();
 
-    std::cout << "  -- test09" << std::endl;
-    test09();
+    // std::cout << "  -- test09" << std::endl;
+    // test09();
 
     // std::cout << "  -- test10" << std::endl;
     // test10();

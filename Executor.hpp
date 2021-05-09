@@ -60,21 +60,21 @@ public:
 
     //-------------------------------------------------------
     // 開始Nodeを登録する。
-    void setStartNode(Node* startNode)
+    virtual void setStartNode(Node* startNode)
     {
         _startNode = startNode;
     }
 
     //-------------------------------------------------------
     // Nodeを一括追加する。
-    void addNodes(std::vector<Node*>& nodes)
+    virtual void addNodes(std::vector<Node*>& nodes)
     {
         std::copy(nodes.begin(), nodes.end(), std::back_inserter(_nodes));
     }
 
     //-------------------------------------------------------
     // edgeを一括追加する。
-    void addEdges(std::vector<Edge*>& edges)
+    virtual void addEdges(std::vector<Edge*>& edges)
     {
         std::copy(edges.begin(), edges.end(), std::back_inserter(_edges));
     }

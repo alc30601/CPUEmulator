@@ -34,6 +34,30 @@ public:
     }
 
     //-------------------------------------------------------
+    void setStartNode(Node* startNode)
+    {
+        Executor::setStartNode(startNode);
+        _exe1->setStartNode(startNode);
+        _exe2->setStartNode(startNode);
+    }
+
+    //-------------------------------------------------------
+    void addNodes(std::vector<Node*>& nodes)
+    {
+        Executor::addNodes(nodes);
+        _exe1->addNodes(nodes);
+        _exe2->addNodes(nodes);
+    }
+
+    //-------------------------------------------------------
+    void addEdges(std::vector<Edge*>& edges)
+    {
+        Executor::addEdges(edges);
+        _exe1->addEdges(edges);
+        _exe2->addEdges(edges);
+    }
+
+    //-------------------------------------------------------
     void step(void)
     {
         _exe1->step();
