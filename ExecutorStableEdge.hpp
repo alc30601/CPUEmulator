@@ -50,7 +50,6 @@ class ExecutorStableEdge : public Executor
     // 何れかに値が設定されている場合は値の比較を行い一致判定を行う。
     // 両方とも値が設定されていない場合も一致とみなす。
     // 
-    // 非常に醜い関数。
     // 使用される可能性のある型をすべて列挙している。
     // std::anyの型を知ることなく比較できないものか。。。
     bool compareValue(std::any& v1, std::any& v2)
@@ -135,7 +134,17 @@ class ExecutorStableEdge : public Executor
         }
         return result;
     }
- 
+
+
+    void printEdgeValues(std::vector<std::any>& values)
+    {
+        for(auto value : values){
+            bool v = std::any_cast<bool>(value);
+            std::cout << v << " ";
+        }
+        std::cout << std::endl;
+    }
+
 public:
     //-------------------------------------------------------
     // データが到達しているかどうかにかかわらずNodeの処理を実行する。
@@ -152,6 +161,7 @@ public:
         while(stabilized == false){
             executeAllNode();
             edgeValuesAfter = edgeSnapShot();
+            printEdgeValues(edgeValuesAfter);
             stabilized = compareValues(edgeValuesBefore, edgeValuesAfter);
             edgeValuesBefore = edgeValuesAfter;
         }

@@ -18,6 +18,7 @@
 #include "test_10.hpp"
 #include "test_11.hpp"
 #include "test_12.hpp"
+#include "test_13.hpp"
 
 
 
@@ -48,7 +49,7 @@ bool compareAB(std::any a, std::any b)
     return result;
 }
 
-void test(void)
+void test1(void)
 {
     std::cout << "-- test -- " << std::endl;
 
@@ -127,48 +128,64 @@ void test3(void)
     test3_sub(typeid(MyClassForTest3));
 }
 
+///////////////////////////////////////////////////////////
+// サブクラス化されたクラスの型情報
+class SomeZ
+{
+     int z; 
+public:
+    virtual ~SomeZ() = default;
+};
+class SomeA : public SomeZ{ int a; };
+class SomeB : public SomeA{ int b; };
+class SomeC : public SomeZ{ int c; };
+
+bool checkIfSomeA(SomeZ* sz)
+{
+    bool result;
+
+    SomeA* psa = dynamic_cast<SomeA*>(sz);
+    if(psa != nullptr){
+        std::cout << "sb is SomeA" << std::endl;
+        result = true;
+    }
+    else{
+        std::cout << "sb is not SomeA" << std::endl;
+        result = false;
+    }
+    return result;
+}
+
+void test4(void)
+{
+    SomeB sb;
+    SomeC sc;
+
+    // SomeA* pas1 = dynamic_cast<SomeA*>(&sb);
+    // SomeA* pas2 = dynamic_cast<SomeA*>(&sc);
+
+    checkIfSomeA(&sb);
+    checkIfSomeA(&sc);
+
+}
+
 
 //-----------------------------------------------------------
 int main(void)
 {
     std::cout << "-- Start - DataFlowGraph -- " << std::endl;
 
-    // test();
+    // test1();
     // test2();
-    test3();
+    // test3();
+    // test4();
 
-    // std::cout << "  -- test01" << std::endl;
-    // test01();
 
-    // std::cout << "  -- test02" << std::endl;
-    // test02();
-
-    // std::cout << "  -- test03" << std::endl;
-    // test03();
+    std::cout << "  -- test13" << std::endl;
+    test13();
 
     std::cout << "  -- test04" << std::endl;
     test04();
-
-    // std::cout << "  -- test05" << std::endl;
-    // test05();
-
-    // std::cout << "  -- test06" << std::endl;
-    // test06();
-
-    // std::cout << "  -- test07" << std::endl;
-    // test07();
-
-    // std::cout << "  -- test08" << std::endl;
-    // test08();
-
-    // std::cout << "  -- test09" << std::endl;
-    // test09();
-
-    // std::cout << "  -- test10" << std::endl;
-    // test10();
-
-    // std::cout << "  -- test11" << std::endl;
-    // test11();
 
     std::cout << "  -- test12" << std::endl;
     test12();

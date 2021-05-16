@@ -19,6 +19,15 @@ public:
     Node* getNode(void){ return _node; }
 };
 
+//-------------------------------------------------------
+// 生ノードを準ノード化する。
+QuasiNode& quasiNodelize(Node* node)
+{
+    auto qn = new QuasiNode(node);
+    return *qn;
+}
+
+
 //-----------------------------------------------------------
 // ノードとエッジの番号を組にしたタプル
 // ノード間接続の際にこのPort型で指定する。
@@ -62,13 +71,6 @@ public:
         return quasiNodelize(node);
     }
 
-    //-------------------------------------------------------
-    // 生ノードを準ノード化する。
-    QuasiNode& quasiNodelize(Node* node)
-    {
-        auto qn = new QuasiNode(node);
-        return *qn;
-    }
 
     //-------------------------------------------------------
     // ノードとノードをエッジで結ぶ。
@@ -129,19 +131,6 @@ public:
         return edge;
     }
 
-    //-------------------------------------------------------
-    // エントリノードを指定してExecutorを生成する。
-    // これは違う。GraphBuilderにあるめきメソッドではない。
-    // 本来GraphBuilderはExecutorを知らないはず。
-    // Executor* createExecutor(QuasiNode&  entryQNode)
-    // {
-    //     Node* entryNode = static_cast<Node*>(entryQNode.getNode());
-    //     auto nodes = getNodes();
-    //     auto edges = getEdges();
-    //     Executor* exe = getExecutor(entryNode, nodes, edges);
-
-    //     return exe;
-    // }
 };
 
 

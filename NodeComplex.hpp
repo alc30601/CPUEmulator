@@ -27,14 +27,14 @@ public:
     QuasiNode& getEntryNode(void)
     {
         Node* nEntry = getNodeEntry();
-        return _gb.quasiNodelize(nEntry);
+        return quasiNodelize(nEntry);
     }
 
     //-------------------------------------------------------
     QuasiNode& getExitNode(void)
     {
         Node* nExit = getNodeExit();
-        return _gb.quasiNodelize(nExit);
+        return quasiNodelize(nExit);
     }
 
     //-------------------------------------------------------
@@ -44,11 +44,10 @@ public:
     // 本メソッドの実行により、本クラスが外部から利用できる複合ノードとなる。
     void commit(void)
     {
-        auto exe = NodeSubSystem::getInnerExecutor();
         auto nodes = _gb.getNodes();
         auto edges = _gb.getEdges();
-        exe->addNodes(nodes);
-        exe->addEdges(edges);
+        NodeSubSystem::addNodes(nodes);
+        NodeSubSystem::addEdges(edges);
     }
 
 };

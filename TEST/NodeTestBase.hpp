@@ -9,6 +9,8 @@
 #include "Node.hpp"
 #include "Executor.hpp"
 #include "GraphBuilder.hpp"
+#include "GraphFlatten.hpp"
+
 
 //-----------------------------------------------------------
 // bit-0がMSB
@@ -174,7 +176,7 @@ public:
 // expected    : 出力期待値
 // do_assert   : assertによるチェック実施要否(デフォルト：実施要)
 template <typename T1, typename T2>
-void evaluation(Executor* exe,
+void   evaluation(Executor* exe,
                 QuasiNode& qnS, QuasiNode& qnE,
                 std::vector<T1>& test_vector, std::vector<T2>& expected, 
                 bool do_assert=true)
@@ -231,10 +233,19 @@ void test_NtoM_template(std::vector<std::vector<T1>>& test_vector, std::vector<s
         gb.outto(Port(qnT, i), Ports{ Port(qnE,i) }, typeid(T2));
     }
 
+
+    std::vector<Node*>& nodes = gb.getNodes();
+    std::vector<Edge*>& edges = gb.getEdges();
+     std::pair<std::vector<Node*>, std::vector<Edge*>> p = graphFlatten(nodes, edges);
+    nodes = p.first;
+    edges = p.second;
+
     auto exe = createExecutor();
     exe->setStartNode(static_cast<Node*>(qnS.getNode()));
-    exe->addNodes(gb.getNodes());
-    exe->addEdges(gb.getEdges());
+    // exe->addNodes(gb.getNodes());
+    // exe->addEdges(gb.getEdges());
+    exe->addNodes(nodes);
+    exe->addEdges(edges);
     // Executor* exe = gb.createExecutor(qnS);
     for(int i=0;i<test_vector.size();i++){
         evaluation<T1, T2>(exe, qnS, qnE, test_vector[i], expected[i], do_assert);

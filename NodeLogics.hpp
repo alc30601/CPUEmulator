@@ -99,8 +99,8 @@ public:
         auto enty = getEntryNode();
         auto exit = getExitNode();
 
-        auto n21 = gb.createNode<T21>();
-        auto n11 = gb.createNode<T11>();
+        auto n21 = gb.createNode<T21>(typeid(T21).name());
+        auto n11 = gb.createNode<T11>(typeid(T11).name());
 
         gb.outto(Port(enty, 1), Ports{ Port(n21, 1) }, typeid(T));
         gb.outto(Port(enty, 2), Ports{ Port(n21, 2) }, typeid(T));
@@ -141,6 +141,30 @@ class NodeAnd : public Node2In1Out<bool>
         bool result = p1 & p2;
         return result;
     }
+
+    //-------------------------------------------------------
+    bool isInputDataCompleted(void)
+    {
+        bool result = true;
+
+        // 入力元Edgeにデータが全て揃っているか確認する。
+        for(auto edge : _inEdges){
+            if(edge->getStatus() == Edge::Status::ENABLE){
+                bool b = getValueFromAny<bool>(edge->getValue());
+                if(b == F){
+                    result = true;
+                    goto _end;
+                }
+            }
+            if(edge->getStatus() == Edge::Status::DISABLE){
+                result = false;
+                break;
+            }
+        }
+_end:        
+        return result;
+    }
+
 };
 
 //-----------------------------------------------------------
@@ -156,6 +180,31 @@ class NodeOr : public Node2In1Out<bool>
         bool result = p1 | p2;
         return result;
     }
+
+
+    //-------------------------------------------------------
+    bool isInputDataCompleted(void)
+    {
+        bool result = true;
+
+        // 入力元Edgeにデータが全て揃っているか確認する。
+        for(auto edge : _inEdges){
+            if(edge->getStatus() == Edge::Status::ENABLE){
+                bool b = getValueFromAny<bool>(edge->getValue());
+                if(b == T){
+                    result = true;
+                    goto _end;
+                }
+            }
+            if(edge->getStatus() == Edge::Status::DISABLE){
+                result = false;
+                break;
+            }
+        }
+_end:        
+        return result;
+    }
+
 };
 
 
