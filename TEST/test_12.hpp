@@ -290,7 +290,7 @@ void test12_07(void)
         {F, T},     // Toggle
     };
 
-    test_NtoM_template<NodeJKFlipFlopMasterSlave, bool, bool>(testVector, expected, false);
+    test_NtoM_template<NodeJKFlipFlopMasterSlave, bool, bool>(testVector, expected);
 }
 
 

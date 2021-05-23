@@ -208,4 +208,9 @@ This is a data flow graph core implementation.
   不安定となるパターンを抽出し、原因の特定を行う必要がある。
   JK FlipFlopに関しては3パターンを繰り返していた。全Edge中、半数ほどが安定していない。
 
+## 2021.05.23
+- 上記の問題解析のため、NANDのNodeを設ける。AND,NOTで構成していたNANDをプリミティブなNodeとして構成。
+  JK-FFは正常に動作するようになった。何故、AND,NOTの合成で駄目でプリミティブなNANDでうまく行くのかは未解明。
+  他もいくつか触っているのでその影響の可能性もある。
+  しかし、JK FF(Master-Slave)はやはり正解とならない。未解析。
 

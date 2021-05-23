@@ -52,15 +52,14 @@ public:
     virtual void execute(void){ _status = Status::DONE; };
 
     //-------------------------------------------------------
-    // Clear execution status
+    // 実行状態フラグを初期化(→未実行)する
     virtual void clearStatus(void)
     {
         _status = Status::NOTYET;
     }
 
     //-------------------------------------------------------
-    // if this node is already executed, return true
-    // else return false
+    // Nodeが既に実行済か確認する。
     virtual bool isExecuted(void)
     {
         bool result = _status == Status::DONE ? true : false;

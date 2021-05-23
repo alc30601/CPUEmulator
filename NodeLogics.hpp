@@ -32,56 +32,29 @@ T getValueFromAny(std::any& anyValue)
     return value;
 }
 
-
 //-----------------------------------------------------------
-// 1入力1出力ノードの基本クラス
-// 仮想クラス使用する際、サブクラス化してcalculate()をオーバライドする必要がある。
-// 入出力のデータは全て同じ型とする(テンプレートでT型)
-template <typename T>
-class Node1In1Out : public Node
+// 与えられたEdgeをチェックし、有効なEdgeでかつ値がbValueのものがあれば演算可能とする。
+// 有効なEdgeでかつ値がbValueのものがなく、無効のEdgeが一つでもあれば演算不可とする。
+// return true  : 演算可能
+//        false : 演算不可
+bool isEdgeEnough(std::vector<Edge*> edges, bool bValue)
 {
-public:
-    //-------------------------------------------------------
-    void execute(void)
-    {
-        Node::execute();
-
-        T inValue = getValueFromAny<T>(_inEdges.at(0)->getValue());
-        T outValue = calculate(inValue);
-        _outEdges.at(0)->setValue(outValue);
+    bool result = true;
+    for(auto edge : edges){
+        if(edge->getStatus() == Edge::Status::ENABLE){
+            bool b = getValueFromAny<bool>(edge->getValue());
+            if(b == bValue){
+                result = true;
+                goto _end;
+            }
+        }
+        else{
+            result = false;
+        }
     }
-
-    //-------------------------------------------------------
-    virtual T calculate(T in1) = 0;
-};
-
-
-//-----------------------------------------------------------
-// ２入力１出力型ノードの基本クラス
-// 仮想クラス使用する際、サブクラス化してcalculate()をオーバライドする必要がある。
-// 入出力のデータは全て同じ型とする(テンプレートでT型)
-// 本来はbool型のandやor演算ノード用に設けたがTをintやdoubleなどにして
-// 加減乗除などの演算ノードのベースとしても使用できる。
-template <typename T>
-class Node2In1Out : public Node
-{
-public:
-    //-------------------------------------------------------
-    void execute(void)
-    {
-        Node::execute();
-
-        T inValue1 = getValueFromAny<T>(_inEdges.at(0)->getValue());
-        T inValue2 = getValueFromAny<T>(_inEdges.at(1)->getValue());
-        T outValue = calculate(inValue1, inValue2);
-        _outEdges.at(0)->setValue(outValue);
-    }
-
-    //-------------------------------------------------------
-    virtual T calculate(T in1, T in2) = 0;
-
-};
-
+_end:        
+    return result;
+}
 
 //-----------------------------------------------------------
 // 2入力1出力ノードと1入力1出力ノードの組合せで構成する複合ノード。
@@ -116,15 +89,19 @@ public:
 // NOT
 // 1入力1出力ノード
 // データ型はともにbool
-class NodeNot : public Node1In1Out<bool>
+class NodeNot : public Node
 {
+public:
     //-------------------------------------------------------
-    bool calculate(bool p)
+    void execute(void)
     {
-        // std::cout << "NOT" << std::endl;
-        bool result = !p;
-        return result;
+        Node::execute();
+
+        bool inValue = getValueFromAny<bool>(_inEdges.at(0)->getValue());
+        bool outValue = !inValue;
+        _outEdges.at(0)->setValue(outValue);
     }
+
 };
 
 
@@ -132,77 +109,89 @@ class NodeNot : public Node1In1Out<bool>
 // AND
 // 2入力1出力ノード
 // データ型はともにbool
-class NodeAnd : public Node2In1Out<bool>
+class NodeAnd : public Node
 {
+public:
     //-------------------------------------------------------
-    bool calculate(bool p1, bool p2)
+    void execute(void)
     {
-        // std::cout << "AND" << std::endl;
-        bool result = p1 & p2;
-        return result;
+        Node::execute();
+
+        bool inValue1 = getValueFromAny<bool>(_inEdges.at(0)->getValue());
+        bool inValue2 = getValueFromAny<bool>(_inEdges.at(1)->getValue());
+        bool outValue = inValue1 & inValue2;
+        _outEdges.at(0)->setValue(outValue);
     }
 
     //-------------------------------------------------------
     bool isInputDataCompleted(void)
     {
-        bool result = true;
+        return isEdgeEnough(_inEdges, F);
 
-        // 入力元Edgeにデータが全て揃っているか確認する。
-        for(auto edge : _inEdges){
-            if(edge->getStatus() == Edge::Status::ENABLE){
-                bool b = getValueFromAny<bool>(edge->getValue());
-                if(b == F){
-                    result = true;
-                    goto _end;
-                }
-            }
-            if(edge->getStatus() == Edge::Status::DISABLE){
-                result = false;
-                break;
-            }
-        }
-_end:        
-        return result;
+//         bool result = true;
+
+//         // 入力元Edgeにデータが全て揃っているか確認する。
+//         for(auto edge : _inEdges){
+//             if(edge->getStatus() == Edge::Status::ENABLE){
+//                 bool b = getValueFromAny<bool>(edge->getValue());
+//                 if(b == F){
+//                     result = true;
+//                     goto _end;
+//                 }
+//             }
+//             if(edge->getStatus() == Edge::Status::DISABLE){
+//                 result = false;
+//                 break;
+//             }
+//         }
+// _end:        
+//         return result;
     }
 
 };
+
 
 //-----------------------------------------------------------
 // OR
 // 2入力1出力ノード
 // データ型はともにbool
-class NodeOr : public Node2In1Out<bool>
+class NodeOr : public Node
 {
+public:
     //-------------------------------------------------------
-    bool calculate(bool p1, bool p2)
+    void execute(void)
     {
-        // std::cout << "OR" << std::endl;
-        bool result = p1 | p2;
-        return result;
-    }
+        Node::execute();
 
+        bool inValue1 = getValueFromAny<bool>(_inEdges.at(0)->getValue());
+        bool inValue2 = getValueFromAny<bool>(_inEdges.at(1)->getValue());
+        bool outValue = inValue1 | inValue2;
+        _outEdges.at(0)->setValue(outValue);
+    }
 
     //-------------------------------------------------------
     bool isInputDataCompleted(void)
     {
-        bool result = true;
+        return isEdgeEnough(_inEdges, T);
 
-        // 入力元Edgeにデータが全て揃っているか確認する。
-        for(auto edge : _inEdges){
-            if(edge->getStatus() == Edge::Status::ENABLE){
-                bool b = getValueFromAny<bool>(edge->getValue());
-                if(b == T){
-                    result = true;
-                    goto _end;
-                }
-            }
-            if(edge->getStatus() == Edge::Status::DISABLE){
-                result = false;
-                break;
-            }
-        }
-_end:        
-        return result;
+//         bool result = true;
+
+//         // 入力元Edgeにデータが全て揃っているか確認する。
+//         for(auto edge : _inEdges){
+//             if(edge->getStatus() == Edge::Status::ENABLE){
+//                 bool b = getValueFromAny<bool>(edge->getValue());
+//                 if(b == T){
+//                     result = true;
+//                     goto _end;
+//                 }
+//             }
+//             if(edge->getStatus() == Edge::Status::DISABLE){
+//                 result = false;
+//                 break;
+//             }
+//         }
+// _end:        
+//         return result;
     }
 
 };
@@ -218,7 +207,39 @@ _end:
 // NAND
 // 2入力1出力ノード
 // データ型はともにbool
-#define NodeNand Node21_11<bool, NodeAnd, NodeNot>
+// #define NodeNand Node21_11<bool, NodeAnd, NodeNot>
+class NodeNand : public Node
+{
+public:
+    //-------------------------------------------------------
+    void execute(void)
+    {
+        Node::execute();
+
+        bool result = F;
+        bool inValue1 = getValueFromAny<bool>(_inEdges.at(0)->getValue());
+        bool inValue2 = getValueFromAny<bool>(_inEdges.at(1)->getValue());
+
+        if((inValue1 == F) || (inValue2 == F)){
+            result = T;
+        }
+        else{
+            result = F;
+        }
+
+        bool outValue = result;
+        _outEdges.at(0)->setValue(outValue);
+    }
+
+    //-------------------------------------------------------
+    // 有効で値がFの入力Edgeがあれば演算可能。
+    // 有効で値がFの入力Edgeがなく、無効の入力Edgeが１つでもあれば演算不可。
+    bool isInputDataCompleted(void)
+    {
+        return isEdgeEnough(_inEdges, F);
+    }
+};
+
 
 
 //-----------------------------------------------------------
@@ -278,27 +299,60 @@ public:
 
 //-----------------------------------------------------------
 // ３端子NAND
-class Node3Nand : public NodeComplex
+// class Node3Nand : public NodeComplex
+// {
+// public:
+//     //-------------------------------------------------------
+//     Node3Nand(void)
+//     {
+//         auto& gb = getGraphBuilder();
+//         auto enty = getEntryNode();
+//         auto exit = getExitNode();
+
+//         auto and1 = gb.createNode<Node3And>("Node3Nand in Node3Nand");
+//         auto not1 = gb.createNode<NodeNot>("NodeNot in Node3Nand");
+
+//         gb.outto(Port(enty, 1), Ports{Port(and1, 1) }, typeid(bool));
+//         gb.outto(Port(enty, 2), Ports{Port(and1, 2) }, typeid(bool));
+//         gb.outto(Port(enty, 3), Ports{Port(and1, 3) }, typeid(bool));
+//         gb.outto(Port(and1, 1), Ports{Port(not1, 1) }, typeid(bool));
+//         gb.outto(Port(not1, 1), Ports{ Port(exit, 1)}, typeid(bool));
+
+//         commit();
+
+//     }
+// };
+
+class Node3Nand : public Node
 {
 public:
     //-------------------------------------------------------
-    Node3Nand(void)
+    void execute(void)
     {
-        auto& gb = getGraphBuilder();
-        auto enty = getEntryNode();
-        auto exit = getExitNode();
+        Node::execute();
 
-        auto and1 = gb.createNode<Node3And>("Node3Nand in Node3Nand");
-        auto not1 = gb.createNode<NodeNot>("NodeNot in Node3Nand");
+        bool result = F;
+        bool inValue1 = getValueFromAny<bool>(_inEdges.at(0)->getValue());
+        bool inValue2 = getValueFromAny<bool>(_inEdges.at(1)->getValue());
+        bool inValue3 = getValueFromAny<bool>(_inEdges.at(2)->getValue());
 
-        gb.outto(Port(enty, 1), Ports{Port(and1, 1) }, typeid(bool));
-        gb.outto(Port(enty, 2), Ports{Port(and1, 2) }, typeid(bool));
-        gb.outto(Port(enty, 3), Ports{Port(and1, 3) }, typeid(bool));
-        gb.outto(Port(and1, 1), Ports{Port(not1, 1) }, typeid(bool));
-        gb.outto(Port(not1, 1), Ports{ Port(exit, 1)}, typeid(bool));
+        if((inValue1 == F) || (inValue2 == F) || (inValue3 == F)){
+            result = T;
+        }
+        else{
+            result = F;
+        }
 
-        commit();
+        bool outValue = result;
+        _outEdges.at(0)->setValue(outValue);
+    }
 
+    //-------------------------------------------------------
+    // 有効で値がFの入力Edgeがあれば演算可能。
+    // 有効で値がFの入力Edgeがなく、無効の入力Edgeが１つでもあれば演算不可。
+    bool isInputDataCompleted(void)
+    {
+        return isEdgeEnough(_inEdges, F);
     }
 };
 

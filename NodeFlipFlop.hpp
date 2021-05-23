@@ -161,17 +161,22 @@ public:
         auto enty  = getEntryNode();
         auto exit  = getExitNode();
 
-        auto nand1 = gb.createNode<Node3Nand>("3nand1 in JKFlipFlop");
-        auto nand2 = gb.createNode<Node3Nand>("3nand2 in JKFlipFlop");
-        auto srff  = gb.createNode<NodeSRFlipFlopNand>("srff(nand) in JKFlipFlop");
+        // auto nand1 = gb.createNode<Node3Nand>("3nand1 in JKFlipFlop");
+        // auto nand2 = gb.createNode<Node3Nand>("3nand2 in JKFlipFlop");
+        // auto srff  = gb.createNode<NodeSRFlipFlopNand>("srff(nand) in JKFlipFlop");
 
-        gb.outto(Port(enty,  1), Ports{ Port(nand1, 1), Port(nand2, 1) }, typeid(bool)); // CK
-        gb.outto(Port(enty,  2), Ports{ Port(nand1, 2) }, typeid(bool));    // J
-        gb.outto(Port(enty,  3), Ports{ Port(nand2, 2) }, typeid(bool));    // K
-        gb.outto(Port(nand1, 1), Ports{ Port(srff,  1) }, typeid(bool));    // A
-        gb.outto(Port(nand2, 1), Ports{ Port(srff,  2) }, typeid(bool));    // B
-        gb.outto(Port(srff,  1), Ports{ Port(nand2, 3), Port(exit, 1) }, typeid(bool)); // Q
-        gb.outto(Port(srff,  2), Ports{ Port(nand1, 3), Port(exit, 2) }, typeid(bool)); // Q-inv
+        auto u1 = gb.createNode<Node3Nand>("U1 in JK-FF");
+        auto u2 = gb.createNode<Node3Nand>("U2 in JK-FF");
+        auto u3 = gb.createNode<NodeNand>("U3 in JK-FF");
+        auto u4 = gb.createNode<NodeNand>("U4 in JK-FF");
+
+        gb.outto(Port(enty,  1), Ports{ Port(u1, 1), Port(u2, 1) }, typeid(bool)); // CK
+        gb.outto(Port(enty,  2), Ports{ Port(u1, 2) },  typeid(bool));             // J
+        gb.outto(Port(enty,  3), Ports{ Port(u2, 2) },  typeid(bool));             // K
+        gb.outto(Port(u1, 1),    Ports{ Port(u3,  1) }, typeid(bool));             // A
+        gb.outto(Port(u2, 1),    Ports{ Port(u4,  1) }, typeid(bool));             // B
+        gb.outto(Port(u3, 1),    Ports{ Port(u2, 3), Port(u4, 2), Port(exit, 1) }, typeid(bool)); // Q
+        gb.outto(Port(u4, 1),    Ports{ Port(u1, 3), Port(u3, 2), Port(exit, 2) }, typeid(bool)); // Q-inv
 
         commit();
     }
