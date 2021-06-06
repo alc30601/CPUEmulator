@@ -13,6 +13,8 @@ class NodeByPass : public Node
 public:
     //-------------------------------------------------------
     // 入口エッジの値を出口エッジにコピーする。
+    // 入力Edgeの状態は出力Edgeにも維持する。
+    // (入力EdgeがENABLEのもののみ出力EdgeもENABLEとする)
     void execute(void)
     {
         bool allEdgeEnabled = true;
@@ -22,11 +24,14 @@ public:
 
         for(int i=0;i<inEdges.size();i++){
             Edge* edge = inEdges.at(i);
+            auto value = edge->getValue();
             if(edge->getStatus() == Edge::Status::DISABLE){
                 allEdgeEnabled = false;
+                outEdges.at(i)->setJustValue(value);
             }
-            auto value = edge->getValue();
-            outEdges.at(i)->setValue(value);
+            else{
+                outEdges.at(i)->setValue(value);
+            }
         }
 
         // 全てのEdgeがデータ可用ならば、実行済とする。
@@ -35,6 +40,12 @@ public:
         }
     }
 
+    //-------------------------------------------------------
+    // データが揃っていようがいまいが実行可能にする。
+    bool isExecutable(void)
+    {
+        return true;
+    }
 };
 
 

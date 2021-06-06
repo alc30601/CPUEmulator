@@ -68,21 +68,69 @@ bool isTheClass(BASE_CLASS* a)
 
 //-----------------------------------------------------------
 // Edgeの繋ぎ変えを行う。
+// void reconnectEdges(NodeSubSystem* node)
+// {
+//     // 入力Edgeの繋ぎ変え
+//     // nodeの入力Edgeをチェックし、node宛になっていたら
+//     // 子供のエントリノード宛に書き換える。
+//     Node* entryNode = node->getNodeEntry();
+//     std::vector<Edge*>& inEdges = node->getInEdges();
+//     for(auto edge : inEdges){
+//         std::vector<Node*>& nodes = edge->getOutNodes();
+//         for(int i=0; i<nodes.size();i++){
+//             if(nodes[i] == node){
+//                 nodes[i] = entryNode;
+//             }
+//         }
+//     }
+//     // nodeのinEdgeをEntryノードに引き継ぐ。
+//     for(int i=0; i<inEdges.size();i++){
+//         entryNode->setInEdge(inEdges[i], i+1);
+//     }
+
+//     // 出力Edgeの繋ぎ変え
+//     // nodeのoutEdgeをExitノードに引き継ぐ。
+//     Node* exitNode = node->getNodeExit();
+//     std::vector<Edge*>& outEdges = node->getOutEdges();
+//     for(int i=0; i<outEdges.size();i++){
+//         exitNode->setOutEdge(outEdges[i], i+1);
+//     }
+
+// }
+
+//-----------------------------------------------------------
+// Edgeの繋ぎ変えを行う。(Entry,Exitノード削除版)
 void reconnectEdges(NodeSubSystem* node)
 {
     // 入力Edgeの繋ぎ変え
     // nodeの入力Edgeをチェックし、node宛になっていたら
-    // 子供のエントリノード宛に書き換える。
+    // 子供のエントリノードの出力Edgeを取り出し、そのEdgeの出力先Nodeを入力Edgeに追加する。
+    // 元のnode宛は削除する。
     Node* entryNode = node->getNodeEntry();
+    std::vector<Edge*>& entryOutEdges = entryNode->getOutEdges(); 
     std::vector<Edge*>& inEdges = node->getInEdges();
-    for(auto edge : inEdges){
-        std::vector<Node*>& nodes = edge->getOutNodes();
-        for(int i=0; i<nodes.size();i++){
-            if(nodes[i] == node){
-                nodes[i] = entryNode;
+    // NodeSubSystem[1]の入力Edge[2]を１つづつ処理する。
+    for(int i=0;i<inEdges.size();i++){
+        std::vector<Node*>& nodes = inEdges[i]->getOutNodes();
+        // １つの入力Edge[2]の出力先Node[3]を1つづつ見ていく。
+        for(int j=0;j<nodes.size();j++){
+            // 出力先Node[3]が自身(NodeSubSystem)の場合
+            if(nodes[j] == node){
+                // 対応するNodeSubSystemEntryの出力Edgeの先のNode[4]を元の入力Edge[2]に追加する。
+                std::vector<Node*>& nodes2 = entryOutEdges[i]->getOutNodes();
+                for(int k=0;k<nodes2.size();k++){
+                    inEdges[i]->addOutNode(nodes2[k]);
+                }
             }
         }
     }
+    // 不要になった自身(NodeSubSystem)向けのEdge(内のNode参照)を削除する
+     // 不要になったNodeSubSystemEntryの出力Edgeを削除する。
+    ★★★
+
+    以下未修正
+
+
     // nodeのinEdgeをEntryノードに引き継ぐ。
     for(int i=0; i<inEdges.size();i++){
         entryNode->setInEdge(inEdges[i], i+1);
@@ -112,8 +160,6 @@ void reconnectEdges(NodeSubSystem* node)
 //   SubNodeでなければそのNodeを平坦化リストに追加する。
 std::pair<std::vector<Node*>, std::vector<Edge*>> graphFlatten(std::vector<Node*>& nodes, std::vector<Edge*>& edges)
 {
-    // std::vector<Node*>* newNodeList = new std::vector<Node*>(); // 平坦化されたNodeリスト
-    // std::vector<Edge*>* newEdgeList = new std::vector<Edge*>(); // 平坦化されたEdgeリスト
     std::vector<Node*> newNodeList; // 平坦化されたNodeリスト
     std::vector<Edge*> newEdgeList; // 平坦化されたEdgeリスト
     std::queue<Node*> waitingQ;     // 処理待ちキュー

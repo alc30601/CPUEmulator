@@ -161,10 +161,6 @@ public:
         auto enty  = getEntryNode();
         auto exit  = getExitNode();
 
-        // auto nand1 = gb.createNode<Node3Nand>("3nand1 in JKFlipFlop");
-        // auto nand2 = gb.createNode<Node3Nand>("3nand2 in JKFlipFlop");
-        // auto srff  = gb.createNode<NodeSRFlipFlopNand>("srff(nand) in JKFlipFlop");
-
         auto u1 = gb.createNode<Node3Nand>("U1 in JK-FF");
         auto u2 = gb.createNode<Node3Nand>("U2 in JK-FF");
         auto u3 = gb.createNode<NodeNand>("U3 in JK-FF");
@@ -225,7 +221,6 @@ public:
         auto enty  = getEntryNode();
         auto exit  = getExitNode();
 
-        auto n1 = gb.createNode<NodeNot>("N1 in JK-FF");
         auto u1 = gb.createNode<Node3Nand>("U1 in JK-FF");
         auto u2 = gb.createNode<Node3Nand>("U2 in JK-FF");
         auto u3 = gb.createNode<NodeNand>("U3 in JK-FF");
@@ -234,15 +229,16 @@ public:
         auto u6 = gb.createNode<NodeNand>("U6 in JK-FF");
         auto u7 = gb.createNode<NodeNand>("U7 in JK-FF");
         auto u8 = gb.createNode<NodeNand>("U8 in JK-FF");
+        auto u9 = gb.createNode<NodeNot>("U9 in JK-FF");
 
-        gb.outto(Port(enty,  1), Ports{ Port(u1, 1), Port(u2, 1), Port(n1, 1)   }, typeid(bool)); // CK
+        gb.outto(Port(enty,  1), Ports{ Port(u1, 1), Port(u2, 1), Port(u9, 1)   }, typeid(bool)); // CK
         gb.outto(Port(enty,  2), Ports{ Port(u1, 2)                             }, typeid(bool)); // J
         gb.outto(Port(enty,  3), Ports{ Port(u2, 2)                             }, typeid(bool)); // K
         gb.outto(Port(u1,    1), Ports{ Port(u3, 1)                             }, typeid(bool));
         gb.outto(Port(u2,    1), Ports{ Port(u4, 1)                             }, typeid(bool));
         gb.outto(Port(u3,    1), Ports{ Port(u4, 2), Port(u5, 2)                }, typeid(bool));
         gb.outto(Port(u4,    1), Ports{ Port(u3, 2), Port(u6, 2)                }, typeid(bool));
-        gb.outto(Port(n1,    1), Ports{ Port(u5, 1), Port(u6, 1)                }, typeid(bool)); // CK-inv
+        gb.outto(Port(u9,    1), Ports{ Port(u5, 1), Port(u6, 1)                }, typeid(bool)); // CK-inv
         gb.outto(Port(u5,    1), Ports{ Port(u7, 1)                             }, typeid(bool));
         gb.outto(Port(u6,    1), Ports{ Port(u8, 1)                             }, typeid(bool));
         gb.outto(Port(u7,    1), Ports{ Port(u8, 2), Port(u2, 3), Port(exit, 1) }, typeid(bool)); // Q
@@ -252,7 +248,7 @@ public:
     }
 };
 
-// D Flip Flop (Master-Slave)
+ // D Flip Flop (Master-Slave)
 // T Flip Flop (Master-Slave)
 // D Flip Flop (Edge-Trigger)
 // JK Flip Flop (Edge-Trigger)

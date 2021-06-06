@@ -67,6 +67,26 @@ public:
     }
 
     //-------------------------------------------------------
+    // Edgeで保持する値をテンプレートで指定された型で取り出す。
+    // Edgeで保持するstd::anyがまだ値を持たなければassert
+    template <typename T>
+    T value(void)
+    {
+        std::any anyValue = getValue();
+        T v = T();
+        if(anyValue.has_value() == true){
+            v = std::any_cast<T>(anyValue);
+        }
+        else{
+            std::cout << "Edge has no value" << std::endl;
+            assert(false);
+        }
+        return v;
+    }
+
+
+
+    //-------------------------------------------------------
     void setJustValue(std::any value)
     {
         _v = value;
@@ -75,7 +95,7 @@ public:
     //-------------------------------------------------------
     void setValue(std::any value)
     {
-        _v = value;
+        setJustValue(value);
         _status = Status::ENABLE;
     }
 

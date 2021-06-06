@@ -290,7 +290,18 @@ void test12_07(void)
         {F, T},     // Toggle
     };
 
-    test_NtoM_template<NodeJKFlipFlopMasterSlave, bool, bool>(testVector, expected);
+    std::vector<bool> do_asserts{
+        false, true,
+        true,  true,
+        true,  true,
+        true,  true,
+        true,  true,
+        true,  true,
+        true,  true,
+        true,  true,
+    };
+
+    test_NtoM_template<NodeJKFlipFlopMasterSlave, bool, bool>(testVector, expected, do_asserts);
 }
 
 

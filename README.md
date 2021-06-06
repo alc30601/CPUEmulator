@@ -214,3 +214,11 @@ This is a data flow graph core implementation.
   他もいくつか触っているのでその影響の可能性もある。
   しかし、JK FF(Master-Slave)はやはり正解とならない。未解析。
 
+## 2021.06.06
+- 合成でないNANDを用いることで少し前進。
+  JK FlipFlop(Matste-Slave)ではトリガー前の不定状態は評価対象外とすることで
+  想定通りの動作にすることができた。
+- 一方、NANDだとOKだが、ANDとNOTの合成のNANDだとやはりうまく行かない。
+  JK FlipFlopで状態が安定せず無限ループする。
+- グラフ平坦化で、Entry,Exitノードを除去するようにしてグラグを単純化するつもり。
+

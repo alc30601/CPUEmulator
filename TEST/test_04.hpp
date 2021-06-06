@@ -23,10 +23,12 @@
 //-----------------------------------------------------------
 void test04(void)
 {
+
+
     std::cout << "-- test NOT -- " << std::endl;
     std::vector<std::vector<bool>> expectedNot{{T}, {F}};
     test_NtoM_template<NodeNot, bool, bool>(vectorBool1bits, expectedNot);
-
+ 
     std::cout << "-- test AND -- " << std::endl;
     std::vector<std::vector<bool>> expectedAND{{F}, {F}, {F}, {T}};
     test_NtoM_template<NodeAnd, bool, bool>(vectorBool2bits, expectedAND);
@@ -50,7 +52,7 @@ void test04(void)
     std::cout << "-- test 3 AND -- " << std::endl;
     std::vector<std::vector<bool>> expected3AND{{F}, {F}, {F}, {F}, {F}, {F}, {F}, {T}};
     test_NtoM_template<Node3And, bool, bool>(vectorBool3bits, expected3AND);
-
+  
     std::cout << "-- test 3 NAND -- " << std::endl;
     std::vector<std::vector<bool>> expected3NAND{{T}, {T}, {T}, {T}, {T}, {T}, {T}, {F}};
     test_NtoM_template<Node3Nand, bool, bool>(vectorBool3bits, expected3NAND);
