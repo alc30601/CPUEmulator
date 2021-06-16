@@ -236,7 +236,7 @@ void test_NtoM_template(std::vector<std::vector<T1>>& test_vector, std::vector<s
 
     std::vector<Node*>& nodes = gb.getNodes();
     std::vector<Edge*>& edges = gb.getEdges();
-     std::pair<std::vector<Node*>, std::vector<Edge*>> p = graphFlatten(nodes, edges);
+    std::pair<std::vector<Node*>, std::vector<Edge*>> p = graphFlatten(nodes, edges);
     nodes = p.first;
     edges = p.second;
 

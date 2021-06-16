@@ -59,8 +59,8 @@ void test09(void)
     gb0.outto(Port(qnT, 1), Ports{ Port(qnE, 1) }, typeid(bool));
 
     // 実行
-    Executor* exe = gb0.createExecutor(qnS);
-
+    // Executor* exe = gb0.createExecutor(qnS);
+    auto exe = createExecutor();
     auto nEntry = static_cast<NodeTestEntry<bool>*>(qnS.getNode());
     auto nExit = static_cast<NodeTestExit<bool>*>(qnE.getNode());
 

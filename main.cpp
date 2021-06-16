@@ -19,6 +19,7 @@
 #include "test_11.hpp"
 #include "test_12.hpp"
 #include "test_13.hpp"
+#include "test_14.hpp"
 
 
 
@@ -186,6 +187,9 @@ int main(void)
 
     std::cout << "  -- test04" << std::endl;
     test04();
+
+    std::cout << "  -- test14" << std::endl;
+    test14();
 
     std::cout << "  -- test12" << std::endl;
     test12();

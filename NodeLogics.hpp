@@ -176,8 +176,8 @@ public:
 
         auto enty = getEntryNode();
         auto exit = getExitNode();
-        auto n21 = gb.createNode<NodeOr>("NodeOr in NodeNand");
-        auto n11 = gb.createNode<NodeNot>("NodeNot in NodeNand");
+        auto n21 = gb.createNode<NodeOr>("NodeOr in NodeNor");
+        auto n11 = gb.createNode<NodeNot>("NodeNot in NodeNor");
 
         gb.outto(Port(enty, 1), Ports{ Port(n21, 1) }, typeid(T));
         gb.outto(Port(enty, 2), Ports{ Port(n21, 2) }, typeid(T));
