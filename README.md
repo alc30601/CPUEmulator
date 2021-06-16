@@ -222,3 +222,5 @@ This is a data flow graph core implementation.
   JK FlipFlopで状態が安定せず無限ループする。
 - グラフ平坦化で、Entry,Exitノードを除去するようにしてグラグを単純化するつもり。
 
+## 2021.06.16
+- グラフ平坦化のEntry,Exitノード除去版の実装(検証未)
