@@ -16,6 +16,7 @@
 #include <vector>
 #include <queue>
 #include <typeinfo>
+#include <set>
 
 #include "Edge.hpp"
 #include "Node.hpp"
@@ -85,7 +86,7 @@ bool isTheClass(BASE_CLASS* a)
 // [2] あるNodeへの複数入力Edge     : inEdges/outEdges -> inEdge / outEdge
 // [3] 出力Edgeからの複数分岐Node   : nodes2
 // [4] あるNodeへの複数入力Edge     : inEdges2
-// このように４つの階層があるため、4重ループとなる。→サブルーチン化して簡易化すべきか。
+// このように４つの階層があるため、4重ループとなる。→サブルーチン化して簡易化すべきか。。。
 void mergeNode(Node* inNode, Node* outNode)
 {
     std::vector<Edge*>& inEdges = inNode->getInEdges();
@@ -100,10 +101,10 @@ void mergeNode(Node* inNode, Node* outNode)
         std::vector<Node*>& nodes1 = inEdge->getOutNodes();
 
         // [1] １つのEdgeの全分岐先Nodeをなめる。
-        for(auto it = nodes1.begin(); it != nodes1.end();){
+        for(int j=0; j<nodes1.size(); j++){
 
             // ある分岐先NodeがinNodeだった場合、それはinNodeのi番目の入力Edgeであるはず。
-            if(*it == inNode){
+            if(nodes1[j] == inNode){
 
                 // [3] 対応する出力Edgeの全分岐先をなめる。
                 std::vector<Node*>& nodes2 = outEdge->getOutNodes();
@@ -114,10 +115,10 @@ void mergeNode(Node* inNode, Node* outNode)
 
                     // [4] 分岐先Nodeに対する全入力Edgeをなめる。
                     std::vector<Edge*>& inEdges2 = nodes2[k]->getInEdges();
-                    for(int j=0;j<inEdges2.size(); j++){
-                        if(inEdges2[j] == outEdge){
+                    for(int m=0;m<inEdges2.size(); m++){
+                        if(inEdges2[m] == outEdge){
                             // 出力先Nodeの入力Edgeを入れ替える。
-                            inEdges2[j] = inEdge;
+                            inEdges2[m] = inEdge;
 
                             // １つの入力Edgeの入れ替えを行ったら、あるNodeに対する入力Edgeの検索は抜ける。
                             // あるNodeに対する複数の同一入力Edgeがあったとしても、入力Edgeの全分岐をなめる１つ上のループで
@@ -127,67 +128,28 @@ void mergeNode(Node* inNode, Node* outNode)
                     }
 
                 }
-                it = nodes1.erase(it);
+                nodes1.erase(nodes1.begin()+j);
 
                 // １つの入力Edgeに対して最初に見つけたinNode向け分岐を行い
                 // そのEdgeのループは終わり。１つのEdgeに複数のinNode向け分岐があったとしても
                 // それは1つ上の全入力Edgeのループで検出されるはずなので。
                 break;
             }
-            else{
-                ++it;
-            }
         }
     }
 }
 
 //-----------------------------------------------------------
-// nodeからの出力Edgeの削除
 // NodeEntryからの出力Edgeの削除
 // NodeEntry, NodeExitの削除
-void deleteUnusedNodeEdge(NodeSubSystem* node)
+// Edge自体の削除はここでは行わない(不要となったEdgeは最後にまとめて一括削除)。
+void deleteUnusedNode(NodeSubSystem* node)
 {
-    //-----------------------------------
-    // NodeSubSystemからの出力Edgeの削除
-    // Edgeの削除およびNodeのOutEdgesのクリア
-    std::vector<Edge*>& edges1 = node->getOutEdges();
-    for(auto edge : edges1){
-        delete edge;
-    }
-    edges1.clear();
-
     Node* entryNode = node->getNodeEntry();
     Node* exitNode = node->getNodeExit();
 
-    //-----------------------------------
-    // NodeEntryからの出力Edgeの削除
-    std::vector<Edge*> edges = node->getInnerEdges();
-    std::vector<Edge*>& edges2 = entryNode->getOutEdges();
-
-    // node内の全Edgeのうち、NodeEntryから出力されているEdgeを見つけ
-    // node内のリストから除去する。
-    for(auto it = edges.begin(); it != edges.end();){
-        auto three = find(edges2.cbegin(), edges2.cend(), *it);
-        if(three != edges2.cend()){
-            it = edges.erase(it);
-        }
-        else{
-            ++it;
-        }
-    }
-
-    // NodeEntryから出力されるEdgeを破棄する。
-    for(auto edge : edges2){
-        delete edge;
-    }
-    edges2.clear();
-
-
-    //-----------------------------------
-    // NodeEntry, NodeExitの除去
-
     // NodeEntry, NodeExitをnode内のリストから除去する
-    std::vector<Node*> nodes = node->getInnerNodes();
+    std::vector<Node*>& nodes = node->getInnerNodes();
     for(auto it = nodes.begin(); it != nodes.end();){
         if((*it == entryNode) || (*it == exitNode)){
             it = nodes.erase(it);
@@ -195,12 +157,47 @@ void deleteUnusedNodeEdge(NodeSubSystem* node)
         else{
             ++it;
         }
-
     }
 
     // NodeEntry, NodeExitの破棄。
     delete entryNode;
     delete exitNode;
+}
+
+//-----------------------------------------------------------
+// 参照されていないEdgeを削除する。
+// 参照されれているEdgeの一覧を返す。
+std::vector<Edge*> removeUnusedEdges(std::vector<Node*>& nodes, std::vector<Edge*>& edges)
+{
+    // nodesのNodeからリンクされている全てのEdgeをstd::setに集める。
+    std::set<Edge*> usedEdges;
+    for(Node* node : nodes){
+        std::vector<Edge*>& inEdges = node->getInEdges();
+        std::vector<Edge*>& outEdges = node->getOutEdges();
+
+        std::set<Edge*> edgesSet1(inEdges.begin(), inEdges.end());
+        std::set<Edge*> edgesSet2(outEdges.begin(), outEdges.end());
+
+        usedEdges.merge(edgesSet1);
+        usedEdges.merge(edgesSet2);
+    }
+
+    // edgesの各Edgeが上で集めたリンクされているEdge一覧に含まれるかをチェックする。
+    // 含まれるEdgeのみを新しいEdge一覧に加える。
+    // 含まれないEdgeは破棄する。
+    std::vector<Edge*> newEdges;
+    for(auto edge : edges){
+        auto result = std::find(usedEdges.begin(), usedEdges.end(), edge);
+        if(result == usedEdges.end()){
+            delete edge;
+        }
+        else{
+            newEdges.push_back(edge);
+        }
+    }
+
+    // 参照されているEdge一覧を返す。
+    return newEdges;
 }
 
 //-----------------------------------------------------------
@@ -213,10 +210,10 @@ void reconnectEdges(NodeSubSystem* node)
     // 出力Edgeの繋ぎ変え
     mergeNode(node->getNodeExit(), node);
 
-
-    // 不要になったNode，Edgeを削除する。
-    deleteUnusedNodeEdge(node);
+    // 不要になったNode(Entry,Exit)を削除する。
+    deleteUnusedNode(node);
 }
+
 
 //-----------------------------------------------------------
 // Nodeを平坦化する。
@@ -252,9 +249,10 @@ std::pair<std::vector<Node*>, std::vector<Edge*>> graphFlatten(std::vector<Node*
             // 入出力Edgeの繋ぎ変えを行う。
             reconnectEdges(nodesub);
  
-            // 子Nodeたちを処理待ちキューに追加する。
+             // 子Nodeたちを処理待ちキューに追加する。
             vec2queue<Node*>(nodesub->getInnerNodes(), waitingQ);
 
+            // NodeSubSystem内のEdgeをEdge一覧に加える。(後で破棄されるEdgeも含む)
             vec2vec<Edge*>(nodesub->getInnerEdges(), newEdgeList);
 
             // nodeはこの時点で不要になったので破棄する。
@@ -265,6 +263,8 @@ std::pair<std::vector<Node*>, std::vector<Edge*>> graphFlatten(std::vector<Node*
         }
     }
 
+    // もう、参照されなくなったEdgeを削除する。
+    newEdgeList = removeUnusedEdges(newNodeList, newEdgeList);
     std::pair<std::vector<Node*>, std::vector<Edge*>> p{newNodeList, newEdgeList};
     return p;
 }

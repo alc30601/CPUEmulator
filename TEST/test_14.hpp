@@ -33,7 +33,7 @@ public:
 
 //-----------------------------------------------------------
 class NodeTest14_01 : public NodeComplex
-{
+{  
 public:
     //-------------------------------------------------------
     NodeTest14_01(void)
@@ -65,6 +65,8 @@ void test14_01(void)
 
     gb.outto(Port(qnS, 1), Ports{ Port(qnT, 1), Port(e1, 1), Port(e2, 1) }, typeid(bool));
     gb.outto(Port(qnT, 1), Ports{ Port(qnE, 1), Port(qnE, 2), Port(qnE, 3) }, typeid(bool));
+    gb.outto(Port(qnT, 2), Ports{ Port(e1, 2)}, typeid(bool));
+    gb.outto(Port(qnT, 3), Ports{ Port(e2, 2)}, typeid(bool));
 
     std::vector<Node*>& nodes = gb.getNodes();
     std::vector<Edge*>& edges = gb.getEdges();
