@@ -229,7 +229,7 @@ public:
         auto u6 = gb.createNode<NodeNand>("U6 in JK-FF");
         auto u7 = gb.createNode<NodeNand>("U7 in JK-FF");
         auto u8 = gb.createNode<NodeNand>("U8 in JK-FF");
-        auto u9 = gb.createNode<NodeNot>("U9 in JK-FF");
+        auto u9 = gb.createNode<NodeNot>("U9(NOT) in JK-FF");
 
         gb.outto(Port(enty,  1), Ports{ Port(u1, 1), Port(u2, 1), Port(u9, 1)   }, typeid(bool)); // CK
         gb.outto(Port(enty,  2), Ports{ Port(u1, 2)                             }, typeid(bool)); // J
@@ -248,8 +248,69 @@ public:
     }
 };
 
- // D Flip Flop (Master-Slave)
+
+//-----------------------------------------------------------
+// D Flip Flop (Master-Slave)
+// In-Ports  : CK, D
+// Out-Ports : Q, Q-inv
+class NodeDFlipFlopMasterSlave : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    NodeDFlipFlopMasterSlave(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty  = getEntryNode();
+        auto exit  = getExitNode();
+
+        auto jkff = gb.createNode<NodeJKFlipFlopMasterSlave>("JK-FF in D-FF");
+        auto nnot = gb.createNode<NodeNot>("NOT in D-FF");
+
+        gb.outto(Port(enty, 1), Ports{ Port(jkff, 1)                }, typeid(bool)); // CK
+        gb.outto(Port(enty, 2), Ports{ Port(jkff, 2), Port(nnot, 1) }, typeid(bool)); // D
+        gb.outto(Port(nnot, 1), Ports{ Port(jkff, 3)                }, typeid(bool)); // K-> JK-FF
+        gb.outto(Port(jkff, 1), Ports{ Port(exit, 1)                }, typeid(bool)); // Q
+        gb.outto(Port(jkff, 2), Ports{ Port(exit, 2)                }, typeid(bool)); // Q-inv
+
+        commit();
+    }
+};
+
+
+
+//-----------------------------------------------------------
 // T Flip Flop (Master-Slave)
+// In-Ports  : T
+// Out-Ports : Q, Q-inv
+class NodeTFlipFlopMasterSlave : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    NodeTFlipFlopMasterSlave(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty  = getEntryNode();
+        auto exit  = getExitNode();
+
+        auto jkff = gb.createNode<NodeJKFlipFlopMasterSlave>("JK-FF in D-FF");
+        auto plup = gb.createNode<NodeValue<bool>>("Pull Up");
+
+        gb.outto(Port(plup, 1), Ports{ Port(jkff, 2), Port(jkff, 3) }, typeid(bool));
+        gb.outto(Port(enty, 1), Ports{ Port(jkff, 1)                }, typeid(bool)); // T
+        gb.outto(Port(jkff, 1), Ports{ Port(exit, 1)                }, typeid(bool)); // Q
+        gb.outto(Port(jkff, 2), Ports{ Port(exit, 2)                }, typeid(bool)); // Q-inv
+
+        auto nValue = static_cast<NodeValue<bool>*>(plup.getNode());
+        nValue->setValue(T);    // Pull UP
+
+        commit();
+    }
+};
+
+
+
+
+//-----------------------------------------------------------
 // D Flip Flop (Edge-Trigger)
 // JK Flip Flop (Edge-Trigger)
 // D Flip Flop (Edge-Trigger/Asynchronous reset)

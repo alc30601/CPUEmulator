@@ -306,15 +306,85 @@ void test12_07(void)
 
 
 //-----------------------------------------------------------
+// D Flip Flop(Master-Slave)のテスト
+void test12_08(void)
+{
+    std::cout << "-- TEST12-08 D FlipFlop (MasterSlave) --" << std::endl;
+
+    std::vector<std::vector<bool>>   testVector{
+        {T, F},  // reset
+        {F, F},  // unset
+        {T, F},  // 前値保持
+        {T, T},  // 前値保持
+        {F, T},  // set
+        {T, T},  // set
+    };
+
+    std::vector<std::vector<bool>> expected{
+        {F, T},     // reset
+        {F, T},     // unset
+        {F, T},     // 前値保持
+        {F, T},     // 前値保持
+        {T, F},     // set
+        {T, F},     // 前値保持
+    };
+
+    std::vector<bool> do_asserts{
+        false, true, true,  true, true,  true,
+    };
+
+    test_NtoM_template<NodeDFlipFlopMasterSlave, bool, bool>(testVector, expected, do_asserts);
+}
+
+//-----------------------------------------------------------
+// T Flip Flop(Master-Slave)のテスト
+// T-FlipFlopはたち下がりで出力データ(Q/Q-inv)が反転する振る舞い。
+// 初期値が何かによってその後の値も変化する。
+// よって、下記の試験フレームワークでは固定的に出力値を規定できず、
+// assertによる結果の判定は行わない。(目視でたち下がり時に出力値が反転することを確認)
+void test12_09(void)
+{
+    std::cout << "-- TEST12-09 T FlipFlop (MasterSlave) --" << std::endl;
+
+    std::vector<std::vector<bool>>   testVector{
+        {T},  // reset
+        {F},  // set
+        {T},  // keep
+        {F},  // set
+        {T},  // keep
+        {F},  // set
+    };
+
+    std::vector<std::vector<bool>> expected{
+        {F, T},     // reset
+        {T, F},     // unset
+        {T, F},     // 前値保持
+        {F, T},     // 反転
+        {F, T},     // 前値保持
+        {T, F},     // 反転 
+    };
+
+    std::vector<bool> do_asserts{
+        false, false, false, false, false, false,
+    };
+
+    test_NtoM_template<NodeTFlipFlopMasterSlave, bool, bool>(testVector, expected, do_asserts);
+}
+
+
+//-----------------------------------------------------------
 void test12(void)
 {
-    test12_01();
-    test12_02();
-    test12_03();
-    test12_04();
-    test12_05(); 
-    test12_06(); 
-    test12_07(); 
+    test12_01();    // NOR型SRフリップフロップのテスト
+    test12_02();    // NAND型SRフリップフロップのテスト
+    test12_03();    // Gated SR Latchのテスト
+    test12_04();    // Gated D Latchのテスト
+    test12_05();    // JK Flip Flopのテスト
+    test12_06();    // D Flip Flopのテスト
+    test12_07();    // JK Flip Flop(Master-Slave)のテスト
+    test12_08();    // D Flip Flop(Master-Slave)のテスト
+    test12_09();    // T Flip Flop(Master-Slave)のテスト
+
 }
 
 #endif

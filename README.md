@@ -229,5 +229,6 @@ This is a data flow graph core implementation.
 - グラフ平坦化動作確認完了
 - グラフ平坦化することにより今まで正常動作しなかったFlipFlopが正常動作することを確認。
   結局、今まで正常動作しなかった原因は不明のままであるがまぁ良しとする。
-
+- D Flip Flop (Master-Slave)確認完了
+- T Flip Flop (Master-Slave)確認完了
   

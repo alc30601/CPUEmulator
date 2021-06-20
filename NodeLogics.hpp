@@ -315,62 +315,62 @@ public:
 
 //-----------------------------------------------------------
 // ３端子NAND
-// class Node3Nand : public NodeComplex
-// {
-// public:
-//     //-------------------------------------------------------
-//     Node3Nand(void)
-//     {
-//         auto& gb = getGraphBuilder();
-//         auto enty = getEntryNode();
-//         auto exit = getExitNode();
-
-//         auto and1 = gb.createNode<Node3And>("Node3Nand in Node3Nand");
-//         auto not1 = gb.createNode<NodeNot>("NodeNot in Node3Nand");
-
-//         gb.outto(Port(enty, 1), Ports{Port(and1, 1) }, typeid(bool));
-//         gb.outto(Port(enty, 2), Ports{Port(and1, 2) }, typeid(bool));
-//         gb.outto(Port(enty, 3), Ports{Port(and1, 3) }, typeid(bool));
-//         gb.outto(Port(and1, 1), Ports{Port(not1, 1) }, typeid(bool));
-//         gb.outto(Port(not1, 1), Ports{ Port(exit, 1)}, typeid(bool));
-
-//         commit();
-
-//     }
-// };
-
-class  Node3Nand : public Node
+class Node3Nand : public NodeComplex
 {
 public:
     //-------------------------------------------------------
-    void execute(void)
+    Node3Nand(void)
     {
-        Node::execute();
+        auto& gb = getGraphBuilder();
+        auto enty = getEntryNode();
+        auto exit = getExitNode();
 
-        bool result = F;
-        bool inValue1 = _inEdges.at(0)->value<bool>();
-        bool inValue2 = _inEdges.at(1)->value<bool>();
-        bool inValue3 = _inEdges.at(2)->value<bool>();
+        auto and1 = gb.createNode<Node3And>("Node3Nand in Node3Nand");
+        auto not1 = gb.createNode<NodeNot>("NodeNot in Node3Nand");
 
-        if((inValue1 == F) || (inValue2 == F) || (inValue3 == F)){
-            result = T;
-        }
-        else{
-            result = F;
-        }
+        gb.outto(Port(enty, 1), Ports{Port(and1, 1) }, typeid(bool));
+        gb.outto(Port(enty, 2), Ports{Port(and1, 2) }, typeid(bool));
+        gb.outto(Port(enty, 3), Ports{Port(and1, 3) }, typeid(bool));
+        gb.outto(Port(and1, 1), Ports{Port(not1, 1) }, typeid(bool));
+        gb.outto(Port(not1, 1), Ports{ Port(exit, 1)}, typeid(bool));
 
-        bool outValue = result;
-        _outEdges.at(0)->setValue(outValue);
-    }
+        commit();
 
-    //-------------------------------------------------------
-    // 有効で値がFの入力Edgeがあれば演算可能。
-    // 有効で値がFの入力Edgeがなく、無効の入力Edgeが１つでもあれば演算不可。
-    bool isInputDataCompleted(void)
-    {
-        return isEdgeEnough(_inEdges, F);
     }
 };
+
+// class  Node3Nand : public Node
+// {
+// public:
+//     //-------------------------------------------------------
+//     void execute(void)
+//     {
+//         Node::execute();
+
+//         bool result = F;
+//         bool inValue1 = _inEdges.at(0)->value<bool>();
+//         bool inValue2 = _inEdges.at(1)->value<bool>();
+//         bool inValue3 = _inEdges.at(2)->value<bool>();
+
+//         if((inValue1 == F) || (inValue2 == F) || (inValue3 == F)){
+//             result = T;
+//         }
+//         else{
+//             result = F;
+//         }
+
+//         bool outValue = result;
+//         _outEdges.at(0)->setValue(outValue);
+//     }
+
+//     //-------------------------------------------------------
+//     // 有効で値がFの入力Edgeがあれば演算可能。
+//     // 有効で値がFの入力Edgeがなく、無効の入力Edgeが１つでもあれば演算不可。
+//     bool isInputDataCompleted(void)
+//     {
+//         return isEdgeEnough(_inEdges, F);
+//     }
+// };
 
 
 #endif
