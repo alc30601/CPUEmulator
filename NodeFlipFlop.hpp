@@ -312,9 +312,179 @@ public:
 
 //-----------------------------------------------------------
 // D Flip Flop (Edge-Trigger)
+// In-Ports  : CK, D
+// Out-Ports : Q, Q-inv
+class NodeDFlipFlopEdgeTrigger : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    NodeDFlipFlopEdgeTrigger(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty  = getEntryNode();
+        auto exit  = getExitNode();
+
+        auto u1 = gb.createNode<NodeNand>("U1 in D-FF(EdgeTrigger)");
+        auto u2 = gb.createNode<NodeNand>("U2 in D-FF(EdgeTrigger)");
+        auto u3 = gb.createNode<Node3Nand>("U3 in D-FF(EdgeTrigger)");
+        auto u4 = gb.createNode<NodeNand>("U4 in D-FF(EdgeTrigger)");
+        auto u5 = gb.createNode<NodeNand>("U5 in D-FF(EdgeTrigger)");
+        auto u6 = gb.createNode<NodeNand>("U6 in D-FF(EdgeTrigger)");
+
+        gb.outto(Port(enty, 1), Ports{ Port(u2, 2), Port(u3, 2) }               , typeid(bool)); // CK
+        gb.outto(Port(enty, 2), Ports{ Port(u4, 2) }                            , typeid(bool)); // D
+        gb.outto(Port(u1, 1)  , Ports{ Port(u2, 1) }                            , typeid(bool)); // A
+        gb.outto(Port(u2, 1)  , Ports{ Port(u1, 2), Port(u3, 1), Port(u5, 1) }  , typeid(bool)); // X
+        gb.outto(Port(u3, 1)  , Ports{ Port(u4, 1), Port(u6, 2) }               , typeid(bool)); // Y
+        gb.outto(Port(u4, 1)  , Ports{ Port(u3, 3), Port(u1, 1) }               , typeid(bool)); // B
+        gb.outto(Port(u5, 1)  , Ports{ Port(u6, 1), Port(exit, 1) }             , typeid(bool)); // Q
+        gb.outto(Port(u6, 1)  , Ports{ Port(u5, 2), Port(exit, 2) }             , typeid(bool)); // Q-inv
+ 
+        commit();
+    }
+};
+
+
+
+
+//-----------------------------------------------------------
 // JK Flip Flop (Edge-Trigger)
+// In-Ports  : CK, J, K
+// Out-Ports : Q, Q-inv
+class NodeJKFlipFlopEdgeTrigger : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    NodeJKFlipFlopEdgeTrigger(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty  = getEntryNode();
+        auto exit  = getExitNode();
+
+        auto dff = gb.createNode<NodeDFlipFlopEdgeTrigger>("D-FF(EdgeTrigger) in JKFF(EdgeTrigger)");
+        auto not1 = gb.createNode<NodeNot>("NOT in JKFF(EdgeTrigger)");
+        auto and1 = gb.createNode<NodeAnd>("AND1 in JKFF(EdgeTrigger)");
+        auto and2 = gb.createNode<NodeAnd>("AND2 in JKFF(EdgeTrigger)");
+        auto or1 = gb.createNode<NodeOr>("OR in JKFF(EdgeTrigger)");
+
+        gb.outto(Port(enty, 1), Ports{ Port(dff, 1) }                   , typeid(bool)); // CK
+        gb.outto(Port(enty, 2), Ports{ Port(and1, 2) }                  , typeid(bool)); // J
+        gb.outto(Port(enty, 3), Ports{ Port(not1, 1) }                  , typeid(bool)); // K
+        gb.outto(Port(not1, 1), Ports{ Port(and2, 1) }                  , typeid(bool));
+        gb.outto(Port(and1, 1), Ports{ Port(or1, 1) }                   , typeid(bool));
+        gb.outto(Port(and2, 1), Ports{ Port(or1, 2) }                   , typeid(bool));
+        gb.outto(Port(or1, 1), Ports{ Port(dff, 2) }                    , typeid(bool)); // D
+        gb.outto(Port(dff, 1), Ports{ Port(and2, 2), Port(exit, 1) }    , typeid(bool)); // Q
+        gb.outto(Port(dff, 2), Ports{ Port(and1, 1), Port(exit, 2) }    , typeid(bool)); // Q-inv
+
+        commit();
+    }
+
+};
+
+
+//-----------------------------------------------------------
+// T Flip Flop (Edge-Trigger)
+// In-Ports  : T
+// Out-Ports : Q, Q-inv
+class NodeTFlipFlopEdgeTrigger : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    NodeTFlipFlopEdgeTrigger(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty  = getEntryNode();
+        auto exit  = getExitNode();
+
+        auto dff = gb.createNode<NodeDFlipFlopEdgeTrigger>("D-FF(EdgeTrigger) in T-FF(EdgeTrigger)");
+
+        gb.outto(Port(enty, 1), Ports{ Port(dff, 1) }                   , typeid(bool)); // T
+        gb.outto(Port(dff, 1),  Ports{ Port(exit, 1) }                  , typeid(bool)); // Q
+        gb.outto(Port(dff, 2),  Ports{ Port(dff, 2), Port(exit, 2) }    , typeid(bool)); // Q-inv
+
+        commit();
+
+    }
+};
+
+
+
+//-----------------------------------------------------------
 // D Flip Flop (Edge-Trigger/Asynchronous reset)
+// In-Ports  : RST, CK, D
+// Out-Ports : Q, Q-inv
+class NodeDFlipFlopEdgeTriggerAsyncReset : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    NodeDFlipFlopEdgeTriggerAsyncReset(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty  = getEntryNode();
+        auto exit  = getExitNode();
+
+        auto u1 = gb.createNode<NodeNand>("U1 in D-FF(EdgeTriggerAsyncReset)");
+        auto u2 = gb.createNode<Node3Nand>("U2 in D-FF(EdgeTriggerAsyncReset)");
+        auto u3 = gb.createNode<Node3Nand>("U3 in D-FF(EdgeTriggerAsyncReset)");
+        auto u4 = gb.createNode<Node3Nand>("U4 in D-FF(EdgeTriggerAsyncReset)");
+        auto u5 = gb.createNode<NodeNand>("U5 in D-FF(EdgeTriggerAsyncReset)");
+        auto u6 = gb.createNode<Node3Nand>("U6 in D-FF(EdgeTriggerAsyncReset)");
+
+        gb.outto(Port(enty, 1), Ports{ Port(u2, 3), Port(u4, 3), Port(u6, 3)    }, typeid(bool)); // RST
+        gb.outto(Port(enty, 2), Ports{ Port(u2, 2), Port(u3, 2)                 }, typeid(bool)); // CK
+        gb.outto(Port(enty, 3), Ports{ Port(u4, 2)                              }, typeid(bool)); // D
+        gb.outto(Port(u1, 1),   Ports{ Port(u2, 1)                              }, typeid(bool)); // A
+        gb.outto(Port(u2, 1),   Ports{ Port(u1, 2), Port(u3, 1), Port(u5, 1)    }, typeid(bool)); // X
+        gb.outto(Port(u3, 1),   Ports{ Port(u4, 1), Port(u6, 2)                 }, typeid(bool)); // Y
+        gb.outto(Port(u4, 1),   Ports{ Port(u3, 3), Port(u1, 1)                 }, typeid(bool)); // B
+        gb.outto(Port(u5, 1),   Ports{ Port(u6, 1), Port(exit, 1)               }, typeid(bool)); // Q
+        gb.outto(Port(u6, 1),   Ports{ Port(u5, 2), Port(exit, 2)               }, typeid(bool)); // Q-inv
+ 
+        commit();
+
+    }
+};
+
+
+//-----------------------------------------------------------
 // JK Flip Flop (Edge-Trigger/Asynchronous reset)
+// In-Ports  : RST, CK, J, K
+// Out-Ports : Q, Q-inv
+class NodeJKFlipFlopEdgeTriggerAsyncReset : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    NodeJKFlipFlopEdgeTriggerAsyncReset(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty  = getEntryNode();
+        auto exit  = getExitNode();
+
+        auto dff = gb.createNode<NodeDFlipFlopEdgeTriggerAsyncReset>("D-FF in JKFF");
+        auto not1 = gb.createNode<NodeNot>("NOT in JKFF");
+        auto and1 = gb.createNode<NodeAnd>("AND1 in JKFF");
+        auto and2 = gb.createNode<NodeAnd>("AND2 in JKFF");
+        auto or1 = gb.createNode<NodeOr>("OR in JKFF ");
+
+        gb.outto(Port(enty, 1), Ports{ Port(dff, 1) }                   , typeid(bool)); // RST
+        gb.outto(Port(enty, 2), Ports{ Port(dff, 2) }                   , typeid(bool)); // CK
+        gb.outto(Port(enty, 3), Ports{ Port(and1, 2) }                  , typeid(bool)); // J
+        gb.outto(Port(enty, 4), Ports{ Port(not1, 1) }                  , typeid(bool)); // K
+        gb.outto(Port(not1, 1), Ports{ Port(and2, 1) }                  , typeid(bool));
+        gb.outto(Port(and1, 1), Ports{ Port(or1, 1) }                   , typeid(bool));
+        gb.outto(Port(and2, 1), Ports{ Port(or1, 2) }                   , typeid(bool));
+        gb.outto(Port(or1, 1), Ports{ Port(dff, 3) }                    , typeid(bool)); // D
+        gb.outto(Port(dff, 1), Ports{ Port(and2, 2), Port(exit, 1) }    , typeid(bool)); // Q
+        gb.outto(Port(dff, 2), Ports{ Port(and1, 1), Port(exit, 2) }    , typeid(bool)); // Q-inv
+
+        commit();
+
+    }
+};
+
+
+
 // T Flip Flop (Edge-Trigger/Asynchronous reset)
 // 4bits register
 // 4bits Asynchronous Counter

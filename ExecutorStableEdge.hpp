@@ -136,13 +136,16 @@ class ExecutorStableEdge : public Executor
     }
 
 
+    //-------------------------------------------------------
     void printEdgeValues(std::vector<std::any>& values)
     {
+#if 0
         for(auto value : values){
             bool v = std::any_cast<bool>(value);
             std::cout << v << " ";
         }
         std::cout << std::endl;
+#endif
     }
 
 public:

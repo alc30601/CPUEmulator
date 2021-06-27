@@ -371,6 +371,191 @@ void test12_09(void)
     test_NtoM_template<NodeTFlipFlopMasterSlave, bool, bool>(testVector, expected, do_asserts);
 }
 
+//-----------------------------------------------------------
+// D Flip Flop(EdgeTrigger)のテスト
+void test12_10(void)
+{
+    std::cout << "-- TEST12-10 D FlipFlop (EdgeTrigger) --" << std::endl;
+
+    std::vector<std::vector<bool>>   testVector{
+        {F, F}, // initial(D=0)
+        {T, F}, // positive edge
+        {F, T}, // negative edge
+        {F, T}, // D=1
+        {T, T}, // positive edge
+        {F, F}, // negative edge
+    };
+
+    std::vector<std::vector<bool>> expected{
+        {F, T},     // initial
+        {F, T},     // D=0
+        {F, T},     // 前値保持
+        {F, T},     // 前値保持
+        {T, F},     // D=1
+        {T, F},     // 前値保持
+    };
+
+    std::vector<bool> do_asserts{
+        false, true, true, true, true, true,
+    };
+
+    test_NtoM_template<NodeDFlipFlopEdgeTrigger, bool, bool>(testVector, expected, do_asserts);
+ 
+}
+
+//-----------------------------------------------------------
+// JK Flip Flop(EdgeTrigger)のテスト
+void test12_11(void)
+{
+    std::cout << "-- TEST12-11 JK FlipFlop (EdgeTrigger) --" << std::endl;
+
+    std::vector<std::vector<bool>>   testVector{
+        {F, F, T}, // [ 1] initial(J=0/K=1)
+        {T, F, T}, // [ 2] positive edge(J=0/K=1)
+        {T, F, F}, // [ 3] stay positive(J=0/K=0)
+        {F, F, F}, // [ 4] negative edge(J=0/K=0)
+        {T, F, F}, // [ 5] positive edge(J=0/K=0)
+        {F, F, F}, // [ 6] negative edge(J=0/K=0)
+        {F, T, F}, // [ 7] stay negative(J=1/K=0)
+        {T, T, F}, // [ 8] positive edge(J=1/K=0)
+        {F, T, T}, // [ 9] negative edge(J=1/K=1)
+        {T, T, T}, // [10] positive edge(J=1/K=1)
+    };
+
+    std::vector<std::vector<bool>> expected{
+        {F, T},     // [ 1] initial(不定)
+        {F, T},     // [ 2] 0, 1
+        {F, T},     // [ 3] 前値保持
+        {F, T},     // [ 4] 前値保持
+        {F, T},     // [ 5] 前値保持
+        {F, T},     // [ 6] 前値保持
+        {F, T},     // [ 7] 前値保持
+        {T, F},     // [ 8] 1, 0
+        {T, F},     // [ 9] 前値保持
+        {F, T},     // [10] 反転
+    };
+
+    std::vector<bool> do_asserts{
+        false, true, true, true, true, true, true, true, true, true,
+    };
+
+    test_NtoM_template<NodeJKFlipFlopEdgeTrigger, bool, bool>(testVector, expected, do_asserts);
+ 
+}
+
+
+//-----------------------------------------------------------
+// T Flip Flop(EdgeTrigger)のテスト
+// 立ち上がりでQ,Q-inv反転。但し出力値は初期値に依存するため
+// 目視での確認とする。
+void test12_12(void)
+{
+    std::cout << "-- TEST12-12 T FlipFlop (EdgeTrigger) --" << std::endl;
+
+    std::vector<std::vector<bool>>   testVector{
+        {F}, // [ 1] initial
+        {T}, // [ 2] positive edge
+        {F}, // [ 3] negative edge
+        {T}, // [ 4] positive edge
+        {F}, // [ 5] negative edge
+        {T}, // [ 6] positive edge
+    };
+
+    std::vector<std::vector<bool>> expected{
+        {F, T},     // [ 1] initial(不定)
+        {T, F},     // [ 2] Q->Q-inv, Q-inv->Q
+        {T, F},     // [ 3] stay
+        {F, T},     // [ 4] Q->Q-inv, Q-inv->Q
+        {F, T},     // [ 5] stay
+        {T, F},     // [ 6] Q->Q-inv, Q-inv->Q
+    };
+
+    std::vector<bool> do_asserts{
+        false, false, false, false, false, false
+    };
+
+    test_NtoM_template<NodeTFlipFlopEdgeTrigger, bool, bool>(testVector, expected, do_asserts);
+ 
+}
+
+//-----------------------------------------------------------
+// D Flip Flop(EdgeTriggerAsyncReset)のテスト
+void test12_13(void)
+{
+    std::cout << "-- TEST12-13 D FlipFlop (EdgeTriggerAsyncReset) --" << std::endl;
+
+    std::vector<std::vector<bool>>   testVector{
+        {F, F, F}, // [ 1] initial
+        {F, T, T}, // [ 2] stay reset
+        {F, F, F}, // [ 3] stay reset
+        {T, F, T}, // [ 4] non reset
+        {T, T, T}, // [ 5] non reset, edge(D=1)
+        {T, F, F}, // [ 6] non reset, (D=0)
+        {T, T, F}, // [ 7] non reset, edge(D=0)
+        {T, F, T}, // [ 8] non reset, (D=1)
+        {T, T, T}, // [ 9] non reset, edge(D=1)
+        {F, T, T}, // [10] reset
+    };
+
+    std::vector<std::vector<bool>> expected{
+        {F, T},     // [ 1] reset(0, 1)
+        {F, T},     // [ 2] stay
+        {F, T},     // [ 3] stay
+        {F, T},     // [ 4] stay
+        {T, F},     // [ 5] 1, 0
+        {T, F},     // [ 6] stay
+        {F, T},     // [ 7] 0, 1
+        {F, T},     // [ 8] stay
+        {T, F},     // [ 9] 1, 0
+        {F, T},     // [10] 0, 1
+    };
+
+    std::vector<bool> do_asserts{
+        true, true, true, true, true, true, true, true, true, true
+    };
+
+    test_NtoM_template<NodeDFlipFlopEdgeTriggerAsyncReset, bool, bool>(testVector, expected, do_asserts);
+ 
+}
+
+
+//-----------------------------------------------------------
+// JK Flip Flop(EdgeTriggerAsyncReset)のテスト
+void test12_14(void)
+{
+    std::cout << "-- TEST12-14 D FlipFlop (EdgeTriggerAsyncReset) --" << std::endl;
+
+    std::vector<std::vector<bool>>   testVector{
+        {F, F, F, T}, // [ 1] reset
+        {T, F, F, F}, // [ 2] non reset
+        {T, T, F, F}, // [ 3] edge up(J=0)
+        {T, F, F, T}, // [ 4] edge down
+        {T, T, F, T}, // [ 5] edge up(J=0)
+        {T, F, T, F}, // [ 6] edge down
+        {T, T, T, F}, // [ 7] edge up(J=1)
+        {T, F, T, T}, // [ 8] edge down
+        {T, F, T, T}, // [ 9] edge down(J=1,K=1)
+    };
+
+    std::vector<std::vector<bool>> expected{
+        {F, T}, // [ 1] reset(0, 1)
+        {F, T}, // [ 2] stay
+        {F, T}, // [ 3] stay
+        {F, T}, // [ 4] stay
+        {F, T}, // [ 5] 0, 1
+        {F, T}, // [ 6] 0, 1
+        {T, F}, // [ 7] 1, 0
+        {T, F}, // [ 8] 1, 0
+        {F, T}, // [ 9] 0, 1
+    };
+
+    std::vector<bool> do_asserts{
+        true, true, true, true, true, true, true, true, true
+    };
+
+    test_NtoM_template<NodeDFlipFlopEdgeTriggerAsyncReset, bool, bool>(testVector, expected, do_asserts);
+ 
+}
 
 //-----------------------------------------------------------
 void test12(void)
@@ -384,7 +569,11 @@ void test12(void)
     test12_07();    // JK Flip Flop(Master-Slave)のテスト
     test12_08();    // D Flip Flop(Master-Slave)のテスト
     test12_09();    // T Flip Flop(Master-Slave)のテスト
-
+    test12_10();    // D Flip Flop(EdgeTrigger)のテスト
+    test12_11();    // JK Flip Flop(EdgeTrigger)のテスト
+    test12_12();    // T Flip Flop(EdgeTrigger)のテスト
+    test12_13();    // D Flip Flop(EdgeTriggerAsyncReset)のテスト
+    test12_14();    // JK Flip Flop(EdgeTriggerAsyncReset)のテスト
 }
 
 #endif

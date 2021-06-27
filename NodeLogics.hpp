@@ -325,7 +325,7 @@ public:
         auto enty = getEntryNode();
         auto exit = getExitNode();
 
-        auto and1 = gb.createNode<Node3And>("Node3Nand in Node3Nand");
+        auto and1 = gb.createNode<Node3And>("Node3And in Node3Nand");
         auto not1 = gb.createNode<NodeNot>("NodeNot in Node3Nand");
 
         gb.outto(Port(enty, 1), Ports{Port(and1, 1) }, typeid(bool));

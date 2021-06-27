@@ -231,4 +231,14 @@ This is a data flow graph core implementation.
   結局、今まで正常動作しなかった原因は不明のままであるがまぁ良しとする。
 - D Flip Flop (Master-Slave)確認完了
 - T Flip Flop (Master-Slave)確認完了
-  
+
+## 2021.06.27
+- D Flip Flop(EdgeTrigger)確認完了
+- JK Flip Flop(EdgeTrigger)確認完了
+- T Flip Flop(EdgeTrigger)確認完了
+- D Flip Flop(EdgeTriggerAsyncReset)確認完了
+- JK Flip Flop(EdgeTriggerAsyncReset)実装完了、確認中。
+
+
+
+
