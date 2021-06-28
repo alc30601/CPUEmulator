@@ -239,6 +239,9 @@ This is a data flow graph core implementation.
 - D Flip Flop(EdgeTriggerAsyncReset)確認完了
 - JK Flip Flop(EdgeTriggerAsyncReset)実装完了、確認中。
 
-
+## 2021.06.28
+- JK Flip Flop(EdgeTriggerAsyncReset)実装完了
+- T Flip Flop(EdgeTriggerAsyncReset)実装完了
+- ここまでで、FlipFlop一通り確認完了。
 
 

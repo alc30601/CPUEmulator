@@ -479,13 +479,38 @@ public:
         gb.outto(Port(dff, 2), Ports{ Port(and1, 1), Port(exit, 2) }    , typeid(bool)); // Q-inv
 
         commit();
-
     }
 };
 
 
 
+//-----------------------------------------------------------
 // T Flip Flop (Edge-Trigger/Asynchronous reset)
+// In-Ports  : RST, T
+// Out-Ports : Q, Q-inv
+class NodeTFlipFlopEdgeTriggerAsyncReset : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    NodeTFlipFlopEdgeTriggerAsyncReset(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty  = getEntryNode();
+        auto exit  = getExitNode();
+
+        auto dff = gb.createNode<NodeDFlipFlopEdgeTriggerAsyncReset>("D-FF in JKFF");
+
+        gb.outto(Port(enty, 1), Ports{ Port(dff, 1) }                   , typeid(bool)); // RST
+        gb.outto(Port(enty, 2), Ports{ Port(dff, 2) }                   , typeid(bool)); // T
+        gb.outto(Port(dff, 1),  Ports{ Port(exit, 1) }                  , typeid(bool)); // Q
+        gb.outto(Port(dff, 2),  Ports{ Port(dff, 3), Port(exit, 2) }    , typeid(bool)); // Q-inv
+
+        commit();
+    }
+};
+
+
+
 // 4bits register
 // 4bits Asynchronous Counter
 // 4bits Synchronous Counter

@@ -534,7 +534,7 @@ void test12_14(void)
         {T, F, T, F}, // [ 6] edge down
         {T, T, T, F}, // [ 7] edge up(J=1)
         {T, F, T, T}, // [ 8] edge down
-        {T, F, T, T}, // [ 9] edge down(J=1,K=1)
+        {T, T, T, T}, // [ 9] edge up(J=1,K=1)
     };
 
     std::vector<std::vector<bool>> expected{
@@ -553,9 +553,47 @@ void test12_14(void)
         true, true, true, true, true, true, true, true, true
     };
 
-    test_NtoM_template<NodeDFlipFlopEdgeTriggerAsyncReset, bool, bool>(testVector, expected, do_asserts);
+    test_NtoM_template<NodeJKFlipFlopEdgeTriggerAsyncReset, bool, bool>(testVector, expected, do_asserts);
  
 }
+
+
+//-----------------------------------------------------------
+// T Flip Flop(EdgeTriggerAsyncReset)のテスト
+void test12_15(void)
+{
+    std::cout << "-- TEST12-15 T FlipFlop (EdgeTriggerAsyncReset) --" << std::endl;
+
+    std::vector<std::vector<bool>>   testVector{
+        {F, F}, // [ 1] reset
+        {T, F}, // [ 2] non reset
+        {T, T}, // [ 3] edge up
+        {T, F}, // [ 4] edge down
+        {T, T}, // [ 5] edge up
+        {T, F}, // [ 6] edge down
+        {T, T}, // [ 7] edge up
+        {F, T}, // [ 8] reset
+    };
+
+    std::vector<std::vector<bool>> expected{
+        {F, T}, // [ 1] reset(0, 1)
+        {F, T}, // [ 2] stay
+        {T, F}, // [ 3] reverse
+        {T, F}, // [ 4] stay
+        {F, T}, // [ 5] reverse
+        {F, T}, // [ 6] stay
+        {T, F}, // [ 7] reverse
+        {F, T}, // [ 8] reset(0, 1)
+    };
+
+    std::vector<bool> do_asserts{
+        true, true, true, true, true, true, true, true
+    };
+
+    test_NtoM_template<NodeTFlipFlopEdgeTriggerAsyncReset, bool, bool>(testVector, expected, do_asserts);
+ 
+}
+
 
 //-----------------------------------------------------------
 void test12(void)
@@ -574,6 +612,7 @@ void test12(void)
     test12_12();    // T Flip Flop(EdgeTrigger)のテスト
     test12_13();    // D Flip Flop(EdgeTriggerAsyncReset)のテスト
     test12_14();    // JK Flip Flop(EdgeTriggerAsyncReset)のテスト
+    test12_15();    // T Flip Flop(EdgeTriggerAsyncReset)のテスト
 }
 
 #endif
