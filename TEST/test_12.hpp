@@ -591,7 +591,6 @@ void test12_15(void)
     };
 
     test_NtoM_template<NodeTFlipFlopEdgeTriggerAsyncReset, bool, bool>(testVector, expected, do_asserts);
- 
 }
 
 

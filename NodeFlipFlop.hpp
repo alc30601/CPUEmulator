@@ -6,7 +6,6 @@
 // Gated D Latch
 // JK Flip Flop
 // D Flip Flop
-
 // JK Flip Flop (Master-Slave)
 // D Flip Flop (Master-Slave)
 // T Flip Flop (Master-Slave)
@@ -15,10 +14,6 @@
 // D Flip Flop (Edge-Trigger/Asynchronous reset)
 // JK Flip Flop (Edge-Trigger/Asynchronous reset)
 // T Flip Flop (Edge-Trigger/Asynchronous reset)
-// 4bits register
-// 4bits Asynchronous Counter
-// 4bits Synchronous Counter
-// 4bits shift register
 
 #ifndef __NODEFLIPFLOP_HPP__
 #define __NODEFLIPFLOP_HPP__
@@ -511,12 +506,7 @@ public:
 
 
 
-// 4bits register
-// 4bits Asynchronous Counter
-// 4bits Synchronous Counter
-// 4bits shift register
 
- 
 #endif
 
 

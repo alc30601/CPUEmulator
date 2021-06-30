@@ -70,9 +70,12 @@ bool isTheClass(BASE_CLASS* a)
 
 //-----------------------------------------------------------
 // inNodeの入力EdgeとoutNodeの出力Edgeを結合する。
-// 前提としてinNodeの入力Edge数とoutNodeの出力Edge数が同じであることが必要。
 // inNodeの入力元Edgeの出力先NodeをinNodeから本当の出力先に書き換える。
 // 本当の出力先Nodeの入力EdgeをinEdgeに書き換える。
+// inNodeの入力Edge数とoutNodeの出力Edge数が同じであるとは限らない。
+// in/outで使用するEdgeが異なる場合がありうる。
+// 特に該当する出力側Edgeが存在しない場合はありうる。
+// これは、そのEdgeの値を出力側では使用しない場合。
 //             
 //            +--   +------+  +-------+               +--   +--+
 //   ______   |   --|inNode|  |outNode|--  _______    |   --|  |
@@ -92,11 +95,22 @@ void mergeNode(Node* inNode, Node* outNode)
     std::vector<Edge*>& inEdges = inNode->getInEdges();
     std::vector<Edge*>& outEdges = outNode->getOutEdges();
 
+    // InとOutで必ずしも全てが接続されているわけではない。
+    // そのため、全てのEdgeを巡り、接続されているEdgeに対して処理を行う。
+    int numOfEdge = std::max(inEdges.size(), outEdges.size());
+
     // [2] 全入力Edge(全出力Edge)をなめる。
-    for(int i=0;i<inEdges.size();i++){
+    for(int i=0;i<numOfEdge;i++){
 
         Edge* inEdge = inEdges[i];
         Edge* outEdge = outEdges[i];
+
+        // 恐らく、あり得ないケースだが、該当する入力Edgeがない場合は処理をスキップ。
+        // 「あり得ない」の意味は、あり得た場合はグラフの接続が間違っている場合ということ。
+        if(inEdge == NULL){
+            std::cout << "!!! No Corresponding in edge" << std::endl;
+            continue;
+        }
 
         std::vector<Node*>& nodes1 = inEdge->getOutNodes();
 
@@ -106,28 +120,38 @@ void mergeNode(Node* inNode, Node* outNode)
             // ある分岐先NodeがinNodeだった場合、それはinNodeのi番目の入力Edgeであるはず。
             if(nodes1[j] == inNode){
 
-                // [3] 対応する出力Edgeの全分岐先をなめる。
-                std::vector<Node*>& nodes2 = outEdge->getOutNodes();
-                for(int k=0;k<nodes2.size();k++){
+                // 該当する出力Edgeがない場合は処理をスキップ。
+                // 入力Edgeの該当の枝を削除するだけ。
+                if(outEdge != NULL){
 
-                    // 出力先分岐Nodeを入力Edgeに追加する。
-                    inEdge->addOutNode(nodes2[k]);
+                    // [3] 対応する出力Edgeの全分岐先をなめる。
+                    std::vector<Node*>& nodes2 = outEdge->getOutNodes();
+                    for(int k=0;k<nodes2.size();k++){
 
-                    // [4] 分岐先Nodeに対する全入力Edgeをなめる。
-                    std::vector<Edge*>& inEdges2 = nodes2[k]->getInEdges();
-                    for(int m=0;m<inEdges2.size(); m++){
-                        if(inEdges2[m] == outEdge){
-                            // 出力先Nodeの入力Edgeを入れ替える。
-                            inEdges2[m] = inEdge;
+                        // 出力先分岐Nodeを入力Edgeに追加する。
+                        inEdge->addOutNode(nodes2[k]);
 
-                            // １つの入力Edgeの入れ替えを行ったら、あるNodeに対する入力Edgeの検索は抜ける。
-                            // あるNodeに対する複数の同一入力Edgeがあったとしても、入力Edgeの全分岐をなめる１つ上のループで
-                            // 検出されるはずなので。
-                            break;
+                        // [4] 分岐先Nodeに対する全入力Edgeをなめる。
+                        std::vector<Edge*>& inEdges2 = nodes2[k]->getInEdges();
+                        for(int m=0;m<inEdges2.size(); m++){
+                            if(inEdges2[m] == outEdge){
+                                // 出力先Nodeの入力Edgeを入れ替える。
+                                inEdges2[m] = inEdge;
+
+                                // １つの入力Edgeの入れ替えを行ったら、あるNodeに対する入力Edgeの検索は抜ける。
+                                // あるNodeに対する複数の同一入力Edgeがあったとしても、入力Edgeの全分岐をなめる１つ上のループで
+                                // 検出されるはずなので。
+                                break;
+                            }
                         }
+
                     }
 
                 }
+                else{
+                    std::cout << "!!! No Corresponding out edge" << std::endl;
+                }
+
                 nodes1.erase(nodes1.begin()+j);
 
                 // １つの入力Edgeに対して最初に見つけたinNode向け分岐を行い

@@ -244,4 +244,6 @@ This is a data flow graph core implementation.
 - T Flip Flop(EdgeTriggerAsyncReset)実装完了
 - ここまでで、FlipFlop一通り確認完了。
 
+## 2021.06.30
+- 4bit Register確認完了
 

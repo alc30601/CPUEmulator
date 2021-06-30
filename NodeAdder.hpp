@@ -181,11 +181,11 @@ public:
         gb.outto(Port(enty, 7), Ports{ Port(exors[2], 1) }, typeid(bool));    // B2
         gb.outto(Port(enty, 8), Ports{ Port(exors[3], 1) }, typeid(bool));    // B3
         gb.outto(Port(enty, 9), Ports{                          // ADD/SUB
-                                Port(exors[0], 2),
-                                Port(exors[1], 2),
-                                Port(exors[2], 2),
-                                Port(exors[3], 2),
-                                Port(adders[0], 3) }, typeid(bool));
+                                        Port(exors[0], 2),
+                                        Port(exors[1], 2),
+                                        Port(exors[2], 2),
+                                        Port(exors[3], 2),
+                                        Port(adders[0], 3) }, typeid(bool));
 
         gb.outto(Port(adders[0], 1), Ports{ Port(exit, 1) }, typeid(bool));   // S0,
         gb.outto(Port(adders[1], 1), Ports{ Port(exit, 2) }, typeid(bool));   // S1,
