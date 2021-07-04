@@ -247,3 +247,9 @@ This is a data flow graph core implementation.
 ## 2021.06.30
 - 4bit Register確認完了
 
+## 2021.06.04
+- 4bit非同期カウンタ確認完了
+- 4bit同期カウンタ確認完了
+- 4bitシフトレジスタ確認完了
+- ここまでで、部品作成完了。以降CPU実装着手。
+

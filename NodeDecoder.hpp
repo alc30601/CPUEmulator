@@ -91,10 +91,5 @@ public:
     }
 };
 
-        // auto enty = getEntryNode();
-        // auto exit = getExitNode();
-        // gb.outto(Port(enty, 1), );
-        // gb.outto(, Ports{ Port(exit, 1) });
-
 #endif
 

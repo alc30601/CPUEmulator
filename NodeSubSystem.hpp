@@ -4,55 +4,11 @@
 
 #include "Node.hpp"
 #include "Edge.hpp"
-#include "Executor.hpp"
-
-//-----------------------------------------------------------
-// ByPass Node
-class NodeByPass : public Node
-{
-public:
-    //-------------------------------------------------------
-    // 入口エッジの値を出口エッジにコピーする。
-    // 入力Edgeの状態は出力Edgeにも維持する。
-    // (入力EdgeがENABLEのもののみ出力EdgeもENABLEとする)
-    void execute(void)
-    {
-        bool allEdgeEnabled = true;
-
-        std::vector<Edge*> inEdges = getInEdges();
-        std::vector<Edge*> outEdges = getOutEdges();
-
-        for(int i=0;i<inEdges.size();i++){
-            Edge* edge = inEdges.at(i);
-            auto value = edge->getValue();
-            if(edge->getStatus() == Edge::Status::DISABLE){
-                allEdgeEnabled = false;
-                outEdges.at(i)->setJustValue(value);
-            }
-            else{
-                outEdges.at(i)->setValue(value);
-            }
-        }
-
-        // 全てのEdgeがデータ可用ならば、実行済とする。
-        if(allEdgeEnabled == true){
-            Node::execute();
-        }
-    }
-
-    //-------------------------------------------------------
-    // データが揃っていようがいまいが実行可能にする。
-    bool isExecutable(void)
-    {
-        return true;
-    }
-};
 
 
 //-----------------------------------------------------------
 // 入口ノード
-// class NodeSubSystemEntry : public Node
-class NodeSubSystemEntry : public NodeByPass
+class NodeSubSystemEntry : public Node
 {
     Node& _parentNode;   // ref of parent instance
 
@@ -63,30 +19,11 @@ public:
         _name = "NodeSubSystemEntry";
     }
 
-    //-------------------------------------------------------
-    // 親ノードの入り口エッジの値を自身の出口エッジにコピーする。
-    // void execute(void)
-    // {
-    //     Node::execute();
-
-    //     std::vector<Edge*> inEdges = _parentNode.getInEdges();
-    //     std::vector<Edge*> outEdges = getOutEdges();
-
-    //     for(int i=0;i<inEdges.size();i++){
-    //         Edge* edge = inEdges.at(i);
-    //         if(edge->getStatus() == Edge::Status::ENABLE){
-    //             auto value = edge->getValue();
-    //             outEdges.at(i)->setValue(value);
-    //         }
-    //     }
-    // }
-
 };
 
 //-----------------------------------------------------------
 // 出口ノード
-// class NodeSubSystemExit : public Node
-class NodeSubSystemExit : public NodeByPass
+class NodeSubSystemExit : public Node
 {
     Node& _parentNode;   // ref of parent instance
 
@@ -96,21 +33,6 @@ public:
     {
         _name = "NodeSubSystemExit";
     }
-
-    //-------------------------------------------------------
-    // 自身の入り口エッジの値を親ノードの出口エッジにコピーする。
-    // void execute(void)
-    // {
-    //     Node::execute();
-
-    //     std::vector<Edge*> inEdges = getInEdges();
-    //     std::vector<Edge*> outEdges = _parentNode.getOutEdges();
-
-    //     for(int i=0;i<inEdges.size();i++){
-    //         auto value = inEdges.at(i)->getValue();
-    //         outEdges.at(i)->setValue(value);
-    //     }
-    // }
 
 };
 
@@ -132,8 +54,8 @@ public:
 class NodeSubSystem : public Node
 {
     // 本サブシステムの入力、出力は以下の入り口ノード、出口ノードで集約する。
-    NodeSubSystemEntry* _nodeEntry;   // 入り口ノード
-    NodeSubSystemExit* _nodeExit;    // 出口ノード
+    NodeSubSystemEntry* _nodeEntry; // 入り口ノード
+    NodeSubSystemExit* _nodeExit;   // 出口ノード
 
     // 自身が内部に持つNode,Edgeを保持する。
     std::vector<Node*> _nodes;
@@ -184,19 +106,10 @@ public:
     {
         std::cout << "This Node never be executed" << std::endl;
         assert(false);
-
-        // Node::execute();
-
-        // Executor* _exe;
-        // _exe = createExecutor();
-        // _exe->setStartNode(_nodeEntry);
-        // _exe->addNodes(_nodes);
-        // _exe->step();
     }
 
 
 };
-
 
 
 #endif

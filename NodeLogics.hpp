@@ -15,22 +15,6 @@
 static const bool T = true;
 static const bool F = false;
 
-//-----------------------------------------------------------
-// 入力Edgeにまだ値が設定されていない場合はその型のデフォルト値を返す。
-// 値が設定されている場合はその値を取得し返す。
-// template <typename T>
-// T getValueFromAny(std::any& anyValue)
-// {
-//     T value = T();
-//     if(anyValue.has_value() == true){
-//         value = std::any_cast<T>(anyValue);
-//     }
-//     else{
-//         std::cout << "Edge has no value" << std::endl;
-//         assert(false);
-//     }
-//     return value;
-// }
 
 //-----------------------------------------------------------
 // 与えられたEdgeをチェックし、有効なEdgeでかつ値がbValueのものがあれば演算可能とする。
@@ -55,35 +39,6 @@ bool isEdgeEnough(std::vector<Edge*>& edges, bool bValue)
 _end:        
     return result;
 }
-
-//-----------------------------------------------------------
-// 2入力1出力ノードと1入力1出力ノードの組合せで構成する複合ノード。
-// 前段：2入力1出力ノード T21
-// 後段：1入力1出力ノード T11
-// テンプレートで上記ノードを指定すれば接続は本テンプレートクラスで実現される。
-// template <typename T, class T21, class T11>
-// class Node21_11 : public NodeComplex
-// {
-// public:
-//     //-------------------------------------------------------
-//     Node21_11(void)
-//     {
-//         // グラフの構築
-//         auto& gb = getGraphBuilder();
-
-//         auto enty = getEntryNode();
-//         auto exit = getExitNode();
-//         auto n21 = gb.createNode<T21>(typeid(T21).name());
-//         auto n11 = gb.createNode<T11>(typeid(T11).name());
-
-//         gb.outto(Port(enty, 1), Ports{ Port(n21, 1) }, typeid(T));
-//         gb.outto(Port(enty, 2), Ports{ Port(n21, 2) }, typeid(T));
-//         gb.outto(Port(n21, 1), Ports{ Port(n11, 1) }, typeid(T));
-//         gb.outto(Port(n11, 1), Ports{ Port(exit, 1) }, typeid(T));
-
-//         commit();
-//     }
-// };
 
 
 //-----------------------------------------------------------
@@ -252,7 +207,7 @@ public:
 //     // 有効で値がFの入力Edgeがなく、無効の入力Edgeが１つでもあれば演算不可。
 //     bool isInputDataCompleted(void)
 //     {
-//         return isEdgeEnough(_inEdges, F);
+ //         return isEdgeEnough(_inEdges, F);
 //     }
 // };
 

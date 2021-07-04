@@ -593,6 +593,31 @@ void test12_15(void)
     test_NtoM_template<NodeTFlipFlopEdgeTriggerAsyncReset, bool, bool>(testVector, expected, do_asserts);
 }
 
+//-----------------------------------------------------------
+// D Flip Flop(EdgeTriggerAsyncReset)のテスト #2
+// 何故か、この入力データパターンだとデータの状態が落ち着かず、
+// 無限ループしてしまう。
+void test12_16(void)
+{
+    std::cout << "-- TEST12-16 D FlipFlop (EdgeTriggerAsyncReset) #2 --" << std::endl;
+
+    std::vector<std::vector<bool>>   testVector{
+        {F, F, T}, // [ 1] reset
+        {T, T, T}, // [ 2] edge-up
+    };
+
+    std::vector<std::vector<bool>> expected{
+        {F, T},     // [ 1] reset(0, 1)
+        {T, F},     // [ 2] stay
+    };
+
+    std::vector<bool> do_asserts{
+        true, true
+    };
+
+    test_NtoM_template<NodeDFlipFlopEdgeTriggerAsyncReset, bool, bool>(testVector, expected, do_asserts);
+ 
+}
 
 //-----------------------------------------------------------
 void test12(void)
@@ -612,6 +637,7 @@ void test12(void)
     test12_13();    // D Flip Flop(EdgeTriggerAsyncReset)のテスト
     test12_14();    // JK Flip Flop(EdgeTriggerAsyncReset)のテスト
     test12_15();    // T Flip Flop(EdgeTriggerAsyncReset)のテスト
+    // test12_16();    // D Flip Flop(EdgeTriggerAsyncReset)のテスト #2 ←無限ループ
 }
 
 #endif
