@@ -253,3 +253,6 @@ This is a data flow graph core implementation.
 - 4bitシフトレジスタ確認完了
 - ここまでで、部品作成完了。以降CPU実装着手。
 
+## 2021.07.10
+- 基本論理素子の実装を見直し。入力端子数がいくつでもいいようにした。
+

@@ -97,13 +97,17 @@ void mergeNode(Node* inNode, Node* outNode)
 
     // InとOutで必ずしも全てが接続されているわけではない。
     // そのため、全てのEdgeを巡り、接続されているEdgeに対して処理を行う。
-    int numOfEdge = std::max(inEdges.size(), outEdges.size());
+    // Outの無いIn Edgeはありうる。逆にInの無いOut Edgeはありえないと考えられる。
+    // よって、In Edgeを基準に考える。
+    int numOfEdge = inEdges.size();
 
     // [2] 全入力Edge(全出力Edge)をなめる。
     for(int i=0;i<numOfEdge;i++){
 
+        // OutEdgeに関してはvector要素数以上のインデックスをアクセスしてNULLで無い場合が
+        // ありうるためサイズチェックを行い、サイズ以上の場合は強制的にNULLを代入する。
         Edge* inEdge = inEdges[i];
-        Edge* outEdge = outEdges[i];
+        Edge* outEdge = outEdges.size() <= i ? NULL : outEdges[i];
 
         // 恐らく、あり得ないケースだが、該当する入力Edgeがない場合は処理をスキップ。
         // 「あり得ない」の意味は、あり得た場合はグラフの接続が間違っている場合ということ。

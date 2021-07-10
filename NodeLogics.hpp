@@ -10,35 +10,8 @@
 // #include "NodeBase.hpp"
 #include "GraphBuilder.hpp"
 #include "NodeComplex.hpp"
+#include "LogicDefines.hpp"
 
-// 論理演算の取りうる値boolのtrue,falseをT,Fで表現する。
-static const bool T = true;
-static const bool F = false;
-
-
-//-----------------------------------------------------------
-// 与えられたEdgeをチェックし、有効なEdgeでかつ値がbValueのものがあれば演算可能とする。
-// 有効なEdgeでかつ値がbValueのものがなく、無効のEdgeが一つでもあれば演算不可とする。
-// return true  : 演算可能
-//        false : 演算不可
-bool isEdgeEnough(std::vector<Edge*>& edges, bool bValue)
-{
-    bool result = true;
-    for(auto edge : edges){
-        if(edge->getStatus() == Edge::Status::ENABLE){
-            bool b = edge->value<bool>();
-            if(b == bValue){
-                result = true;
-                goto _end;
-            }
-        }
-        else{
-            result = false;
-        }
-    }
-_end:        
-    return result;
-}
 
 
 //-----------------------------------------------------------
@@ -62,10 +35,9 @@ public:
 
 
 //-----------------------------------------------------------
-// AND
-// 2入力1出力ノード
-// データ型はともにbool
-class NodeAnd : public Node
+// 論理素子の基本形
+// N入力1出力とする。入力数は不定。接続された入力Edge数とする。
+class NodeLogic : public Node
 {
 public:
     //-------------------------------------------------------
@@ -73,143 +45,146 @@ public:
     {
         Node::execute();
 
-        bool inValue1 = _inEdges.at(0)->value<bool>();
-        bool inValue2 = _inEdges.at(1)->value<bool>();
-        bool outValue = inValue1 & inValue2;
-        _outEdges.at(0)->setValue(outValue);
+        // 入力Edgeのデータを収集する。
+        std::vector<Edge*>& inEdges = getInEdges();
+        int numInEdges = inEdges.size();
+        std::vector<bool> inValues;
+        for(int i=0;i<numInEdges;i++){
+            bool value = inEdges[i]->value<bool>();
+            inValues.push_back(value);
+        }
+
+        // 入力データを元に出力データを計算する。
+        bool result = calculate(inValues);
+
+        // 出力は1本。
+        std::vector<Edge*>& outEdges = getOutEdges();
+        outEdges[0]->setValue(result);
+    }
+
+    //-------------------------------------------------------
+    virtual bool calculate(std::vector<bool>& input) = 0;
+
+
+    //-------------------------------------------------------
+    // 与えられたEdgeをチェックし、有効なEdgeでかつ値がbValueのものがあれば演算可能とする。
+    // 有効なEdgeでかつ値がbValueのものがなく、無効のEdgeが一つでもあれば演算不可とする。
+    // return true  : 演算可能
+    //        false : 演算不可
+    bool isEdgeEnough(bool bValue)
+    {
+        std::vector<Edge*>& edges = getInEdges();
+        bool result = true;
+
+        for(auto edge : edges){
+            if(edge->getStatus() == Edge::Status::ENABLE){
+                bool b = edge->value<bool>();
+                if(b == bValue){
+                    result = true;
+                    goto _end;
+                }
+            }
+            else{
+                result = false;
+            }
+        }
+    _end:        
+        return result;
+    }
+
+};
+
+
+
+//-----------------------------------------------------------
+class NodeAnd : public NodeLogic
+{
+public:
+    //-------------------------------------------------------
+    bool calculate(std::vector<bool>& input)
+    {
+        bool answer = input[0];
+        for(int i=1;i<input.size();i++){
+            answer = answer & input[i];
+        }
+        return answer;
     }
 
     //-------------------------------------------------------
     bool isInputDataCompleted(void)
     {
-        return isEdgeEnough(_inEdges, F);
+        return isEdgeEnough(F);
     }
-
 };
 
-
 //-----------------------------------------------------------
-// OR
-// 2入力1出力ノード
-// データ型はともにbool
-class NodeOr : public Node
+class NodeOr : public NodeLogic
 {
 public:
     //-------------------------------------------------------
-    void execute(void)
+    bool calculate(std::vector<bool>& input)
     {
-        Node::execute();
-
-        bool inValue1 = _inEdges.at(0)->value<bool>();
-        bool inValue2 = _inEdges.at(1)->value<bool>();
-        bool outValue = inValue1 | inValue2;
-        _outEdges.at(0)->setValue(outValue);
+        bool answer = input[0];
+        for(int i=1;i<input.size();i++){
+            answer = answer | input[i];
+        }
+        return answer;
     }
 
     //-------------------------------------------------------
     bool isInputDataCompleted(void)
     {
-        return isEdgeEnough(_inEdges, T);
-    }
-
-};
-
-
-//-----------------------------------------------------------
-// NOR
-// 2入力1出力ノード
-// データ型はともにbool
-// #define NodeNor Node21_11<bool, NodeOr, NodeNot>
-class NodeNor : public NodeComplex
-{
-public:
-    //-------------------------------------------------------
-    NodeNor(void)
-    {
-        // グラフの構築
-        auto& gb = getGraphBuilder();
-
-        auto enty = getEntryNode();
-        auto exit = getExitNode();
-        auto n21 = gb.createNode<NodeOr>("NodeOr in NodeNor");
-        auto n11 = gb.createNode<NodeNot>("NodeNot in NodeNor");
-
-        gb.outto(Port(enty, 1), Ports{ Port(n21, 1) }, typeid(T));
-        gb.outto(Port(enty, 2), Ports{ Port(n21, 2) }, typeid(T));
-        gb.outto(Port(n21, 1), Ports{ Port(n11, 1) }, typeid(T));
-        gb.outto(Port(n11, 1), Ports{ Port(exit, 1) }, typeid(T));
-
-        commit();
+        return isEdgeEnough(T);
     }
 };
 
 //-----------------------------------------------------------
-// NAND
-// 2入力1出力ノード
-// データ型はともにbool
-// #define NodeNand Node21_11<bool, NodeAnd, NodeNot>
-class NodeNand : public NodeComplex
+class NodeNand : public NodeLogic
 {
 public:
     //-------------------------------------------------------
-    NodeNand(void)
+    bool calculate(std::vector<bool>& input)
     {
-        // グラフの構築
-        auto& gb = getGraphBuilder();
-
-        auto enty = getEntryNode();
-        auto exit = getExitNode();
-        auto n21 = gb.createNode<NodeAnd>("NodeAnd in NodeNand");
-        auto n11 = gb.createNode<NodeNot>("NodeNot in NodeNand");
-
-        gb.outto(Port(enty, 1), Ports{ Port(n21, 1) }, typeid(T));
-        gb.outto(Port(enty, 2), Ports{ Port(n21, 2) }, typeid(T));
-        gb.outto(Port(n21, 1), Ports{ Port(n11, 1) }, typeid(T));
-        gb.outto(Port(n11, 1), Ports{ Port(exit, 1) }, typeid(T));
-
-        commit();
+        bool answer = input[0];
+        for(int i=1;i<input.size();i++){
+            answer = answer & input[i];
+        }
+        return !answer;
     }
 
     //-------------------------------------------------------
-    // 有効で値がFの入力Edgeがあれば演算可能。
-    // 有効で値がFの入力Edgeがなく、無効の入力Edgeが１つでもあれば演算不可。
     bool isInputDataCompleted(void)
     {
-        return isEdgeEnough(_inEdges, F);
+        return isEdgeEnough(F);
     }
 };
 
-// class NodeNand : public Node
-// {
-// public:
-//     //-------------------------------------------------------
-//     void execute(void)
-//     {
-//         Node::execute();
+//-----------------------------------------------------------
+class NodeNor : public NodeLogic
+{
+public:
+    //-------------------------------------------------------
+    bool calculate(std::vector<bool>& input)
+    {
+        bool answer = input[0];
+        for(int i=1;i<input.size();i++){
+            answer = answer | input[i];
+        }
+        return !answer;
+    }
 
-//         bool result = F;
-//         bool inValue1 = _inEdges.at(0)->value<bool>();
-//         bool inValue2 = _inEdges.at(1)->value<bool>();
+    //-------------------------------------------------------
+    bool isInputDataCompleted(void)
+    {
+        return isEdgeEnough(T);
+    }
+};
 
-//         if((inValue1 == F) || (inValue2 == F)){
-//             result = T;
-//         }
-//         else{
-//             result = F;
-//         }
+// 3入力素子も上記で対応可能であるが明示的に3入力であることを表すために別名をつける。
+// この名前を使っても、上記の3のつかない名前を使ってもどちらでもよい。
+using Node3And = NodeAnd;
+using Node3Nand = NodeNand;
 
-//         bool outValue = result;
-//         _outEdges.at(0)->setValue(outValue);
-//     }
-
-//     //-------------------------------------------------------
-//     // 有効で値がFの入力Edgeがあれば演算可能。
-//     // 有効で値がFの入力Edgeがなく、無効の入力Edgeが１つでもあれば演算不可。
-//     bool isInputDataCompleted(void)
-//     {
- //         return isEdgeEnough(_inEdges, F);
-//     }
-// };
 
 
 
@@ -242,90 +217,6 @@ public:
         commit();
     }
 };
-
-//-----------------------------------------------------------
-// ３端子AND
-class Node3And : public NodeComplex
-{
-public:
-    //-------------------------------------------------------
-    Node3And(void)
-    {
-        auto& gb = getGraphBuilder();
-        auto enty = getEntryNode();
-        auto exit = getExitNode();
-
-        auto and1 = gb.createNode<NodeAnd>("NodeAnd in Node3And");
-        auto and2 = gb.createNode<NodeAnd>("NodeAnd in Node3And");
-
-        gb.outto(Port(enty, 1), Ports{Port(and1, 1) }, typeid(bool));
-        gb.outto(Port(enty, 2), Ports{Port(and1, 2) }, typeid(bool));
-        gb.outto(Port(enty, 3), Ports{Port(and2, 1) }, typeid(bool));
-        gb.outto(Port(and1, 1), Ports{Port(and2, 2) }, typeid(bool));
-        gb.outto(Port(and2, 1), Ports{ Port(exit, 1)}, typeid(bool));
-
-        commit();
-    }
-};
-
-//-----------------------------------------------------------
-// ３端子NAND
-class Node3Nand : public NodeComplex
-{
-public:
-    //-------------------------------------------------------
-    Node3Nand(void)
-    {
-        auto& gb = getGraphBuilder();
-        auto enty = getEntryNode();
-        auto exit = getExitNode();
-
-        auto and1 = gb.createNode<Node3And>("Node3And in Node3Nand");
-        auto not1 = gb.createNode<NodeNot>("NodeNot in Node3Nand");
-
-        gb.outto(Port(enty, 1), Ports{Port(and1, 1) }, typeid(bool));
-        gb.outto(Port(enty, 2), Ports{Port(and1, 2) }, typeid(bool));
-        gb.outto(Port(enty, 3), Ports{Port(and1, 3) }, typeid(bool));
-        gb.outto(Port(and1, 1), Ports{Port(not1, 1) }, typeid(bool));
-        gb.outto(Port(not1, 1), Ports{ Port(exit, 1)}, typeid(bool));
-
-        commit();
-
-    }
-};
-
-// class  Node3Nand : public Node
-// {
-// public:
-//     //-------------------------------------------------------
-//     void execute(void)
-//     {
-//         Node::execute();
-
-//         bool result = F;
-//         bool inValue1 = _inEdges.at(0)->value<bool>();
-//         bool inValue2 = _inEdges.at(1)->value<bool>();
-//         bool inValue3 = _inEdges.at(2)->value<bool>();
-
-//         if((inValue1 == F) || (inValue2 == F) || (inValue3 == F)){
-//             result = T;
-//         }
-//         else{
-//             result = F;
-//         }
-
-//         bool outValue = result;
-//         _outEdges.at(0)->setValue(outValue);
-//     }
-
-//     //-------------------------------------------------------
-//     // 有効で値がFの入力Edgeがあれば演算可能。
-//     // 有効で値がFの入力Edgeがなく、無効の入力Edgeが１つでもあれば演算不可。
-//     bool isInputDataCompleted(void)
-//     {
-//         return isEdgeEnough(_inEdges, F);
-//     }
-// };
 
 
 #endif

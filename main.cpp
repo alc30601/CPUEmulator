@@ -21,6 +21,7 @@
 #include "test_13.hpp"
 #include "test_14.hpp"
 #include "test_15.hpp"
+#include "test_16.hpp"
 
 #include "exp_02.hpp"
 
@@ -52,6 +53,9 @@ int main(void)
 
     std::cout << "  -- test15" << std::endl;
     test15();
+
+    std::cout << "  -- test16" << std::endl;
+    test16();
 
     std::cout << "... Done." << std::endl;
     return 0;
