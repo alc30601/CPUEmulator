@@ -145,7 +145,7 @@ public:
     //-------------------------------------------------------
     bool calculate(std::vector<bool>& input)
     {
-        bool answer = input[0];
+         bool answer = input[0];
         for(int i=1;i<input.size();i++){
             answer = answer & input[i];
         }

@@ -23,21 +23,12 @@
 #include "test_15.hpp"
 #include "test_16.hpp"
 
-#include "exp_02.hpp"
-
 
 
 //-----------------------------------------------------------
 int main(void)
 {
     std::cout << "-- Start - DataFlowGraph -- " << std::endl;
-
-    // test1();
-    // test2();
-    // test3();
-    // test4();
-
-    exp_02();
 
     std::cout << "  -- test13" << std::endl;
     test13();

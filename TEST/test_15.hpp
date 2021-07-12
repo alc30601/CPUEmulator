@@ -4,7 +4,7 @@
 #define __TEST_15_HPP__
 
 #include "NodeTestBase.hpp"
-#include "NodeRegister.hpp"
+#include "Node4bitRegister.hpp"
 
 
 //-----------------------------------------------------------

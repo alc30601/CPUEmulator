@@ -256,3 +256,8 @@ This is a data flow graph core implementation.
 ## 2021.07.10
 - 基本論理素子の実装を見直し。入力端子数がいくつでもいいようにした。
 
+## 2021.07.12
+- ROM確認完了
+- レジスタ確認完了
+- PC確認完了
+
