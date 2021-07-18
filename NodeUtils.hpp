@@ -2,6 +2,7 @@
 #ifndef __NODEUTILS_HPP__
 #define __NODEUTILS_HPP__
 
+#include <any>
 #include "Edge.hpp"
 #include "Node.hpp"
 
@@ -69,6 +70,27 @@ public:
         _outEdges.at(0)->setValue(value);
     }
 
+};
+
+
+//-----------------------------------------------------------
+// 透過
+class NodeTransparent : public Node
+{
+public:
+    //-------------------------------------------------------
+    void execute(void)
+    {
+        Node::execute();
+
+        std::vector<Edge*>& inEdges = getInEdges();
+        std::vector<Edge*>& outEdges = getOutEdges();
+
+        for(int i=0;i<inEdges.size();i++){
+            std::any& value = inEdges[i]->getValue();
+            outEdges[i]->setValue(value);
+        }
+    }
 };
 
 #endif

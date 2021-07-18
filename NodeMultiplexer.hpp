@@ -19,6 +19,7 @@ public:
         auto& gb = getGraphBuilder();
         auto enty = getEntryNode();
         auto exit = getExitNode();
+        
         auto not1 = gb.createNode<NodeNot>();
         auto and1  = gb.createNode<NodeAnd>();
         auto and2  = gb.createNode<NodeAnd>();

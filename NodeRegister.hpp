@@ -16,6 +16,174 @@
 #include "NodeMultiplexer.hpp"
 
 
+
+//-----------------------------------------------------------
+// <部品ノード>
+// 4Input - 1Output
+// 
+// A--[NOR ]
+// B--[   1]--+
+//            +--[AND ]
+//            +--[   0]----Z
+// C--[NOR ]--+
+// D--[   2]
+// 
+// In-Ports  : A, B, C, D
+// Out-Ports : Z
+class NodeZeroDetector : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    NodeZeroDetector(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty  = getEntryNode();
+        auto exit  = getExitNode();
+
+        auto nor1 = gb.createNode<NodeNor>("nor1 in Node3Selector");
+        auto nor2 = gb.createNode<NodeNor>("nor2 in Node3Selector");
+        auto and0 = gb.createNode<NodeAnd>("and0 in Node3Selector");
+
+        gb.outto(Port(enty, 1), Ports{ Port(nor1, 1) }, typeid(bool)); // A
+        gb.outto(Port(enty, 2), Ports{ Port(nor1, 2) }, typeid(bool)); // B
+        gb.outto(Port(enty, 3), Ports{ Port(nor2, 1) }, typeid(bool)); // C
+        gb.outto(Port(enty, 4), Ports{ Port(nor2, 2) }, typeid(bool)); // D
+
+        gb.outto(Port(nor1, 1), Ports{ Port(and0, 1) }, typeid(bool));
+        gb.outto(Port(nor2, 1), Ports{ Port(and0, 2) }, typeid(bool));
+
+        gb.outto(Port(and0, 1), Ports{ Port(exit, 1) }, typeid(bool)); // Z
+
+        commit();
+    }
+};
+
+
+//-----------------------------------------------------------
+// <部品ノード>
+// 2Input/2Selector - 1Output
+// 
+// ==[NAND1]--+
+// ==[NAND2]--+--[NAND0]--
+// 
+// In-Ports  : S0, S1, D0, D1
+// Out-Ports : Q
+class Node2Selector : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    Node2Selector(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty  = getEntryNode();
+        auto exit  = getExitNode();
+
+        auto nand0 = gb.createNode<NodeNand>("nand0 in Node3Selector");
+        auto nand1 = gb.createNode<NodeNand>("nand1 in Node3Selector");
+        auto nand2 = gb.createNode<NodeNand>("nand2 in Node3Selector");
+
+        gb.outto(Port(enty, 1), Ports{ Port(nand1, 1) }, typeid(bool)); // S0
+        gb.outto(Port(enty, 2), Ports{ Port(nand2, 1) }, typeid(bool)); // S1
+
+        gb.outto(Port(enty, 3), Ports{ Port(nand1, 2) }, typeid(bool)); // D0
+        gb.outto(Port(enty, 4), Ports{ Port(nand2, 2) }, typeid(bool)); // D1
+
+        gb.outto(Port(nand1, 1), Ports{ Port(nand0, 1) }, typeid(bool));
+        gb.outto(Port(nand2, 1), Ports{ Port(nand0, 2) }, typeid(bool));
+
+        gb.outto(Port(nand0, 1), Ports{ Port(exit, 1) }, typeid(bool)); // Q
+
+        commit();
+    }
+};
+
+
+//-----------------------------------------------------------
+// <部品ノード>
+// Input/3Selector - 1Output
+// 
+// ==[NAND1]--+
+// ==[NAND2]--+--[NAND0]--
+// ==[NAND3]--+
+// 
+// In-Ports  : S0, S1, S2, D0, D1, D2
+// Out-Ports : Q
+class Node3Selector : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    Node3Selector(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty  = getEntryNode();
+        auto exit  = getExitNode();
+
+        auto nand0 = gb.createNode<NodeNand>("nand0 in Node3Selector");
+        auto nand1 = gb.createNode<NodeNand>("nand1 in Node3Selector");
+        auto nand2 = gb.createNode<NodeNand>("nand2 in Node3Selector");
+        auto nand3 = gb.createNode<NodeNand>("nand3 in Node3Selector");
+
+        gb.outto(Port(enty, 1), Ports{ Port(nand1, 1) }, typeid(bool)); // S0
+        gb.outto(Port(enty, 2), Ports{ Port(nand2, 1) }, typeid(bool)); // S1
+        gb.outto(Port(enty, 3), Ports{ Port(nand3, 1) }, typeid(bool)); // S2
+
+        gb.outto(Port(enty, 4), Ports{ Port(nand1, 2) }, typeid(bool)); // D0
+        gb.outto(Port(enty, 5), Ports{ Port(nand2, 2) }, typeid(bool)); // D1
+        gb.outto(Port(enty, 6), Ports{ Port(nand3, 2) }, typeid(bool)); // D2
+
+        gb.outto(Port(nand1, 1), Ports{ Port(nand0, 1) }, typeid(bool));
+        gb.outto(Port(nand2, 1), Ports{ Port(nand0, 2) }, typeid(bool));
+        gb.outto(Port(nand3, 1), Ports{ Port(nand0, 3) }, typeid(bool));
+
+        gb.outto(Port(nand0, 1), Ports{ Port(exit, 1) }, typeid(bool)); // Q
+
+        commit();
+    }
+};
+
+//-----------------------------------------------------------
+// <部品ノード>
+// UP/LD Selector
+// 
+// UP--+--[NOT1]--+--[AND ]
+//     |          +--[   1]----HOLD
+//     +-------------[AND ]
+// LD--+--[NOT2]--+--[   2]----UP_EN
+//     +-----------------------LD
+// 
+// In-Ports  : UP, LD
+// Out-Ports : HOLD, UP_EN, LD
+class NodeUpLdSelector : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    NodeUpLdSelector(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty  = getEntryNode();
+        auto exit  = getExitNode();
+
+        auto not1 = gb.createNode<NodeNot>("not1 in NodeUpLdSelector");
+        auto not2 = gb.createNode<NodeNot>("not2 in NodeUpLdSelector");
+        auto and1 = gb.createNode<NodeAnd>("and1 in NodeUpLdSelector");
+        auto and2 = gb.createNode<NodeAnd>("and2 in NodeUpLdSelector");
+
+        gb.outto(Port(enty, 1), Ports{ Port(not1, 1), Port(and2, 1) }, typeid(bool)); // UP
+        gb.outto(Port(enty, 2), Ports{ Port(not2, 1), Port(exit, 3) }, typeid(bool)); // LD
+        gb.outto(Port(not1, 1), Ports{ Port(and1, 1)                }, typeid(bool));
+        gb.outto(Port(not2, 1), Ports{ Port(and1, 2), Port(and2, 2) }, typeid(bool));
+        gb.outto(Port(and1, 1), Ports{ Port(exit, 1)                }, typeid(bool)); // HOLD
+        gb.outto(Port(and2, 1), Ports{ Port(exit, 2)                }, typeid(bool)); // UP_EN
+
+        commit();
+    }
+};
+
+
+
+
+
+
 //-----------------------------------------------------------
 // A register
 // In-Ports  : RST, CK, LD, D0, D1, D2, D3
@@ -62,79 +230,6 @@ public:
 
 
 
-//-----------------------------------------------------------
-// <NodePCの内部ノード>
-// 3Input/3Selector - 1Output
-// This class is used in NodePC
-// ==[1]--+
-// ==[2]--+--[0]--
-// ==[3]--+
-// In-Ports  : S0, S1, S2, D0, D1, D2
-// Out-Ports : Q
-class Node3Selector : public NodeComplex
-{
-public:
-    //-------------------------------------------------------
-    Node3Selector(void)
-    {
-        auto& gb = getGraphBuilder();
-        auto enty  = getEntryNode();
-        auto exit  = getExitNode();
-
-        auto nand0 = gb.createNode<NodeNand>("nand0 in Node3Selector");
-        auto nand1 = gb.createNode<NodeNand>("nand1 in Node3Selector");
-        auto nand2 = gb.createNode<NodeNand>("nand2 in Node3Selector");
-        auto nand3 = gb.createNode<NodeNand>("nand3 in Node3Selector");
-
-        gb.outto(Port(enty, 1), Ports{ Port(nand1, 1) }, typeid(bool)); // S0
-        gb.outto(Port(enty, 2), Ports{ Port(nand2, 1) }, typeid(bool)); // S1
-        gb.outto(Port(enty, 3), Ports{ Port(nand3, 1) }, typeid(bool)); // S2
-
-        gb.outto(Port(enty, 4), Ports{ Port(nand1, 2) }, typeid(bool)); // D0
-        gb.outto(Port(enty, 5), Ports{ Port(nand2, 2) }, typeid(bool)); // D1
-        gb.outto(Port(enty, 6), Ports{ Port(nand3, 2) }, typeid(bool)); // D2
-
-        gb.outto(Port(nand1, 1), Ports{ Port(nand0, 1) }, typeid(bool));
-        gb.outto(Port(nand2, 1), Ports{ Port(nand0, 2) }, typeid(bool));
-        gb.outto(Port(nand3, 1), Ports{ Port(nand0, 3) }, typeid(bool));
-
-        gb.outto(Port(nand0, 1), Ports{ Port(exit, 1) }, typeid(bool)); // Q
-
-        commit();
-    }
-};
-
-//-----------------------------------------------------------
-// <NodePCの内部ノード>
-// UP/LD Selector
-// This class is used in NodePC
-// In-Ports  : UP, LD
-// Out-Ports : HOLD, UP_EN, LD
-class NodeUpLdSelector : public NodeComplex
-{
-public:
-    //-------------------------------------------------------
-    NodeUpLdSelector(void)
-    {
-        auto& gb = getGraphBuilder();
-        auto enty  = getEntryNode();
-        auto exit  = getExitNode();
-
-        auto not1 = gb.createNode<NodeNot>("not1 in NodeUpLdSelector");
-        auto not2 = gb.createNode<NodeNot>("not2 in NodeUpLdSelector");
-        auto and1 = gb.createNode<NodeAnd>("and1 in NodeUpLdSelector");
-        auto and2 = gb.createNode<NodeAnd>("and2 in NodeUpLdSelector");
-
-        gb.outto(Port(enty, 1), Ports{ Port(not1, 1), Port(and2, 1) }, typeid(bool)); // UP
-        gb.outto(Port(enty, 2), Ports{ Port(not2, 1), Port(exit, 3) }, typeid(bool)); // LD
-        gb.outto(Port(not1, 1), Ports{ Port(and1, 1)                }, typeid(bool));
-        gb.outto(Port(not2, 1), Ports{ Port(and1, 2), Port(and2, 2) }, typeid(bool));
-        gb.outto(Port(and1, 1), Ports{ Port(exit, 1)                }, typeid(bool)); // HOLD
-        gb.outto(Port(and2, 1), Ports{ Port(exit, 2)                }, typeid(bool)); // UP_EN
-
-        commit();
-    }
-};
 
 
 //-----------------------------------------------------------
@@ -198,6 +293,93 @@ public:
         commit();
     }
 };
+
+
+//-----------------------------------------------------------
+// ALU
+// 但し、OE(Output Enabler)は設けない。本来は出力にトライステート・バッファを設けて
+// OEで出力制御をしているが、本エミュレータでは、上位でバスを共有するところで
+// MUXによる入力選択を行うようにする。
+// 
+//             1    2   3   4   5      6      7   8   9   10  11  12  13  14
+// In-Ports  : RST, CK, LD, AS, MUX_A, MUX_B, A0, A1, A2, A3, B0, B1, B2, B3
+//             1   2   3   4   5  6
+// Out-Ports : Q0, Q1, Q2, Q3, C, Z
+class NodeALU : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    NodeALU(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty  = getEntryNode();
+        auto exit  = getExitNode();
+
+        auto reg4 = gb.createNode<NodeAddSub4bit>("4bit Add/Sub in ALU");
+
+        auto andA0 = gb.createNode<NodeAnd>("and in ALU");
+        auto andB0 = gb.createNode<NodeAnd>("and in ALU");
+        auto andA1 = gb.createNode<NodeAnd>("and in ALU");
+        auto andB1 = gb.createNode<NodeAnd>("and in ALU");
+        auto andA2 = gb.createNode<NodeAnd>("and in ALU");
+        auto andB2 = gb.createNode<NodeAnd>("and in ALU");
+        auto andA3 = gb.createNode<NodeAnd>("and in ALU");
+        auto andB3 = gb.createNode<NodeAnd>("and in ALU");
+
+        auto zero0 = gb.createNode<NodeZeroDetector>("NodeZeroDetector in ALU");
+        auto mulc = gb.createNode<NodeMultiplexer>("MUX in ALU");
+        auto mulz = gb.createNode<NodeMultiplexer>("MUX in ALU");
+
+        auto dffc = gb.createNode<NodeDFlipFlopEdgeTriggerAsyncReset>("DFlipFlop in ALU");
+        auto dffz = gb.createNode<NodeDFlipFlopEdgeTriggerAsyncReset>("DFlipFlop in ALU");
+
+        gb.outto(Port(enty, 4), Ports{ Port(reg4, 9) }, typeid(bool)); // AS->Add/Sub
+
+        gb.outto(Port(enty,  5), Ports{ Port(andA0, 2), Port(andA1, 2), Port(andA2, 2), Port(andA3, 2), }, typeid(bool)); // MUX_A
+        gb.outto(Port(enty,  7), Ports{ Port(andA0, 1) }, typeid(bool)); // A0
+        gb.outto(Port(enty,  8), Ports{ Port(andA1, 1) }, typeid(bool)); // A1
+        gb.outto(Port(enty,  9), Ports{ Port(andA2, 1) }, typeid(bool)); // A2
+        gb.outto(Port(enty, 10), Ports{ Port(andA3, 1) }, typeid(bool)); // A3
+
+        gb.outto(Port(enty,  6), Ports{ Port(andB0, 2), Port(andB1, 2), Port(andB2, 2), Port(andB3, 2), }, typeid(bool)); // MUX_B
+        gb.outto(Port(enty, 11), Ports{ Port(andB0, 1) }, typeid(bool)); // B0
+        gb.outto(Port(enty, 12), Ports{ Port(andB1, 1) }, typeid(bool)); // B1
+        gb.outto(Port(enty, 13), Ports{ Port(andB2, 1) }, typeid(bool)); // B2
+        gb.outto(Port(enty, 14), Ports{ Port(andB3, 1) }, typeid(bool)); // B3
+
+        gb.outto(Port(andA0, 1), Ports{ Port(reg4, 1) }, typeid(bool)); // A0->Add/Sub
+        gb.outto(Port(andA1, 1), Ports{ Port(reg4, 2) }, typeid(bool)); // A1->Add/Sub
+        gb.outto(Port(andA2, 1), Ports{ Port(reg4, 3) }, typeid(bool)); // A2->Add/Sub
+        gb.outto(Port(andA3, 1), Ports{ Port(reg4, 4) }, typeid(bool)); // A3->Add/Sub
+
+        gb.outto(Port(andB0, 1), Ports{ Port(reg4, 5) }, typeid(bool)); // B0->Add/Sub
+        gb.outto(Port(andB1, 1), Ports{ Port(reg4, 6) }, typeid(bool)); // B1->Add/Sub
+        gb.outto(Port(andB2, 1), Ports{ Port(reg4, 7) }, typeid(bool)); // B2->Add/Sub
+        gb.outto(Port(andB3, 1), Ports{ Port(reg4, 8) }, typeid(bool)); // B3->Add/Sub
+
+
+        gb.outto(Port(enty, 1), Ports{ Port(dffz, 1), Port(dffc, 1) }, typeid(bool)); // RST
+        gb.outto(Port(enty, 2), Ports{ Port(dffz, 2), Port(dffc, 2) }, typeid(bool)); // CK
+        gb.outto(Port(enty, 3), Ports{ Port(mulz, 1), Port(mulc, 1) }, typeid(bool)); // LD
+
+        gb.outto(Port(reg4, 1), Ports{ Port(zero0, 1), Port(exit, 1) }, typeid(bool)); // S0
+        gb.outto(Port(reg4, 2), Ports{ Port(zero0, 2), Port(exit, 2) }, typeid(bool)); // S1
+        gb.outto(Port(reg4, 3), Ports{ Port(zero0, 3), Port(exit, 3) }, typeid(bool)); // S2
+        gb.outto(Port(reg4, 4), Ports{ Port(zero0, 4), Port(exit, 4) }, typeid(bool)); // S3
+
+        gb.outto(Port(zero0, 1), Ports{ Port(mulz, 3) }, typeid(bool)); // Z
+        gb.outto(Port(reg4, 5), Ports{ Port(mulc, 3) }, typeid(bool));  // C
+
+        gb.outto(Port(mulc, 1), Ports{ Port(dffc, 3) }, typeid(bool)); // C->D-FF
+        gb.outto(Port(mulz, 1), Ports{ Port(dffz, 3) }, typeid(bool)); // Z->D-FF
+
+        gb.outto(Port(dffc, 1), Ports{ Port(mulc, 2), Port(exit, 5) }, typeid(bool)); // C
+        gb.outto(Port(dffz, 1), Ports{ Port(mulz, 2), Port(exit, 6) }, typeid(bool)); // Z
+
+        commit();
+    }
+};
+
 
 
 #endif

@@ -37,6 +37,8 @@ public:
         return quasiNodelize(nExit);
     }
 
+
+
     //-------------------------------------------------------
     // GraphBuilderを用いて本クラスをNodeSubSystemのノード化
     // (入口ノード、出口ノードとの接続)

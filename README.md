@@ -261,3 +261,5 @@ This is a data flow graph core implementation.
 - レジスタ確認完了
 - PC確認完了
 
+## 2021.07.18
+- ALU確認完了
