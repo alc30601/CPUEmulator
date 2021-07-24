@@ -263,3 +263,9 @@ This is a data flow graph core implementation.
 
 ## 2021.07.18
 - ALU確認完了
+
+## 2021.07.24
+- StateMachine確認完了
+- ID(Instruction Decorder)確認完了
+- ここまででCPUの部品一通り完成。
+  但し、ClockとReset回路は未実装。

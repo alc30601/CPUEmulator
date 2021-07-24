@@ -6,8 +6,9 @@
 #include <iostream>
 
 #include "NodeTestBase.hpp"
-#include "NodeROM.hpp"
 #include "NodeRegister.hpp"
+
+
 
 //-----------------------------------------------------------
 void test16_01(void)
@@ -296,6 +297,139 @@ void test16_04(void)
 }
 
 //-----------------------------------------------------------
+void test16_05(void)
+{
+    std::cout << "-- TEST 16-04 ALU --" << std::endl;
+
+    std::vector<std::vector<bool>>   testVector{
+    //   1    2   3     4
+    //   RST, CK, HALT, PC_LD
+        {F,   F,  T,    F    }, // [ 0] 初期リセット
+        {T,   F,  T,    F    }, // [ 1] リセット解除
+        {T,   T,  T,    F    }, // [ 2] clock-up (PC_LD=0)
+        {T,   F,  T,    F    }, // [ 3] clock-down
+        {T,   T,  T,    F    }, // [ 4] clock-up (PC_LD=0)
+        {T,   F,  T,    F    }, // [ 5] clock-down
+        {T,   T,  T,    F    }, // [ 6] clock-up (PC_LD=0)
+        {T,   F,  T,    F    }, // [ 7] clock-down
+        {T,   T,  T,    F    }, // [ 8] clock-up (PC_LD=0)
+        {T,   F,  T,    F    }, // [ 9] clock-down
+
+        {T,   T,  T,    T    }, // [10] clock-up (PC_LD=1) ←ジャンプ命令
+        {T,   F,  T,    F    }, // [11] clock-down
+        {T,   T,  T,    F    }, // [12] clock-up (PC_LD=0)
+        {T,   F,  T,    F    }, // [13] clock-down
+
+
+    };
+
+    std::vector<std::vector<bool>> expected{
+    //   1    2   3      4
+    //   RST, CK, PC_UP, LD_EN
+        {F,   F,  F,     T      }, // [ 0] 入力強制0
+        {T,   F,  F,     T      }, // [ 1] リセット解除だけなので出力変わらず
+        {T,   T,  T,     F      }, // [ 2] 状態0→1
+        {T,   F,  T,     F      }, // [ 3] 
+        {T,   T,  F,     T      }, // [ 4] 状態1→0
+        {T,   F,  F,     T      }, // [ 5] 
+        {T,   T,  T,     F      }, // [ 6] 状態0→1
+        {T,   F,  T,     F      }, // [ 7] 
+        {T,   T,  F,     T      }, // [ 8] 状態1→0
+        {T,   F,  F,     T      }, // [ 9] 
+
+        {T,   T,  F,     T      }, // [10] 状態0→0 ←状態維持
+        {T,   F,  F,     T      }, // [11] 
+        {T,   T,  T,     F      }, // [12] 状態0→1
+        {T,   F,  T,     F      }, // [13] 
+
+    };
+
+    std::vector<bool> do_asserts{
+        true, true, true, true, true,
+        true, true, true, true, true,
+        true, true, true, true, true,
+        true, true, true, true, true,
+    };
+
+     test_NtoM_template<NodeStateMachine, bool, bool>(testVector, expected, do_asserts);
+}
+
+
+//-----------------------------------------------------------
+void test16_06(void)
+{
+    std::cout << "-- TEST 16-04 ID --" << std::endl;
+
+    std::vector<std::vector<bool>>   testVector{
+    //   1   2   3   4   5  6  7
+    //   D0, D1, D2, D3, C, Z, LD_EN
+        {F,  F,  F,  F,  F, F, T    }, // [ 1] LD A
+        {T,  F,  F,  F,  F, F, T    }, // [ 2] LD B
+        {F,  T,  F,  F,  F, F, T    }, // [ 3] LD A B
+        {T,  T,  F,  F,  F, F, T    }, // [ 4] LD B A
+        {F,  F,  T,  F,  F, F, T    }, // [ 5] ADD A B
+        {T,  F,  T,  F,  F, F, T    }, // [ 6] SUB A B
+        {F,  T,  T,  F,  F, F, T    }, // [ 7] ADD A [Data]
+        {T,  T,  T,  F,  F, F, T    }, // [ 8] SUB A [Data]
+        {F,  F,  F,  T,  F, F, T    }, // [ 9] OUT A
+        {T,  F,  F,  T,  F, F, T    }, // [10] OUT B
+        {F,  T,  F,  T,  F, F, T    }, // [11] OUT [Data]
+        {T,  T,  F,  T,  F, F, T    }, // [12] IN A
+        {F,  F,  T,  T,  F, F, T    }, // [13] JUMP [Address]
+        {T,  F,  T,  T,  F, F, T    }, // [14] JNC [Address]
+        {F,  T,  T,  T,  F, F, T    }, // [15] JNZ [Address]
+        {T,  T,  T,  T,  F, F, T    }, // [16] HALT
+
+        {T,  F,  T,  T,  T, F, T    }, // [17] JNC [Address] (C=T)
+        {F,  T,  T,  T,  F, T, T    }, // [18] JNZ [Address] (Z=T)
+
+        {F,  F,  T,  F,  F, F, F    }, // [19] ADD A B (LD_EN=F)
+        {T,  F,  F,  F,  F, F, F    }, // [20] LD B (LD_EN=F)
+        {F,  F,  F,  T,  F, F, F    }, // [21] OUT A (LD_EN=F)
+    };
+
+    std::vector<std::vector<bool>> expected{
+    //   1       2      3     4       5       6       7          8          9         10        11        12      13     14 15 16 17 18 19
+    //   ROM_OE, PC_LD, HALT, ALU_LD, ALU_OE, ALU_AS, ALU_MUX_A, ALU_MUX_B, A_REG_LD, B_REG_LD, B_REG_OE, OUT_LD, IN_OE  PROBE1-6
+        {T,      F,     T,    F,      T,      F,      F,         T,         T,        F,        F,        F,      F    }, // [ 1] LD A [Data]
+        {T,      F,     T,    F,      T,      F,      F,         T,         F,        T,        F,        F,      F    }, // [ 2] LD B [Data]
+        {F,      F,     T,    F,      T,      F,      F,         T,         T,        F,        T,        F,      F    }, // [ 3] LD A B
+        {F,      F,     T,    F,      T,      F,      T,         F,         F,        T,        T,        F,      F    }, // [ 4] LD B A
+        {F,      F,     T,    T,      T,      F,      T,         T,         T,        F,        T,        F,      F    }, // [ 5] ADD A B
+        {F,      F,     T,    T,      T,      T,      T,         T,         T,        F,        T,        F,      F    }, // [ 6] SUB A B
+        {T,      F,     T,    T,      T,      F,      T,         T,         T,        F,        F,        F,      F    }, // [ 7] ADD A [Data]
+        {T,      F,     T,    T,      T,      T,      T,         T,         T,        F,        F,        F,      F    }, // [ 8] SUB A [Data]
+        {F,      F,     T,    F,      T,      F,      T,         F,         F,        F,        T,        T,      F    }, // [ 9] OUT A
+        {F,      F,     T,    F,      T,      F,      F,         T,         F,        F,        T,        T,      F    }, // [10] OUT B
+        {T,      F,     T,    F,      T,      F,      F,         T,         F,        F,        F,        T,      F    }, // [11] OUT [Data]
+        {F,      F,     T,    F,      F,      F,      F,         T,         T,        F,        T,        F,      T    }, // [12] IN A
+        {T,      T,     T,    F,      T,      F,      F,         T,         F,        F,        F,        F,      F    }, // [13] JUMP [Address]
+        {T,      T,     T,    F,      T,      F,      F,         T,         F,        F,        F,        F,      F    }, // [14] JNC [Address]
+        {T,      T,     T,    F,      T,      F,      F,         T,         F,        F,        F,        F,      F    }, // [15] JNZ [Address]
+        {T,      F,     F,    F,      T,      F,      F,         T,         F,        F,        F,        F,      F    }, // [16] HALT
+
+        {T,      F,     T,    F,      T,      F,      F,         T,         F,        F,        F,        F,      F    }, // [17] JNC [Address] (C=T)
+        {T,      F,     T,    F,      T,      F,      F,         T,         F,        F,        F,        F,      F    }, // [18] JNZ [Address] (Z=T)
+
+        {F,      F,     T,    F,      T,      F,      T,         T,         F,        F,        T,        F,      F    }, // [19] ADD A B (LD_EN=F)
+        {T,      F,     T,    F,      T,      F,      F,         T,         F,        F,        F,        F,      F    }, // [20] LD B [Data] (LD_EN=F)
+        {F,      F,     T,    F,      T,      F,      T,         F,         F,        F,        T,        F,      F    }, // [21] OUT A (LD_EN=F)
+    };
+
+
+
+    std::vector<bool> do_asserts{
+        true, true, true, true, true,
+        true, true, true, true, true,
+        true, true, true, true, true,
+        true, true, true, true, true,
+    };
+
+     test_NtoM_template<NodeID, bool, bool>(testVector, expected, do_asserts);
+}
+
+
+//-----------------------------------------------------------
 void test16(void)
 {
     test16_01();
@@ -305,6 +439,8 @@ void test16(void)
     test16_03();
     test16_04_01();
     test16_04();
+    test16_05();
+    test16_06();
 }
 
 

@@ -11,9 +11,82 @@
 #ifndef __NODEREGISTER_HPP__
 #define __NODEREGISTER_HPP__
 
+#include "LogicDefines.hpp"
 #include "NodeComplex.hpp"
 #include "Node4bitRegister.hpp"
 #include "NodeMultiplexer.hpp"
+#include "NodeUtils.hpp"
+
+
+
+//-----------------------------------------------------------
+// 4 bit register
+// In-Ports  : A0, A1, A2, A3, OE
+// Out-Ports : D0, D1, D2, D3, D4, D5, D6, D7
+// 指定されたアドレス値(A0-A3)のROM値を出力(D0-D7)する。
+// アドレスは4bit指定で8bitのデータを出力する。
+// 実装として、固定データを保持する。
+// → ゆくゆくは、ファイルからCSV形式のデータを読み込むなどにしたい。
+// ノード実行時に、入力アドレスに対応するデータを出力する。
+// 本ノードは論理回路から構成されるのではなく、簡易のため疑似実装とする。
+class NodeROM : public Node
+{
+    bool _data[16][8] = {
+        {F, F, F, F, F, F, F, F},
+        {F, F, F, F, F, F, F, T},
+        {F, F, F, F, F, F, T, F},
+        {F, F, F, F, F, T, F, F},
+        {F, F, F, F, T, F, F, F},
+        {F, F, F, T, F, F, F, F},
+        {F, F, T, F, F, F, F, F},
+        {F, T, F, F, F, F, F, F},
+        {T, F, F, F, F, F, F, F},
+        {F, F, F, F, F, F, F, F},
+        {F, F, F, F, F, F, F, F},
+        {F, F, F, F, F, F, F, F},
+        {F, F, F, F, F, F, F, F},
+        {F, F, F, F, F, F, F, F},
+        {F, F, F, F, F, F, F, F},
+        {F, F, F, F, F, F, F, F},
+    };
+
+public:
+    //-------------------------------------------------------
+    NodeROM(void)
+    {
+    }
+
+    //-------------------------------------------------------
+    void execute(void)
+    {
+        Node::execute();
+
+        // アドレスバス数を求める。
+        // 入力Edgeの最後はOEなので入力Edge数-1をアドレスバス数とみなす。
+        int numAddressBus = _inEdges.size() - 1;
+        std::vector<Edge*> inEdges = getInEdges();
+        unsigned int address = 0x00000000;
+
+        // アドレスバスの値から指定されているアドレス値を得る。
+        for(int i=0;i<numAddressBus;i++){
+            bool value = inEdges[i]->value<bool>();
+            address = (address << 1) | static_cast<unsigned int>(value);
+        }
+
+        // アドレス値のデータを取り出す。
+        bool* data = _data[address];
+
+        // データの個数を取得
+        int dataSize = sizeof(data) / sizeof(*data);
+
+        // データの各bitをデータバスに出力する。
+        std::vector<Edge*> outEdges = getOutEdges();
+        for(int i=0;i<dataSize;i++){
+            outEdges[i]->setValue(data[i]);
+         }
+    }
+
+};
 
 
 
@@ -296,6 +369,15 @@ public:
 
 
 //-----------------------------------------------------------
+// 出力ポートはこのエミュレータ上はレジスタと同じ。
+using NodeOutPort = NodeRegister;
+
+//-----------------------------------------------------------
+// 入力ポートはこのエミュレータ上は単に入力値を出力値に送るだけのもの
+using NodeInPort = NodeTransparent;
+
+
+//-----------------------------------------------------------
 // ALU
 // 但し、OE(Output Enabler)は設けない。本来は出力にトライステート・バッファを設けて
 // OEで出力制御をしているが、本エミュレータでは、上位でバスを共有するところで
@@ -380,6 +462,204 @@ public:
     }
 };
 
+
+//-----------------------------------------------------------
+// STATE MACHINE
+// 本エミュレータではクロックとリセット回路はStateMachineには含めない。
+// クロック、リセットは通常のNodeとしての実現が難しいため、疑似Nodeとして
+// 別で設け、それらの出力を本StateMachineに入力することとする。
+//             1    2   3     4
+// In-Ports  : RST, CK, HALT, PC_LD
+//             1    2   3      4
+// Out-Ports : RST, CK, PC_UP, LD_EN
+class NodeStateMachine : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    NodeStateMachine(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty  = getEntryNode();
+        auto exit  = getExitNode();
+
+        auto dff1 = gb.createNode<NodeDFlipFlopEdgeTriggerAsyncReset>("DFF1 in SM");
+        auto dff2 = gb.createNode<NodeDFlipFlopEdgeTriggerAsyncReset>("DFF2 in SM");
+        auto nor1 = gb.createNode<NodeNor>("nor1 in SM");
+        auto nor2 = gb.createNode<NodeNor>("nor2 in SM");
+        auto and1 = gb.createNode<NodeAnd>("and1 in SM");
+
+        gb.outto(Port(enty, 1), Ports{ Port(dff1, 1), Port(dff2, 1), Port(exit, 1) }, typeid(bool)); // RST
+        gb.outto(Port(enty, 2), Ports{ Port(and1, 1) }, typeid(bool)); // CK
+        gb.outto(Port(enty, 3), Ports{ Port(nor1, 1) }, typeid(bool)); // HALT
+        gb.outto(Port(enty, 4), Ports{ Port(nor2, 1) }, typeid(bool)); // PC_LD
+
+        gb.outto(Port(and1, 1), Ports{ Port(dff1, 2), Port(dff2, 2) , Port(exit, 2) }, typeid(bool)); // CK
+        gb.outto(Port(nor1, 1), Ports{ Port(dff1, 3) }, typeid(bool)); // D -> DFF1
+        gb.outto(Port(nor2, 1), Ports{ Port(dff2, 3) }, typeid(bool)); // D -> DFF2
+
+        gb.outto(Port(dff1, 2), Ports{ Port(and1, 2) }, typeid(bool)); // HALT-inv
+        gb.outto(Port(dff2, 1), Ports{ Port(nor1, 2), Port(nor2, 2), Port(exit, 3) }, typeid(bool)); // PC_UP
+        gb.outto(Port(dff2, 2), Ports{ Port(exit, 4) }, typeid(bool)); // LD_EN
+
+        commit();
+    }
+};
+
+
+//-----------------------------------------------------------
+// ID (Instruction Decorder)
+//             1   2   3   4   5  6  7
+// In-Ports  : D0, D1, D2, D3, C, Z, LD_EN
+//             
+//             1       2      3     4       5       6       7          8          9         10        11        12      13     14   15   16   17   18   19   20
+// Out-Ports : ROM_OE, PC_LD, HALT, ALU_LD, ALU_OE, ALU_AS, ALU_MUX_A, ALU_MUX_B, A_REG_LD, B_REG_LD, B_REG_OE, OUT_LD, IN_OE, PB1, PB2, PB3, PB4, PB5, PB6, PB7   
+// 
+// const static int PB1 = 14;
+// const static int PB2 = 15;
+// const static int PB3 = 16;
+// const static int PB4 = 17;
+// const static int PB5 = 18;
+// const static int PB6 = 19;
+// const static int PB7 = 20;
+//
+class NodeID : public NodeComplex
+{
+public:
+    //-------------------------------------------------------
+    NodeID(void)
+    {
+        auto& gb = getGraphBuilder();
+        auto enty  = getEntryNode();
+        auto exit  = getExitNode();
+
+        auto not01 = gb.createNode<NodeNot>("not1 in ID");
+        auto not02 = gb.createNode<NodeNot>("not2 in ID");
+        auto not03 = gb.createNode<NodeNot>("not3 in ID");
+        auto not04 = gb.createNode<NodeNot>("not4 in ID");
+        auto not05 = gb.createNode<NodeNot>("not5 in ID");
+        auto not06 = gb.createNode<NodeNot>("not6 in ID");
+        auto not07 = gb.createNode<NodeNot>("not7 in ID");
+
+        auto nor01 = gb.createNode<NodeNor>("nor01 in ID");
+        auto nor02 = gb.createNode<NodeNor>("nor02 in ID");
+        auto nor03 = gb.createNode<NodeNor>("nor03 in ID");
+        auto nor04 = gb.createNode<NodeNor>("nor04 in ID");
+        auto nor05 = gb.createNode<NodeNor>("nor05 in ID");
+        auto nor06 = gb.createNode<NodeNor>("nor06 in ID");
+        auto nor07 = gb.createNode<NodeNor>("nor07 in ID");
+        auto nor08 = gb.createNode<NodeNor>("nor08 in ID");
+        auto nor09 = gb.createNode<NodeNor>("nor09 in ID");
+        auto nor10 = gb.createNode<NodeNor>("nor10 in ID");
+        auto nor11 = gb.createNode<NodeNor>("nor11 in ID");
+        auto nor12 = gb.createNode<NodeNor>("nor12 in ID");
+        auto nor13 = gb.createNode<NodeNor>("nor13 in ID");
+        auto nor14 = gb.createNode<NodeNor>("nor14 in ID");
+        auto nor15 = gb.createNode<NodeNor>("nor15 in ID");
+        auto nor16 = gb.createNode<NodeNor>("nor16 in ID");
+        auto nor17 = gb.createNode<NodeNor>("nor17 in ID");
+        auto nor18 = gb.createNode<NodeNor>("nor18 in ID");
+        auto nor19 = gb.createNode<NodeNor>("nor19 in ID");
+        auto nor20 = gb.createNode<NodeNor>("nor20 in ID");
+        auto nor21 = gb.createNode<NodeNor>("nor21 in ID");
+
+        auto nand01 = gb.createNode<NodeNand>("nand01 in ID");
+        auto nand02 = gb.createNode<NodeNand>("nand02 in ID");
+        auto nand03 = gb.createNode<NodeNand>("nand03 in ID");
+        auto nand04 = gb.createNode<NodeNand>("nand04 in ID");
+        auto nand05 = gb.createNode<NodeNand>("nand05 in ID");
+        auto nand06 = gb.createNode<NodeNand>("nand06 in ID");
+        auto nand07 = gb.createNode<NodeNand>("nand07 in ID");
+        auto nand08 = gb.createNode<NodeNand>("nand08 in ID");
+        auto nand09 = gb.createNode<NodeNand>("nand09 in ID");
+        auto nand10 = gb.createNode<NodeNand>("nand10 in ID");
+        auto nand11 = gb.createNode<NodeNand>("nand11 in ID");
+        auto nand12 = gb.createNode<NodeNand>("nand12 in ID");
+        auto nand13 = gb.createNode<NodeNand>("nand13 in ID");
+        auto nand14 = gb.createNode<NodeNand>("nand14 in ID");
+        auto nand15 = gb.createNode<NodeNand>("nand15 in ID");
+
+        auto and01 = gb.createNode<NodeAnd>("and01 in ID");
+        auto and02 = gb.createNode<NodeAnd>("and02 in ID");
+        auto and03 = gb.createNode<NodeAnd>("and03 in ID");
+        auto and04 = gb.createNode<NodeAnd>("and04 in ID");
+        auto and05 = gb.createNode<NodeAnd>("and05 in ID");
+
+        auto or01  = gb.createNode<NodeOr>("or01 in ID");
+        auto or02  = gb.createNode<NodeOr>("or02 in ID");
+
+        gb.outto(Port(enty,   1), Ports{ Port(not04,   1), Port(nor01,  3), Port(nand02, 2), Port(nand05, 2), Port(nand10, 2), Port(nor19,  2), Port(nor21, 2) }, typeid(bool)); // D0
+        gb.outto(Port(enty,   2), Ports{ Port(not03,   1), Port(nand02, 1), Port(nor07,  3), Port(nor09,  3), Port(nand05, 1), Port(nand10, 1), Port(nor19, 1), Port(nor20, 1)  }, typeid(bool)); // D1
+        gb.outto(Port(enty,   3), Ports{ Port(not02,   1), Port(nor01,  2), Port(nor05,  2), Port(nor06,  2), Port(nor09,  2), Port(nand08, 2), Port(nor16, 2) }, typeid(bool)); // D2
+        gb.outto(Port(enty,   4), Ports{ Port(not01,   1), Port(nor01,  1), Port(nor02,  1), Port(nand01, 1), Port(nor05,  1), Port(nor06,  1), Port(nor07, 1), Port(nor11, 1), Port(nor12, 1), Port(nand06, 1) }, typeid(bool)); // D3
+
+        gb.outto(Port(enty,   5), Ports{ Port(or01,    2) }, typeid(bool)); // C
+        gb.outto(Port(enty,   6), Ports{ Port(or02,    2) }, typeid(bool)); // Z
+        gb.outto(Port(enty,   7), Ports{ Port(and01,   2),  Port(and02, 2),  Port(and03, 2), Port(and05,  2) }, typeid(bool)); // LD_EN
+
+        gb.outto(Port(not04,  1), Ports{ Port(nor05,   3), Port(nor11,  3), Port(nand07, 2), Port(nor18, 2),  Port(nor20, 2) }, typeid(bool)); // D0-inv
+        gb.outto(Port(not03,  1), Ports{ Port(nor06,   3), Port(nand07, 1), Port(nor18,  1), Port(nor21, 1) }, typeid(bool)); // D1-inv
+        gb.outto(Port(not02,  1), Ports{ Port(nor02,   2), Port(nand01, 2), Port(nor07,  2), Port(nor11, 2),  Port(nor12, 2), Port(nand04, 2), Port(nand06, 2), Port(nor17, 2) }, typeid(bool)); // D2-inv
+        gb.outto(Port(not01,  1), Ports{ Port(nor09,   1), Port(nand04, 1), Port(nand08, 1), Port(nor16, 1),  Port(nor17, 1) }, typeid(bool)); // D3-inv
+
+        gb.outto(Port(nor01,  1), Ports{ Port(nor04,   1) }, typeid(bool));
+        gb.outto(Port(nor02,  1), Ports{ Port(nor04,   2) }, typeid(bool));
+        gb.outto(Port(nand01, 1), Ports{ Port(nor03,   1) }, typeid(bool));
+        gb.outto(Port(nand02, 1), Ports{ Port(nor03,   2) }, typeid(bool));
+        gb.outto(Port(nor03,  1), Ports{ Port(nor04,   3), Port(not06, 1), Port(exit, 13), Port(nor10, 2) }, typeid(bool)); // IN_OE
+        gb.outto(Port(nor04,  1), Ports{ Port(not05,   1) }, typeid(bool));
+        gb.outto(Port(not05,  1), Ports{ Port(and01,   1) }, typeid(bool));
+        gb.outto(Port(and01,  1), Ports{ Port(exit,    9) }, typeid(bool)); // A_REG_LD
+        gb.outto(Port(not06,  1), Ports{ Port(exit,    5) }, typeid(bool)); // ALU_OE
+
+        gb.outto(Port(nor05,  1), Ports{ Port(and02,   1) }, typeid(bool));
+        gb.outto(Port(and02,  1), Ports{ Port(exit,   10) }, typeid(bool)); // B_REG_LD
+
+        gb.outto(Port(nor06,  1), Ports{ Port(nor08,   1) }, typeid(bool));
+        gb.outto(Port(nor07,  1), Ports{ Port(nor08,   2) }, typeid(bool));
+        gb.outto(Port(nor09,  1), Ports{ Port(nor10,   1) }, typeid(bool));
+        gb.outto(Port(nor08,  1), Ports{ Port(nand03,  1) }, typeid(bool));
+        gb.outto(Port(nor10,  1), Ports{ Port(nand03,  2) }, typeid(bool));
+        gb.outto(Port(nand03, 1), Ports{ Port(not07,   1), Port(exit, 11) }, typeid(bool)); // B_REG_OE
+        gb.outto(Port(not07,  1), Ports{ Port(exit,    1) }, typeid(bool)); // ROM_OE
+
+        gb.outto(Port(nor11,  1),  Ports{ Port(exit,   6) }, typeid(bool)); // ALU_AS
+
+        gb.outto(Port(nor12,  1),  Ports{ Port(and03,  1) }, typeid(bool));
+        gb.outto(Port(and03,  1),  Ports{ Port(exit,   4) }, typeid(bool)); // ALU_LD
+
+        gb.outto(Port(nand04, 1), Ports{ Port(nor13,   1) }, typeid(bool));
+        gb.outto(Port(nand05, 1), Ports{ Port(nor13,   2) }, typeid(bool));
+        gb.outto(Port(nand06, 1), Ports{ Port(nor14,   1) }, typeid(bool));
+        gb.outto(Port(nand07, 1), Ports{ Port(nor14,   2) }, typeid(bool));
+        gb.outto(Port(nor13,  1), Ports{ Port(nor15,   1) }, typeid(bool));
+        gb.outto(Port(nor14,  1), Ports{ Port(nor15,   2) }, typeid(bool));
+        gb.outto(Port(nor15,  1), Ports{ Port(exit,    8) , Port(nand09, 2)}, typeid(bool)); // ALU_MUX_B
+
+        gb.outto(Port(nand08, 1), Ports{ Port(nand09,  1) }, typeid(bool));
+        gb.outto(Port(nand09, 1), Ports{ Port(exit,    7) }, typeid(bool)); // ALU_MUX_A
+
+        gb.outto(Port(nor16,  1), Ports{ Port(and04,   1) }, typeid(bool));
+        gb.outto(Port(nand10, 1), Ports{ Port(and04,   2) }, typeid(bool));
+        gb.outto(Port(and04,  1), Ports{ Port(and05,   1) }, typeid(bool));
+        gb.outto(Port(and05,  1), Ports{ Port(exit,   12) }, typeid(bool)); // OUT_LD
+
+        gb.outto(Port(nor17,  1),  Ports{ Port(nand11, 1), Port(nand12, 2), Port(nand13, 2), Port(nand14, 2)  }, typeid(bool));
+        gb.outto(Port(nor18,  1),  Ports{ Port(nand11, 2) }, typeid(bool));
+        gb.outto(Port(nand11, 1), Ports{ Port(exit,    3) }, typeid(bool)); // HALT
+
+        gb.outto(Port(nor19,  1), Ports{ Port(nand12,  1) }, typeid(bool));
+        gb.outto(Port(nor20,  1), Ports{ Port(nand13,  1) }, typeid(bool));
+        gb.outto(Port(nor21,  1), Ports{ Port(nand14,  1) }, typeid(bool));
+        gb.outto(Port(nand13, 1), Ports{ Port(or01,    1) }, typeid(bool));
+        gb.outto(Port(nand14, 1), Ports{ Port(or02,    1) }, typeid(bool));
+        gb.outto(Port(nand12, 1), Ports{ Port(nand15,  1) }, typeid(bool));
+        gb.outto(Port(or01,   1), Ports{ Port(nand15,  2) }, typeid(bool));
+        gb.outto(Port(or02,   1), Ports{ Port(nand15,  3) }, typeid(bool));
+        gb.outto(Port(nand15, 1), Ports{ Port(exit,    2) }, typeid(bool)); // PC_LD
+
+        commit();
+    }
+};
 
 
 #endif
