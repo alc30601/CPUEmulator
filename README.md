@@ -269,3 +269,13 @@ This is a data flow graph core implementation.
 - ID(Instruction Decorder)確認完了
 - ここまででCPUの部品一通り完成。
   但し、ClockとReset回路は未実装。
+
+## 2021.07.25
+- CPUノード作成完了(未確認)
+  今までのNode単体テストフレームワークではなく、CPU動作環境を設ける必要あり。
+  クロック及びリセットを入力できるようにする。
+  できればROMデータを外部から読み込むようにする。
+  CPUの動作をモニタする機構を追加する。
+
+
+

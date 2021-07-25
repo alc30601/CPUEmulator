@@ -52,9 +52,7 @@ class NodeROM : public Node
 
 public:
     //-------------------------------------------------------
-    NodeROM(void)
-    {
-    }
+    NodeROM(void){}
 
     //-------------------------------------------------------
     void execute(void)
@@ -258,7 +256,7 @@ public:
 
 
 //-----------------------------------------------------------
-// A register
+// Register
 // In-Ports  : RST, CK, LD, D0, D1, D2, D3
 // Out-Ports : Q0, Q1, Q2, Q3
 class NodeRegister : public NodeComplex
@@ -511,17 +509,9 @@ public:
 //             1   2   3   4   5  6  7
 // In-Ports  : D0, D1, D2, D3, C, Z, LD_EN
 //             
-//             1       2      3     4       5       6       7          8          9         10        11        12      13     14   15   16   17   18   19   20
-// Out-Ports : ROM_OE, PC_LD, HALT, ALU_LD, ALU_OE, ALU_AS, ALU_MUX_A, ALU_MUX_B, A_REG_LD, B_REG_LD, B_REG_OE, OUT_LD, IN_OE, PB1, PB2, PB3, PB4, PB5, PB6, PB7   
+//             1       2      3     4       5       6       7          8          9         10        11        12      13   
+// Out-Ports : ROM_OE, PC_LD, HALT, ALU_LD, ALU_OE, ALU_AS, ALU_MUX_A, ALU_MUX_B, A_REG_LD, B_REG_LD, B_REG_OE, OUT_LD, IN_OE
 // 
-// const static int PB1 = 14;
-// const static int PB2 = 15;
-// const static int PB3 = 16;
-// const static int PB4 = 17;
-// const static int PB5 = 18;
-// const static int PB6 = 19;
-// const static int PB7 = 20;
-//
 class NodeID : public NodeComplex
 {
 public:

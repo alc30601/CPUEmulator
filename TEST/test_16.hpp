@@ -7,7 +7,7 @@
 
 #include "NodeTestBase.hpp"
 #include "NodeRegister.hpp"
-
+#include "NodeMultiplexer.hpp"
 
 
 //-----------------------------------------------------------
@@ -430,6 +430,38 @@ void test16_06(void)
 
 
 //-----------------------------------------------------------
+void test16_07(void)
+{
+    std::cout << "-- TEST 16-07 4bit MUX --" << std::endl;
+
+    std::vector<std::vector<bool>>   testVector{
+    //   1    2   3   4   5   6   7   8   9
+    //   sel, A0, A1, A2, A3, B0, B1, B2, B3
+        {F,   F,  T,  F,  T,  T,  F,  T,  F  },
+        {T,   F,  T,  F,  T,  T,  F,  T,  F  },
+    };
+
+    std::vector<std::vector<bool>> expected{
+    //   1   2   3   4
+    //   Y0, Y1, Y2, Y3
+        {F,  T,  F,  T},
+        {T,  F,  T,  F },
+    };
+
+
+
+    std::vector<bool> do_asserts{
+        true, true, true, true, true,
+        true, true, true, true, true,
+        true, true, true, true, true,
+        true, true, true, true, true,
+    };
+
+     test_NtoM_template<Node4bitMultiplexer, bool, bool>(testVector, expected, do_asserts);
+}
+
+
+//-----------------------------------------------------------
 void test16(void)
 {
     test16_01();
@@ -441,6 +473,7 @@ void test16(void)
     test16_04();
     test16_05();
     test16_06();
+    test16_07();
 }
 
 
