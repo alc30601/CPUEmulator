@@ -22,11 +22,13 @@
 #include "test_14.hpp"
 #include "test_15.hpp"
 #include "test_16.hpp"
+#include "test_17.hpp"
 
+#include "CPU.hpp"
 
 
 //-----------------------------------------------------------
-int main(void)
+void test(void)
 {
     std::cout << "-- Start - DataFlowGraph -- " << std::endl;
 
@@ -48,8 +50,17 @@ int main(void)
     std::cout << "  -- test16" << std::endl;
     test16();
 
-    std::cout << "... Done." << std::endl;
-    return 0;
+    std::cout << "  -- test17" << std::endl;
+    test17();
+
+    std::cout << "... Test Done." << std::endl;
 }
 
 
+//-----------------------------------------------------------
+int main(void)
+{
+    test();
+
+    CPU();
+}

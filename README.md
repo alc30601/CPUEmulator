@@ -277,5 +277,10 @@ This is a data flow graph core implementation.
   できればROMデータを外部から読み込むようにする。
   CPUの動作をモニタする機構を追加する。
 
+## 2021.08.01
+- CPU起動のためのフレームワーク作成中
+- NodeROMに外部からデータ設定できるように修正
+- 疑似Clockノード作成
+- 疑似Resetノード作成
 
 

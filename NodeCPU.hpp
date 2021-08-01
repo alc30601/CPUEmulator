@@ -5,6 +5,8 @@
 #include "NodeComplex.hpp"
 #include "NodeRegister.hpp"
 #include "NodeMultiplexer.hpp"
+#include "NodePseudoParts.hpp"
+
 
 //-----------------------------------------------------------
 // CPU全体。
@@ -31,6 +33,9 @@
 // Out-Ports : O0, O1, O2, O3
 class NodeCPU : public NodeComplex
 {
+    //-------------------------------------------------------
+    NodeROM* _rom; // ROMは外部からデータを更新することがあるため、自分で保持しておく。
+
 public:
     //-------------------------------------------------------
     NodeCPU(void)
@@ -50,6 +55,9 @@ public:
         auto rom  = gb.createNode<NodeROM>("ROM");
         auto mux1  = gb.createNode<Node4bitMultiplexer>("MUX1"); // For Bus1
         auto mux2  = gb.createNode<Node4bitMultiplexer>("MUX2"); // For Bus2
+
+        _rom = dynamic_cast<NodeROM*>(rom.getNode());
+
 
         // INPUT
         gb.outto(Port(enty, 1), Ports{ Port(sm, 1) }, typeid(bool)); // RST
@@ -137,6 +145,14 @@ public:
 
         commit();
     }
+
+    //-------------------------------------------------------
+    // ROMのデータを更新する。
+    void setROMData(const bool (&rom)[16][8])
+    {
+        _rom->setROMData(rom);
+    }
+
 };
 
 

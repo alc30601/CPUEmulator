@@ -8,6 +8,7 @@
 #include "NodeTestBase.hpp"
 #include "NodeRegister.hpp"
 #include "NodeMultiplexer.hpp"
+#include "NodePseudoParts.hpp"
 
 
 //-----------------------------------------------------------
