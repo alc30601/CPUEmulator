@@ -20,8 +20,8 @@ public:
     {
         Node::execute();
 
-        int inValue = std::any_cast<int>(_inEdges.at(0)->getValue());
-
+        // int inValue = std::any_cast<int>(_inEdges.at(0)->getValue());
+        int inValue = _inEdges.at(0)->value<int>();
         bool bits[BITNUM];
         for(int i=0;i<BITNUM; i++){
             if((inValue & 0x00000001) == 0x00000001){
@@ -57,7 +57,8 @@ public:
         std::vector<Edge*> inEdges = getInEdges();
         for(int i=0;i<BITNUM; i++){
             auto edge = inEdges[i];
-            bool b = std::any_cast<bool>(edge->getValue());
+            // bool b = std::any_cast<bool>(edge->getValue());
+            bool b = edge->value<bool>();
             bits[i] = b;
         }
 

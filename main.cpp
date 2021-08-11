@@ -56,10 +56,24 @@ void test(void)
     std::cout << "... Test Done." << std::endl;
 }
 
+//-----------------------------------------------------------
+void synTest(void)
+{
+    std::vector<std::string> v = {"aaa", "bbb", "ccc"};
+
+    std::string s1 = "ddd";
+    v.insert(v.begin(), s1);
+
+    std::string s2 = "eee";
+    v.insert(v.end(), s2);
+
+}
 
 //-----------------------------------------------------------
 int main(void)
 {
+    synTest();
+
     test();
 
     CPU();

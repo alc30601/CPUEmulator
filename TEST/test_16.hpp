@@ -17,15 +17,15 @@ void test16_01(void)
     std::cout << "-- TEST 16-01 ROM --" << std::endl;
 
     std::vector<std::vector<bool>>   testVector{
-        {F, F, F, F, T},
-        {F, F, F, T, T},
-        {F, F, T, F, T},
-        {F, F, T, T, T},
-        {F, T, F, F, T},
-        {F, T, F, T, T},
-        {F, T, T, F, T},
-        {F, T, T, T, T},
-        {T, F, F, F, T},
+        {F, F, F, F, T}, // [ 0]
+        {T, F, F, F, T}, // [ 1]
+        {F, T, F, F, T}, // [ 2]
+        {T, T, F, F, T}, // [ 3]
+        {F, F, T, F, T}, // [ 4]
+        {T, F, T, F, T}, // [ 5]
+        {F, T, T, F, T}, // [ 6]
+        {T, T, T, F, T}, // [ 7]
+        {F, F, F, T, T}, // [ 8]
     };
 
     std::vector<std::vector<bool>> expected{
