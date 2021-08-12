@@ -34,7 +34,7 @@ CPUとして動作させるためには階層構造を持つグラフだとう�
                 GraphBuilder                    ExecutorForCircuit
            NodeComplex                            
        NodeLogics
-NodeDecoder NodeAdder NodeMultiplexer
+  NodeDecoder NodeAdder NodeMultiplexer
     NodeFlipFlop
                   Node4bitRegister
           NodeRegister
