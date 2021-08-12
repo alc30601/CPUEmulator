@@ -28,6 +28,8 @@ QuasiNode& quasiNodelize(Node* node)
 }
 
 
+
+
 //-----------------------------------------------------------
 // ノードとエッジの番号を組にしたタプル
 // ノード間接続の際にこのPort型で指定する。
@@ -62,12 +64,12 @@ public:
     // 準ノードを生成する。本当のノードも生成し準ノードで包む。
     // 準ノードをユーザに返すとともに、GraphBuilder内でも管理しておく。　
     template <typename T>
-    // QuasiNode& createNode(void)
     QuasiNode& createNode(const std::string& name = "")
     {
         T* node(new T);
         node->setName(name);
         _nodes.push_back(node);
+
         return quasiNodelize(node);
     }
 
@@ -103,30 +105,14 @@ public:
 
     //-------------------------------------------------------
     // 型情報付きEdge生成
-    // 指定された型情報を元にEdgeの値を初期化する。
+    // テンプレートで指定された型情報を元にEdgeの値を初期化する。
     // 本関数を経由するとEdgeが常時値を持つことになる。
-    // (有効値ではないにしても)
-    Edge* outto(const Port& srcPort, const Ports& dstPorts, std::type_info const &ti)
+    template <typename T>
+    Edge* outto(const Port& srcPort, const Ports& dstPorts)
     {
         Edge* edge = outto(srcPort, dstPorts);
-
-        // 型情報に応じてその型のデフォルト値を生成しEdgeに設定する。
-        if(ti == typeid(bool)){
-            bool a = bool();
-            edge->setJustValue(a);
-        }
-        else if(ti == typeid(int)){
-            int a =int();
-            edge->setJustValue(a);
-        }
-        else if(ti == typeid(double)){
-            double a = double();
-            edge->setJustValue(a);
-        }
-        else{
-            std::cout << "Unknown data type" << std::endl;
-            assert(false);
-        }
+        T a = T();
+        edge->setJustValue(a);
 
         return edge;
     }

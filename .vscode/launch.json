@@ -14,7 +14,7 @@
             "name": "g++ - Build and debug active file",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/DataFlowGraph",
+            "program": "${workspaceFolder}/cpuEmulator",
             "args": [],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",

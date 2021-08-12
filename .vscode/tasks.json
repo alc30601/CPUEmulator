@@ -9,7 +9,7 @@
                 "-g",
                 "main.cpp",
                 "-o",
-                "${workspaceFolder}/DataFlowGraph",
+                "${workspaceFolder}/cpuEmulator",
                 "-I/${workspaceFolder}",
                 "-I/${workspaceFolder}/TEST"
             ],

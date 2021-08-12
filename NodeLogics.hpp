@@ -206,13 +206,13 @@ public:
         auto and2 = gb.createNode<NodeAnd>("NodeAnd in NodeExor");
         auto or1  = gb.createNode<NodeOr>("NodeOr in NodeExor");
 
-        gb.outto(Port(enty, 1), Ports{Port(not1, 1), Port(and2, 2)}, typeid(bool));
-        gb.outto(Port(enty, 2), Ports{Port(and1, 2), Port(not2, 1)}, typeid(bool));
-        gb.outto(Port(not1, 1), Ports{ Port(and1, 1) }, typeid(bool));
-        gb.outto(Port(not2, 1), Ports{ Port(and2, 1) }, typeid(bool));
-        gb.outto(Port(and1, 1), Ports{ Port(or1, 1) }, typeid(bool));
-        gb.outto(Port(and2, 1), Ports{ Port(or1, 2) }, typeid(bool));
-        gb.outto(Port(or1, 1), Ports{ Port(exit, 1)}, typeid(bool));
+        gb.outto<bool>(Port(enty, 1), Ports{Port(not1, 1), Port(and2, 2)});
+        gb.outto<bool>(Port(enty, 2), Ports{Port(and1, 2), Port(not2, 1)});
+        gb.outto<bool>(Port(not1, 1), Ports{ Port(and1, 1) });
+        gb.outto<bool>(Port(not2, 1), Ports{ Port(and2, 1) });
+        gb.outto<bool>(Port(and1, 1), Ports{ Port(or1, 1) });
+        gb.outto<bool>(Port(and2, 1), Ports{ Port(or1, 2) });
+        gb.outto<bool>(Port(or1, 1), Ports{ Port(exit, 1)});
 
         commit();
     }

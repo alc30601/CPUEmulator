@@ -7,7 +7,7 @@
 #include <any>
 #include <cassert>
 
-class Edge;
+#include "Edge.hpp"
 
 //-----------------------------------------------------------
 // ノードは0〜複数個の入力エッジ、0〜複数個の出力エッジを持つ。
@@ -42,6 +42,7 @@ public:
 
     //-------------------------------------------------------
     void setName(const std::string& name){ _name = name; }
+    std::string& getName(void){ return _name; }
 
     //-------------------------------------------------------
     // Execute the operation of this node

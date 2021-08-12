@@ -76,11 +76,6 @@ public:
         unsigned int address = 0x00000000;
 
         // アドレスバスの値から指定されているアドレス値を得る。
-        // for(int i=0;i<_numAddressBus;i++){
-        //     bool value = inEdges[i]->value<bool>();
-        //     address = (address << 1) | static_cast<unsigned int>(value);
-        // }
-
         for(int i=_numAddressBus-1;i>=0;i--){
             bool value = inEdges[i]->value<bool>();
             address = (address << 1) | static_cast<unsigned int>(value);

@@ -51,7 +51,7 @@ class ExecutorStableEdge : public Executor
     // 両方とも値が設定されていない場合も一致とみなす。
     // 
     // 使用される可能性のある型をすべて列挙している。
-    // std::anyの型を知ることなく比較できないものか。。。
+    // (std::anyの型を知ることなく比較できないものか)
     bool compareValue(std::any& v1, std::any& v2)
     {
         bool result = true;
