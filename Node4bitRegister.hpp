@@ -1,4 +1,4 @@
-// NodeRegister.hpp
+// Node4bitRegister.hpp
 // 4bits register
 // 4bits Asynchronous Counter
 // 4bits Synchronous Counter

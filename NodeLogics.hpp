@@ -7,7 +7,6 @@
 #include <memory>
 #include <cassert>
 
-// #include "NodeBase.hpp"
 #include "GraphBuilder.hpp"
 #include "NodeComplex.hpp"
 #include "LogicDefines.hpp"

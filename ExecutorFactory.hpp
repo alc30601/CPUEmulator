@@ -23,17 +23,6 @@ Executor* createExecutor(void)
     return executor;
 }
 
-//-----------------------------------------------------------
-// Executor生成関数
-// ゆくゆくは削除したい。
-// Executor* createExecutor(Node* startNode, std::vector<Node*>& nodes, std::vector<Edge*>& edges)
-// {
-//     Executor* executor = createExecutor();
-//     executor->setStartNode(startNode);
-//     executor->addNodes(nodes);
-//     executor->addEdges(edges);
-//     return executor;
-// }
 
 #endif
 
